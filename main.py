@@ -35,12 +35,12 @@ class App(tk.Tk):
         style.configure("TButton", font=("Helvetica", 15), padding=10)
 
         ttk.Label(self.frames["Menu"], text="Menu Utama", font=("Helvetica", 30)).pack(pady=25)
-        ttk.Button(self.frames["Menu"], text="Pencatatan",
+        ttk.Button(self.frames["Menu"], text="Pencatatan Transaksi",
                    command=lambda: self.show_frame("Pencatatan")).pack(pady=10)
         ttk.Button(self.frames["Menu"], text="Pelaporan",
-                   command=lambda: self.show_frame("Pelaporan")).pack(pady=10)
+                   command=lambda: self.show_frame("Laporan Transaksi")).pack(pady=10)
         ttk.Button(self.frames["Menu"], text="Grafik",
-                   command=lambda: self.show_frame("Grafik")).pack(pady=10)
+                   command=lambda: self.show_frame("Analisis Grafik")).pack(pady=10)
         ttk.Button(self.frames["Menu"], text="Keluar", command=self.quit).pack(pady=10)
 
         self.show_frame("Menu")
