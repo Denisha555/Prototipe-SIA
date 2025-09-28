@@ -19,7 +19,7 @@ class PencatatanPage(tk.Frame):
 
         # Input Tanggal
         ttk.Label(self, text="Tanggal").grid(row=1, column=0, sticky="e", pady=8)
-        self.entry_tanggal = DateEntry(self, width=15, background='darkblue',
+        self.entry_tanggal = DateEntry(self, width=20, background='darkblue',
                                        foreground='white', borderwidth=2, 
                                        date_pattern="yyyy-mm-dd")
         self.entry_tanggal.grid(row=1, column=1, pady=8, padx=10, sticky="w")
@@ -33,7 +33,7 @@ class PencatatanPage(tk.Frame):
         ttk.Label(self, text="Jumlah").grid(row=3, column=0, sticky="e", pady=8)
         def validate(P):
             return P.isdigit() or P == ""
-        self.entry_jumlah = ttk.Entry(self, validate="key",
+        self.entry_jumlah = ttk.Entry(self, validate="key", width=23,
                                       validatecommand=(self.register(validate), '%P'))
         self.entry_jumlah.grid(row=3, column=1, pady=8, padx=10, sticky="w")
 
@@ -65,7 +65,7 @@ class PencatatanPage(tk.Frame):
             label_kategori = "M" if kategori == "Pemasukan" else "K"
             label_tanggal = tanggal.replace("-", "")
 
-            c.execute("SELECT COUNT(*) FROM transaksi WHERE tanggal=?", (tanggal))
+            c.execute("SELECT COUNT(*) FROM transaksi WHERE tanggal=?", (tanggal,))
             count = c.fetchone()[0]
 
             nomor_urut = count + 1
@@ -88,7 +88,7 @@ class PencatatanPage(tk.Frame):
         btn_frame.grid(row=5, column=0, columnspan=2, pady=20)
 
         ttk.Button(btn_frame, text="💾 Simpan", command=simpan_data).grid(row=0, column=0, padx=10)
-        ttk.Button(btn_frame, text="⬅️ Kembali ke Menu",
+        ttk.Button(btn_frame, text="⬅️ Kembali ke Menu Utama",
                    command=lambda: controller.show_frame("Menu")).grid(row=0, column=1, padx=10)
 
         # Biar form lebih rapat di tengah

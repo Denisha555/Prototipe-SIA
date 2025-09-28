@@ -35,13 +35,13 @@ class App(tk.Tk):
 
         # Frame Menu
         ttk.Label(self.frames["Menu"], text="Menu Utama", font=("Helvetica", 30)).pack(pady=25)
-        ttk.Button(self.frames["Menu"], text="Pencatatan Transaksi",
+        ttk.Button(self.frames["Menu"], text="Pencatatan Transaksi", width=20,
                    command=lambda: self.show_frame("Pencatatan")).pack(pady=10)
-        ttk.Button(self.frames["Menu"], text="Laporan Keuangan",
+        ttk.Button(self.frames["Menu"], text="Laporan Keuangan", width=20,
                    command=lambda: self.show_frame("Pelaporan")).pack(pady=10)
-        ttk.Button(self.frames["Menu"], text="Analisis Keuangan",
+        ttk.Button(self.frames["Menu"], text="Analisis Keuangan", width=20,
                    command=lambda: self.show_frame("Grafik")).pack(pady=10)
-        ttk.Button(self.frames["Menu"], text="Keluar", command=self.quit).pack(pady=10)
+        ttk.Button(self.frames["Menu"], text="Keluar", width=20, command=self.quit).pack(pady=20)
 
         self.show_frame("Menu")
 

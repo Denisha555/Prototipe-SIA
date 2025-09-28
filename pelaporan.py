@@ -17,11 +17,11 @@ class PelaporanPage(tk.Frame):
 
         # Judul
         ttk.Label(self, text="📊 Laporan Keuangan", style="Title.TLabel").grid(
-            row=0, column=0, columnspan=3, pady=20
+            row=0, column=0, columnspan=2, pady=20
         )
 
         # Input Bulan
-        ttk.Label(self, text="Bulan").grid(row=1, column=0, sticky="e", pady=5, padx=5)
+        ttk.Label(self, text="Bulan").grid(row=1, column=0, sticky="e", pady=5, padx=20)
         self.combo_bulan = ttk.Combobox(
             self,
             values=[
@@ -34,12 +34,12 @@ class PelaporanPage(tk.Frame):
         self.combo_bulan.grid(row=1, column=1, pady=5, sticky="w")
 
         # Input Tahun
-        ttk.Label(self, text="Tahun").grid(row=2, column=0, sticky="e", pady=5, padx=5)
+        ttk.Label(self, text="Tahun").grid(row=2, column=0, sticky="e", pady=5, padx=20)
         self.entry_tahun = ttk.Entry(self, width=18)
         self.entry_tahun.grid(row=2, column=1, pady=5, sticky="w")
 
         # Input Kategori
-        ttk.Label(self, text="Kategori").grid(row=3, column=0, sticky="e", pady=5, padx=5)
+        ttk.Label(self, text="Kategori").grid(row=3, column=0, sticky="e", pady=5, padx=20)
         self.combo_kategori = ttk.Combobox(
             self,
             values=["Semua", "Pemasukan", "Pengeluaran"],
@@ -99,12 +99,16 @@ class PelaporanPage(tk.Frame):
             laporan_window.wait_window()
             laporan_window.destroy()  
 
+            # Reset Form
+            self.combo_bulan.set('')
+            self.entry_tahun.delete(0, tk.END)
+            self.combo_kategori.set('')
+
         # Tombol
-        ttk.Button(self, text="📑 Tampilkan Laporan", command=show_laporan).grid(row=1, column=2, padx=10, sticky="w")
-        ttk.Button(self, text="⬅️ Kembali ke Menu",
-                   command=lambda: controller.show_frame("Menu")).grid(row=2, column=2, padx=10, sticky="w")
+        ttk.Button(self, text="📑 Tampilkan Laporan", command=show_laporan).grid(row=4, column=0, padx=10, pady=20, sticky="e")
+        ttk.Button(self, text="⬅️ Kembali ke Menu Utama",
+                   command=lambda: controller.show_frame("Menu")).grid(row=4, column=1, padx=10, pady=20, sticky="w")
 
         # Biar grid lebih rata
-        self.grid_columnconfigure(0, weight=2)
-        self.grid_columnconfigure(1, weight=1) 
-        self.grid_columnconfigure(2, weight=2) 
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)  
