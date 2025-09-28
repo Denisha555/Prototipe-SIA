@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-from matplotlib import container
 from pencatatan import PencatatanPage 
 from pelaporan import PelaporanPage
 from grafik import GrafikPage
@@ -34,13 +33,14 @@ class App(tk.Tk):
         style = ttk.Style()
         style.configure("TButton", font=("Helvetica", 15), padding=10)
 
+        # Frame Menu
         ttk.Label(self.frames["Menu"], text="Menu Utama", font=("Helvetica", 30)).pack(pady=25)
         ttk.Button(self.frames["Menu"], text="Pencatatan Transaksi",
                    command=lambda: self.show_frame("Pencatatan")).pack(pady=10)
-        ttk.Button(self.frames["Menu"], text="Pelaporan",
-                   command=lambda: self.show_frame("Laporan Transaksi")).pack(pady=10)
+        ttk.Button(self.frames["Menu"], text="Laporan Keuangan",
+                   command=lambda: self.show_frame("Pelaporan")).pack(pady=10)
         ttk.Button(self.frames["Menu"], text="Grafik",
-                   command=lambda: self.show_frame("Analisis Grafik")).pack(pady=10)
+                   command=lambda: self.show_frame("Grafik")).pack(pady=10)
         ttk.Button(self.frames["Menu"], text="Keluar", command=self.quit).pack(pady=10)
 
         self.show_frame("Menu")

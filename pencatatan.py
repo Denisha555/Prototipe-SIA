@@ -65,7 +65,7 @@ class PencatatanPage(tk.Frame):
             label_kategori = "M" if kategori == "Pemasukan" else "K"
             label_tanggal = tanggal.replace("-", "")
 
-            c.execute("SELECT COUNT(*) FROM transaksi WHERE tanggal=?", (tanggal,))
+            c.execute("SELECT COUNT(*) FROM transaksi WHERE tanggal=?", (tanggal))
             count = c.fetchone()[0]
 
             nomor_urut = count + 1

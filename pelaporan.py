@@ -1,11 +1,128 @@
+import sqlite3
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 class PelaporanPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
-        ttk.Label(self, text="Laporan Keuangan", font=("Helvetica", 18)).pack(pady=20)
+        # Styling
+        style = ttk.Style()
+        style.configure("TLabel", font=("Helvetica", 12))
+        style.configure("TButton", font=("Helvetica", 11), padding=6)
+        style.configure("Title.TLabel", font=("Helvetica", 18, "bold"))
 
-        ttk.Button(self, text="Kembali ke Menu", 
-                   command=lambda: controller.show_frame("Menu")).pack(pady=10)
+
+        # Judul
+        ttk.Label(self, text="📊 Laporan Keuangan", style="Title.TLabel").grid(
+            row=0, column=0, columnspan=3, pady=20
+        )
+
+        # Input Bulan
+        ttk.Label(self, text="Bulan").grid(row=1, column=0, sticky="e", pady=5, padx=5)
+        self.combo_bulan = ttk.Combobox(
+            self,
+            values=[
+                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+            ],
+            state="readonly",
+            width=15
+        )
+        self.combo_bulan.grid(row=1, column=1, pady=5, sticky="w")
+
+        # Input Tahun
+        ttk.Label(self, text="Tahun").grid(row=2, column=0, sticky="e", pady=5, padx=5)
+        self.entry_tahun = ttk.Entry(self, width=18)
+        self.entry_tahun.grid(row=2, column=1, pady=5, sticky="w")
+
+        # Input Kategori
+        ttk.Label(self, text="Kategori").grid(row=3, column=0, sticky="e", pady=5, padx=5)
+        self.combo_kategori = ttk.Combobox(
+            self,
+            values=["Semua", "Pemasukan", "Pengeluaran"],
+            state="readonly",
+            width=15
+        )
+        self.combo_kategori.grid(row=3, column=1, pady=10, sticky="w")
+
+        bulan_map = {
+            "Januari": "01", "Februari": "02", "Maret": "03", 
+            "April": "04", "Mei": "05", "Juni": "06",
+            "Juli": "07", "Agustus": "08", "September": "09",
+            "Oktober": "10", "November": "11", "Desember": "12"}
+
+        def get_data(bulan, tahun, kategori):
+            conn = sqlite3.connect('data_keuangan.db')
+            c = conn.cursor()
+            if kategori != "Semua":
+                query = "SELECT tanggal, jumlah, kategori, keterangan FROM transaksi WHERE strftime('%m', tanggal)=? AND strftime('%Y', tanggal)=? AND kategori=?"
+                params = [bulan, tahun, kategori]
+            elif kategori == "Semua":
+                query = "SELECT tanggal, jumlah, kategori, keterangan FROM transaksi WHERE strftime('%m', tanggal)=? AND strftime('%Y', tanggal)=?"
+                params = [bulan, tahun]
+            c.execute(query, params)
+            results = c.fetchall()
+            conn.close()
+            return results
+
+        def show_laporan():
+            bulan = self.combo_bulan.get()
+            bulan = bulan_map.get(bulan, "")
+            tahun = self.entry_tahun.get()
+            kategori = self.combo_kategori.get()
+
+            if not (bulan and tahun.isdigit()):
+                messagebox.showerror("Error", "Tahun harus diisi dengan benar!")
+                return
+
+            if not kategori:
+                messagebox.showerror("Error", "Kategori harus dipilih!")
+                return
+            
+            data = get_data(bulan, tahun, kategori)
+
+            if not data:
+                messagebox.showerror("Error", "Tidak ada data yang ditemukan!")
+                return
+            
+            # Tampilkan data di bawah
+            laporan_window = tk.Toplevel(self)
+            laporan_window.title("Laporan Keuangan")
+            width = self.winfo_screenwidth()
+            height = self.winfo_screenheight()
+            laporan_window.geometry(f"{width}x{height}")
+            laporan_window.grab_set()
+            laporan_window.transient(self)
+            laporan_window.focus_set()
+            laporan_window.rowconfigure(0, weight=1)
+            laporan_window.columnconfigure(0, weight=1)
+            tree = ttk.Treeview(laporan_window, columns=("Tanggal", "Jumlah", "Kategori", "Keterangan"), show="headings")
+            tree.heading("Tanggal", text="Tanggal")
+            tree.heading("Jumlah", text="Jumlah")
+            tree.heading("Kategori", text="Kategori")
+            tree.heading("Keterangan", text="Keterangan")
+            tree.grid(row=0, column=0, sticky="nsew")
+            for row in data:
+                tree.insert("", tk.END, values=row)
+            scrollbar = ttk.Scrollbar(laporan_window, orient="vertical", command=tree.yview)
+            tree.configure(yscroll=scrollbar.set)
+            scrollbar.grid(row=0, column=1, sticky="ns")
+            ttk.Button(laporan_window, text="Tutup", command=laporan_window.destroy).grid(row=1, column=0, columnspan=2, pady=10)
+            laporan_window.grid_rowconfigure(0, weight=1)
+            laporan_window.grid_columnconfigure(0, weight=1)
+            laporan_window.focus_set()
+            laporan_window.transient(self)
+            laporan_window.grab_set()
+            laporan_window.wait_window()
+            laporan_window.destroy()  
+
+        # Tombol
+        ttk.Button(self, text="📑 Tampilkan Laporan", command=show_laporan).grid(row=1, column=2, padx=10, sticky="w")
+        ttk.Button(self, text="⬅️ Kembali ke Menu",
+                   command=lambda: controller.show_frame("Menu")).grid(row=2, column=2, padx=10, sticky="w")
+
+        # Biar grid lebih rata
+        self.grid_columnconfigure(0, weight=2)
+        self.grid_columnconfigure(1, weight=1) 
+        self.grid_columnconfigure(2, weight=2) 
