@@ -39,7 +39,7 @@ class App(tk.Tk):
                    command=lambda: self.show_frame("Pencatatan")).pack(pady=10)
         ttk.Button(self.frames["Menu"], text="Laporan Keuangan",
                    command=lambda: self.show_frame("Pelaporan")).pack(pady=10)
-        ttk.Button(self.frames["Menu"], text="Grafik",
+        ttk.Button(self.frames["Menu"], text="Analisis Keuangan",
                    command=lambda: self.show_frame("Grafik")).pack(pady=10)
         ttk.Button(self.frames["Menu"], text="Keluar", command=self.quit).pack(pady=10)
 

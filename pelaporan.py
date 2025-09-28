@@ -1,6 +1,8 @@
 import sqlite3
 import tkinter as tk
 from tkinter import ttk, messagebox
+from get_data import get_data
+from bulan_map import bulan_map
 
 class PelaporanPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -46,26 +48,6 @@ class PelaporanPage(tk.Frame):
         )
         self.combo_kategori.grid(row=3, column=1, pady=10, sticky="w")
 
-        bulan_map = {
-            "Januari": "01", "Februari": "02", "Maret": "03", 
-            "April": "04", "Mei": "05", "Juni": "06",
-            "Juli": "07", "Agustus": "08", "September": "09",
-            "Oktober": "10", "November": "11", "Desember": "12"}
-
-        def get_data(bulan, tahun, kategori):
-            conn = sqlite3.connect('data_keuangan.db')
-            c = conn.cursor()
-            if kategori != "Semua":
-                query = "SELECT tanggal, jumlah, kategori, keterangan FROM transaksi WHERE strftime('%m', tanggal)=? AND strftime('%Y', tanggal)=? AND kategori=?"
-                params = [bulan, tahun, kategori]
-            elif kategori == "Semua":
-                query = "SELECT tanggal, jumlah, kategori, keterangan FROM transaksi WHERE strftime('%m', tanggal)=? AND strftime('%Y', tanggal)=?"
-                params = [bulan, tahun]
-            c.execute(query, params)
-            results = c.fetchall()
-            conn.close()
-            return results
-
         def show_laporan():
             bulan = self.combo_bulan.get()
             bulan = bulan_map.get(bulan, "")
@@ -83,7 +65,7 @@ class PelaporanPage(tk.Frame):
             data = get_data(bulan, tahun, kategori)
 
             if not data:
-                messagebox.showerror("Error", "Tidak ada data yang ditemukan!")
+                messagebox.showerror("Error", "Tidak ada data untuk periode ini!")
                 return
             
             # Tampilkan data di bawah
