@@ -137,7 +137,7 @@ class PencatatanPage(tk.Frame):
         messagebox.showinfo("Edit Data", f"Transaksi ID {id_transaksi} dimuat untuk diubah. Tekan Simpan/Update atau Hapus.")
         
     def load_selected_transaction(self, data):
-    
+
         self._load_data_to_form(data[0], data[1], data[2], data[3], data[4])
         self.controller.show_frame("Pencatatan")
 

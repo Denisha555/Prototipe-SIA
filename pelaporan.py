@@ -120,7 +120,9 @@ class PelaporanPage(tk.Frame):
         
         laporan_window = tk.Toplevel(self)
         laporan_window.title(f"Laporan {kategori} - {bulan_str} {tahun}")
-        laporan_window.geometry("800x600")
+        width = self.winfo_screenwidth()
+        height = self.winfo_screenheight()
+        laporan_window.geometry(f"{width}x{height}")
 
         laporan_window.grid_rowconfigure(1, weight=1)
         laporan_window.grid_columnconfigure(0, weight=1)

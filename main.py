@@ -3,6 +3,7 @@ from tkinter import ttk
 import sqlite3
 from tkinter import messagebox
 from datetime import date
+from initialize_db import initialize_db
 
 from pencatatan import PencatatanPage 
 from pelaporan import PelaporanPage
@@ -13,10 +14,10 @@ from penggajian import PenggajianPage
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Prototipe SIA")
+        self.title("Prototype SIA")
         
         # Inisialisasi Database
-        self.initialize_db()
+        initialize_db(self)
 
         width = self.winfo_screenwidth()
         height = self.winfo_screenheight()
@@ -71,32 +72,6 @@ class App(tk.Tk):
                    command=self.quit).pack(pady=20)
 
         self.show_frame("Menu")
-
-    def initialize_db(self):
-        conn = sqlite3.connect('data_keuangan.db')
-        c = conn.cursor()
-        
-        c.execute('''CREATE TABLE IF NOT EXISTS transaksi (
-                            id TEXT PRIMARY KEY,
-                            tanggal TEXT,
-                            kategori TEXT,
-                            keterangan TEXT,
-                            jumlah INTEGER)''')
-                            
-        c.execute('''CREATE TABLE IF NOT EXISTS pajak (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    tanggal TEXT,
-                    jenis_pajak TEXT,
-                    jumlah INTEGER)''')
-                    
-        c.execute('''CREATE TABLE IF NOT EXISTS penggajian (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    tanggal TEXT,
-                    nama_karyawan TEXT,
-                    gaji_bersih INTEGER)''')
-
-        conn.commit()
-        conn.close()
 
     def show_frame(self, name):
         frame = self.frames[name]

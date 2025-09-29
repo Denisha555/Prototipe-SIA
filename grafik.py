@@ -144,6 +144,7 @@ class GrafikPage(tk.Frame):
                 )
 
                 fig.canvas.manager.set_window_title("Pie Chart Pemasukan & Pengeluaran")
+                fig.canvas.manager.window.state('zoomed') 
                 plt.tight_layout()
                 plt.show()
                 return
@@ -179,6 +180,7 @@ class GrafikPage(tk.Frame):
                 plt.tight_layout()
                 
                 fig.canvas.manager.set_window_title(title)
+                fig.canvas.manager.window.state('zoomed') 
 
                 plt.show()
 
