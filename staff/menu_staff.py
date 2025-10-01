@@ -7,7 +7,14 @@ class MenuStaffPage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        ttk.Label(self, text="Menu Utama").grid(column=0, row=0, padx=10, pady=10)
-        
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
+        ttk.Label(self, text="Menu Utama").grid(column=0, row=0, padx=10, pady=10, columnspan=2)
+
+        ttk.Button(self, text="Produk").grid(column=0, row=1, padx=10, pady=10)
+
+        ttk.Button(self, text="Transaksi").grid(column=1, row=1, padx=10, pady=10)
+
 
         
