@@ -1,64 +1,74 @@
+import sqlite3
 import tkinter as tk
 from tkinter import ttk, messagebox
-import sqlite3
 
-from initialize_db import initialize_db
+from function.show_frame import show_frame
 
 
-class LoginPage(tk.Frame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
+class LoginPage(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Prototype SIA")
 
-        initialize_db(self)
+        width = self.winfo_screenwidth()
+        height = self.winfo_screenheight()
+        self.geometry(f"{width}x{height}")
 
-        self.title = "Login Page"
-        self.controller = controller
+        # Container utama untuk frame-frame
+        self.container = tk.Frame(self)
+        self.container.pack(fill="both", expand=True)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
 
-        ttk.Label(self, text="🔑 Login", font=("Helvetica", 20, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+        self.frames = {}
 
-        # Username
-        ttk.Label(self, text="Username:").grid(row=1, column=0, sticky="e", padx=10, pady=5)
-        self.entry_username = ttk.Entry(self, width=25)
+        # Tampilkan login frame dulu
+        login_frame = tk.Frame(self.container)
+        self.frames["Login"] = login_frame
+        login_frame.grid(row=0, column=0, sticky="nsew")
+
+        login_frame.grid_columnconfigure(0, weight=1)
+        login_frame.grid_columnconfigure(1, weight=1)
+
+        ttk.Label(login_frame, text="🔑 Login", font=("Helvetica", 20, "bold")).grid(row=0, column=0, columnspan=2)
+
+        ttk.Label(login_frame, text="Username:").grid(row=1, column=0, pady=5, padx=5, sticky="e")
+        self.entry_username = ttk.Entry(login_frame, width=25)
         self.entry_username.grid(row=1, column=1, pady=5, sticky="w")
-
-        # Password
-        ttk.Label(self, text="Password:").grid(row=2, column=0, sticky="e", padx=10, pady=5)
-        self.entry_password = ttk.Entry(self, show="*", width=25)
+        ttk.Label(login_frame, text="Password:").grid(row=2, column=0, pady=5, padx=5, sticky="e")
+        self.entry_password = ttk.Entry(login_frame, show="*", width=25)
         self.entry_password.grid(row=2, column=1, pady=5, sticky="w")
 
-        # Tombol
-        ttk.Button(self, text="Login", command=self.login).grid(row=3, column=0, columnspan=2, pady=15)
+        ttk.Button(login_frame, text="Login", command=self.login).grid(row=3, columnspan=2, pady=15)
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.show_frame("Login")
+
+    def show_frame(self, name):
+        frame = self.frames[name]
+        frame.tkraise()
 
     def login(self):
         username = self.entry_username.get()
         password = self.entry_password.get()
 
-        if not username or not password:
-            messagebox.showerror("Error", "Isi semua field!")
-            return
-
-        conn = sqlite3.connect("data_keuangan.db")
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT role FROM users WHERE username=? AND password=?", (username, password))
-        result = cursor.fetchone()
-        conn.close()
-
+        conn = sqlite3.connect('data_keuangan.db')
+        c = conn.cursor()
+        c.execute("SELECT role FROM users WHERE username=? AND password=?", (username, password))
+        result = c.fetchone()
+    
         if result:
             role = result[0]
-            messagebox.showinfo("Sukses", f"Login berhasil sebagai {role}")
-            self.controller.current_role = role
-            self.controller.show_frame("Menu")  # masuk ke menu utama
+            if role == "staff":
+                show_frame(self, "Menu Utama Staff")
+            elif role == "manager":
+                show_frame(self, "Menu Utama Manager")
+            messagebox.showinfo("Sukses", f"Login berhasil sebagai {role}.")
         else:
-            messagebox.showerror("Error", "Username atau password salah!")
+            messagebox.showerror("Gagal", "Username atau password salah.")
+
+        conn.close()
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Login Page")
-    login_page = LoginPage(root, None)
-    login_page.pack(fill="both", expand=True)
-    root.mainloop()
+    app = LoginPage()
+    app.mainloop()

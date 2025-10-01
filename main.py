@@ -8,9 +8,6 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Prototype SIA")
-        
-        # Inisialisasi Database
-        initialize_db(self)
 
         width = self.winfo_screenwidth()
         height = self.winfo_screenheight()
