@@ -2,11 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from initialize_db import initialize_db
 
-from pencatatan import PencatatanPage 
-from pelaporan import PelaporanPage
-from grafik import GrafikPage
-from pajak import PajakPage       
-from penggajian import PenggajianPage 
+from function.show_frame import show_frame
 
 class App(tk.Tk):
     def __init__(self):
@@ -41,48 +37,29 @@ class App(tk.Tk):
         
         ttk.Label(menu_frame, text="Menu Utama", font=("Helvetica", 30)).pack(pady=25)
         ttk.Button(menu_frame, text="📒 Pencatatan Transaksi", width=30,
-                   command=lambda: self.show_frame("Pencatatan")).pack(pady=10)
+                   command=lambda: show_frame(self, "Pencatatan")).pack(pady=10)
         
         ttk.Separator(menu_frame, orient='horizontal').pack(fill='x', padx=50, pady=10)
 
         ttk.Button(menu_frame, text="📊 Laporan Keuangan", width=30,
-                   command=lambda: self.show_frame("Pelaporan")).pack(pady=10)
+                   command=lambda: show_frame(self, "Pelaporan")).pack(pady=10)
         ttk.Button(menu_frame, text="📈 Analisis Keuangan", width=30,
-                   command=lambda: self.show_frame("Grafik")).pack(pady=10)
-        
+                   command=lambda: show_frame(self, "Grafik")).pack(pady=10)
+
         ttk.Separator(menu_frame, orient='horizontal').pack(fill='x', padx=50, pady=10)
 
         ttk.Button(menu_frame, text="🧾 Manajemen Pajak", width=30,
-                   command=lambda: self.show_frame("Pajak")).pack(pady=10)
+                   command=lambda: show_frame(self, "Pajak")).pack(pady=10)
         ttk.Button(menu_frame, text="💵 Manajemen Penggajian", width=30,
-                   command=lambda: self.show_frame("Penggajian")).pack(pady=10)
+                   command=lambda: show_frame(self, "Penggajian")).pack(pady=10)
         
         ttk.Separator(menu_frame, orient='horizontal').pack(fill='x', padx=50, pady=10)
 
         ttk.Button(menu_frame, text="Keluar", width=30,
                    command=self.quit).pack(pady=20)
 
-        # Tampilkan menu pertama kali
-        self.show_frame("Menu")
-
-    def show_frame(self, name):
-        if name not in self.frames:
-            PageClass = {
-                "Pencatatan": PencatatanPage,
-                "Pelaporan": PelaporanPage,
-                "Grafik": GrafikPage,
-                "Pajak": PajakPage,        
-                "Penggajian": PenggajianPage, 
-            }[name]
-            frame = PageClass(self.container, self)
-            self.frames[name] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
-
-        frame = self.frames[name]
-        frame.tkraise()
-
-        if hasattr(frame, 'load_transaksi_data'):
-            frame.load_transaksi_data()
+        # # Tampilkan menu pertama kali
+        # self.show_frame("Menu")
 
 
 if __name__ == "__main__":

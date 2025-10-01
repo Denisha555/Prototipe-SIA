@@ -22,6 +22,12 @@ def initialize_db(self):
                     tanggal TEXT,
                     nama_karyawan TEXT,
                     gaji_bersih INTEGER)''')
+        
+        c.execute('''CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE,
+                    password TEXT,
+                    role TEXT)''')
 
         conn.commit()
         conn.close()
