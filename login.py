@@ -2,7 +2,17 @@ import sqlite3
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from function.show_frame import show_frame
+from function.initialize_db import initialize_db
+from pencatatan import PencatatanPage
+from pelaporan import PelaporanPage
+from grafik import GrafikPage
+from pajak import PajakPage
+from penggajian import PenggajianPage
+from staff.menu_staff import MenuStaffPage
+from manager.menu_manager import MenuManagerPage
+from staff.produk import ProdukPage
+from staff.transaksi import TransaksiPage
+
 
 
 class LoginPage(tk.Tk):
@@ -13,6 +23,8 @@ class LoginPage(tk.Tk):
         width = self.winfo_screenwidth()
         height = self.winfo_screenheight()
         self.geometry(f"{width}x{height}")
+
+        initialize_db(self)
 
         # Container utama untuk frame-frame
         self.container = tk.Frame(self)
@@ -44,8 +56,27 @@ class LoginPage(tk.Tk):
         self.show_frame("Login")
 
     def show_frame(self, name):
+        if name not in self.frames:
+            PageClass = {
+                "Menu Utama Staff": MenuStaffPage,
+                "Input Produk": ProdukPage,
+                "Input Transaksi": TransaksiPage,
+                "Menu Utama Manger": MenuManagerPage,
+                "Pencatatan": PencatatanPage,
+                "Pelaporan": PelaporanPage,
+                "Grafik": GrafikPage,
+                "Pajak": PajakPage,        
+                "Penggajian": PenggajianPage, 
+            }[name]
+            frame = PageClass(self.container, self)
+            self.frames[name] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+
         frame = self.frames[name]
         frame.tkraise()
+
+        if hasattr(frame, 'load_transaksi_data'):
+            frame.load_transaksi_data()
 
     def login(self):
         username = self.entry_username.get()
@@ -59,9 +90,9 @@ class LoginPage(tk.Tk):
         if result:
             role = result[0]
             if role == "staff":
-                show_frame(self, "Menu Utama Staff")
+                self.show_frame("Menu Utama Staff")
             elif role == "manager":
-                show_frame(self, "Menu Utama Manager")
+                self.show_frame("Menu Utama Manager")
             messagebox.showinfo("Sukses", f"Login berhasil sebagai {role}.")
         else:
             messagebox.showerror("Gagal", "Username atau password salah.")

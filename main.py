@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from initialize_db import initialize_db
-
-from function.show_frame import show_frame
+from function.initialize_db import initialize_db
 
 class App(tk.Tk):
     def __init__(self):
