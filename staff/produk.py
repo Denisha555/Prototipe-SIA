@@ -43,8 +43,10 @@ class ProdukPage(tk.Frame):
         self.entry_gambar.grid(row=3, column=1, pady=5)
         ttk.Button(input_frame, text="Pilih Gambar", command=self.pilih_gambar).grid(row=3, column=2, padx=5)
 
-        ttk.Button(input_frame, text="Simpan", command=self.simpan_produk).grid(row=4, column=0, columnspan=3, pady=10)
-        ttk.Button(input_frame, text="Hapus", command=self.hapus_produk).grid(row=5, column=0, columnspan=3, pady=5)
+        ttk.Button(input_frame, text="Simpan", command=self.simpan_produk).grid(row=4, column=0, columnspan=2, pady=10)
+        ttk.Button(input_frame, text="Hapus", command=self.hapus_produk).grid(row=4, column=1, columnspan=2, pady=5)
+
+        ttk.Button(input_frame, text="Kembali ke menu utama", width=30, command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=5, column=0, columnspan=3, pady=10)
 
        # === FRAME KANAN (Tabel Data) ===
         table_frame = ttk.LabelFrame(self, text="Daftar Produk", padding=10)
@@ -187,6 +189,9 @@ class ProdukPage(tk.Frame):
 
             self.entry_stok.delete(0, tk.END)
             self.entry_stok.insert(0, produk[2])
+
+            self.entry_gambar.delete(0, tk.END)
+            self.entry_gambar.insert(0, f"gambar {produk[0]}")
 
     # === HAPUS PRODUK ===
     def hapus_produk(self):

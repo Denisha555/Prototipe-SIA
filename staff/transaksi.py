@@ -23,15 +23,15 @@ class TransaksiPage(tk.Frame):
         self.entry_jumlah = ttk.Entry(self, width=30)
         self.entry_jumlah.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-        # Tombol simpan
-        ttk.Button(self, text="Simpan Transaksi", command=self.simpan_transaksi).grid(row=3, column=0, columnspan=2, pady=15)
+        # Tombol tambah
+        ttk.Button(self, text="Tambah", command=self.simpan_transaksi).grid(row=3, column=0, columnspan=2, pady=15)
 
         # Tabel transaksi
-        self.tree = ttk.Treeview(self, columns=("produk", "jumlah", "total"), show="headings", height=8)
+        self.tree = ttk.Treeview(self, columns=("produk", "jumlah"), show="headings", height=8)
         self.tree.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
         self.tree.heading("produk", text="Produk")
         self.tree.heading("jumlah", text="Jumlah")
-        self.tree.heading("total", text="Total (Rp)")
+        self.tree.heading("total", text="Total (Rp)")   
 
         # Load data produk untuk combobox
         self.load_produk()
@@ -39,7 +39,7 @@ class TransaksiPage(tk.Frame):
     def load_produk(self):
         conn = sqlite3.connect("data_keuangan.db")
         c = conn.cursor()
-        c.execute("SELECT id, nama, harga FROM produk")
+        c.execute("SELECT product_id, nama_produk, harga FROM produk")
         self.produk_data = c.fetchall()
         conn.close()
 
@@ -66,7 +66,7 @@ class TransaksiPage(tk.Frame):
         # simpan ke database
         conn = sqlite3.connect("data_keuangan.db")
         c = conn.cursor()
-        c.execute("INSERT INTO transaksi (produk_id, jumlah, total) VALUES (?, ?, ?)", (produk_id, jumlah, total))
+        c.execute("INSERT INTO detail_transaksi (produk_id, jumlah) VALUES (?, ?, ?)", (produk_id, jumlah, total))
         conn.commit()
         conn.close()
 
@@ -76,5 +76,3 @@ class TransaksiPage(tk.Frame):
         # reset input
         self.combo_produk.set("")
         self.entry_jumlah.delete(0, tk.END)
-
-        messagebox.showinfo("Sukses", "Transaksi berhasil disimpan.")
