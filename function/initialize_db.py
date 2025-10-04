@@ -25,8 +25,7 @@ def initialize_db(self):
         c.execute('''CREATE TABLE IF NOT EXISTS produk (
                   product_id TEXT,
                   nama_produk TEXT,
-                  deskripsi TEXT,
-                  kategori TEXT,
+                  gambar BLOB,
                   harga INTEGER,
                   stok INTEGER)''')
         
