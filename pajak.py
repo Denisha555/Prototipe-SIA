@@ -46,8 +46,10 @@ class PajakPage(tk.Frame):
 
         # Input Jumlah
         ttk.Label(input_frame, text="Jumlah Setor (Rp)").grid(row=3, column=0, sticky="e", pady=8, padx=5)
+        
         def validate(P):
             return P.isdigit() or P == ""
+        
         self.entry_jumlah = ttk.Entry(input_frame, validate="key", width=23,
                                       validatecommand=(self.register(validate), '%P'))
         self.entry_jumlah.grid(row=3, column=1, pady=8, padx=10, sticky="w")
@@ -95,7 +97,6 @@ class PajakPage(tk.Frame):
         self.btn_hapus.config(state=tk.DISABLED)
         messagebox.showinfo("Informasi", "Form telah direset ke mode pencatatan baru.")
 
-
     def _load_data_to_form(self, event):
         selected_item = self.tree_pajak.selection()
         if not selected_item:
@@ -116,7 +117,6 @@ class PajakPage(tk.Frame):
         
         self.btn_hapus.config(state=tk.NORMAL)
         messagebox.showinfo("Edit Data", f"Data Pajak ID {pajak_id} dimuat untuk diubah.")
-
 
     def _save_or_update_pajak(self):
         tanggal = self.entry_tanggal.get()
