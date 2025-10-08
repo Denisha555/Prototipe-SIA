@@ -23,25 +23,26 @@ def initialize_db(self):
                     role TEXT)''')
         
         c.execute('''CREATE TABLE IF NOT EXISTS produk (
-                  product_id TEXT,
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
                   nama_produk TEXT,
                   gambar BLOB,
                   harga INTEGER,
                   stok INTEGER)''')
         
         c.execute('''CREATE TABLE IF NOT EXISTS transaksi (
-                  transaction_id TEXT,
+                  transaction_id TEXT PRIMARY KEY,
                   tanggal DATE,
-                  kategori TEXT
+                  kategori TEXT,
+                  total INTEGER,
                   keterangan TEXT)
                   ''')
         
         c.execute('''CREATE TABLE IF NOT EXISTS detail_transaksi (
-                  detail_id TEXT,
+                  detail_id TEXT PRIMARY KEY,
                   transaction_id TEXT,
                   product_id TEXT,
                   jumlah INTEGER,
-                  FOREIGN KEY(product_id) REFERENCES PRODUK (product_id),
+                  FOREIGN KEY(product_id) REFERENCES PRODUK (id),
                   FOREIGN KEY(transaction_id) REFERENCES TRANSAKSI (transaction_id))''')
 
         conn.commit()

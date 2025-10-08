@@ -42,7 +42,7 @@ class LoginPage(tk.Tk):
         login_frame.grid_columnconfigure(0, weight=1)
         login_frame.grid_columnconfigure(1, weight=1)
 
-        ttk.Label(login_frame, text="🔑 Login", font=("Helvetica", 20, "bold")).grid(row=0, column=0, columnspan=2)
+        ttk.Label(login_frame, text="🔑 Login", font=("Helvetica", 20, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
         ttk.Label(login_frame, text="Username:").grid(row=1, column=0, pady=5, padx=5, sticky="e")
         self.entry_username = ttk.Entry(login_frame, width=25)
