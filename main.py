@@ -9,7 +9,7 @@ from penggajian import PenggajianPage
 from staff.menu_staff import MenuStaffPage
 from manager.menu_manager import MenuManagerPage
 from staff.produk import ProdukPage
-from staff.transaksi import TransaksiPage
+from staff.penjualan import TransaksiPage
 
 class App(tk.Tk):
     def __init__(self):

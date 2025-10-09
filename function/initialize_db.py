@@ -29,21 +29,35 @@ def initialize_db(self):
                   harga INTEGER,
                   stok INTEGER)''')
         
-        c.execute('''CREATE TABLE IF NOT EXISTS transaksi (
-                  transaction_id TEXT PRIMARY KEY,
+        c.execute('''CREATE TABLE IF NOT EXISTS transaksi_penjualan (
+                  transaksi_penjualan_id TEXT PRIMARY KEY,
                   tanggal DATE,
-                  kategori TEXT,
                   total INTEGER,
                   keterangan TEXT)
                   ''')
         
-        c.execute('''CREATE TABLE IF NOT EXISTS detail_transaksi (
-                  detail_id TEXT PRIMARY KEY,
-                  transaction_id TEXT,
-                  product_id TEXT,
+        c.execute('''CREATE TABLE IF NOT EXISTS detail_transaksi_penjualan (
+                  detail_penjualan_id TEXT PRIMARY KEY,
+                  transaksi_penjualan_id TEXT,
+                  produk_id TEXT,
                   jumlah INTEGER,
-                  FOREIGN KEY(product_id) REFERENCES PRODUK (id),
-                  FOREIGN KEY(transaction_id) REFERENCES TRANSAKSI (transaction_id))''')
+                  FOREIGN KEY(produk_id) REFERENCES PRODUK (id),
+                  FOREIGN KEY(transaksi_penjualan_id) REFERENCES TRANSAKSI_PENJUALAN (transaksi_penjualan_id))''')
+        
+        c.execute('''CREATE TABLE IF NOT EXISTS transaksi_pembelian (
+                  transaksi_pembelian_id TEXT PRIMARY KEY,
+                  tanggal DATE,
+                  total INTEGER,
+                  keterangan TEXT)
+                  ''')
+        
+        c.execute('''CREATE TABLE IF NOT EXISTS detail_transaksi_pembelian (
+                  detail_pembelian_id TEXT PRIMARY KEY,
+                  transaksi_pembelian_id TEXT,
+                  produk TEXT,
+                  jumlah INTEGER,
+                  FOREIGN KEY(transaksi_pembelian_id) REFERENCES TRANSAKSI_PEMBELIAN (transaksi_pembelian_id))
+                  ''')
 
         conn.commit()
         conn.close()

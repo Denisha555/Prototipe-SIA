@@ -10,8 +10,9 @@ from pajak import PajakPage
 from penggajian import PenggajianPage
 from staff.menu_staff import MenuStaffPage
 from manager.menu_manager import MenuManagerPage
+from staff.pembelian import PembelianPage
 from staff.produk import ProdukPage
-from staff.transaksi import TransaksiPage
+from staff.penjualan import PenjualanPage
 
 
 
@@ -60,7 +61,8 @@ class LoginPage(tk.Tk):
             PageClass = {
                 "Menu Utama Staff": MenuStaffPage,
                 "Input Produk": ProdukPage,
-                "Input Transaksi": TransaksiPage,
+                "Input Penjualan": PenjualanPage,
+                "Input Pembelian": PembelianPage,
                 "Menu Utama Manger": MenuManagerPage,
                 "Pencatatan": PencatatanPage,
                 "Pelaporan": PelaporanPage,

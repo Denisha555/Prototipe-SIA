@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
 
-class TransaksiPage(tk.Frame):
+class PenjualanPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -11,7 +11,7 @@ class TransaksiPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        ttk.Label(self, text="🛒 Input Transaksi", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+        ttk.Label(self, text="🛒 Input Transaksi Pembelian", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
 
         ttk.Label(self, text="Produk:").grid(row=1, column=0, sticky="e", padx=10, pady=5)
         self.combo_produk = ttk.Combobox(self, width=27, state="readonly")
@@ -86,7 +86,7 @@ class TransaksiPage(tk.Frame):
         c = conn.cursor()
 
         today = datetime.date.today()
-        c.execute("SELECT transaction_id FROM transaksi WHERE tanggal = ?", (today,))
+        c.execute("SELECT transaksi_penjualan_id FROM transaksi_penjualan WHERE tanggal = ?", (today,))
         existing = c.fetchall()
         antrian = len(existing) + 1
         antrian_str = str(antrian).zfill(3)
@@ -96,14 +96,14 @@ class TransaksiPage(tk.Frame):
 
         total_semua = sum([int(row[4]) for row in transaksi_data])
 
-        c.execute("INSERT INTO transaksi (transaction_id, kategori, tanggal, total) VALUES (?, ?, ?, ?)", (transaksi_id, "penjualan", today, total_semua))
+        c.execute("INSERT INTO transaksi_penjualan (transaksi_penjualan_id, tanggal, total) VALUES (?, ?, ?)", (transaksi_id, today, total_semua))
 
         count = 1
         for data in transaksi_data:
             count_str = str(count).zfill(3)
             detail_id = f"PJ{datestr}{antrian_str}{count_str}"
             c.execute(
-                "INSERT INTO detail_transaksi (detail_id, transaction_id, product_id, jumlah) VALUES (?, ?, ?, ?)",
+                "INSERT INTO detail_transaksi_penjualan (detail_penjualan_id, transaksi_penjualan_id, produk_id, jumlah) VALUES (?, ?, ?, ?)",
                 (detail_id, transaksi_id, data[0], data[2])
             )
             c.execute("UPDATE produk SET stok = stok - ? WHERE id = ?", (data[2], data[0]))
