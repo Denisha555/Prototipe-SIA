@@ -20,5 +20,4 @@ class MenuStaffPage(tk.Frame):
 
         ttk.Button(self, text="Pembelian", command=lambda: controller.show_frame("Input Pembelian")).grid(column=0, row=2, padx=50, pady=60, sticky="nsew")
 
-
         
