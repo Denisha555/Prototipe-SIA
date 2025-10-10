@@ -16,7 +16,7 @@ class PenjualanPage(tk.Frame):
         self.columnconfigure(3, weight=1)
 
         # TITLE
-        ttk.Label(self, text="Manajemen Penjualan", font=("Arial", 16)).grid(row=0, column=0, columnspan=2)
+        ttk.Label(self, text="Manajemen Penjualan", font=("Arial", 16), ).grid(row=0, column=0, columnspan=2)
 
         # === FRAME KIRI (Input Transaksi) ===
         self.frame_kiri = ttk.LabelFrame(self, text="Input / Edit Transaksi Penjualan")

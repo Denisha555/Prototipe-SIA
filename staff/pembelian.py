@@ -13,19 +13,24 @@ class PembelianPage(tk.Frame):
 
         ttk.Label(self, text="🛒 Input Transaksi Pembelian", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
 
-        ttk.Label(self, text="Produk:").grid(row=1, column=0, sticky="e", padx=10, pady=5)
-        self.entry_produk = ttk.Entry(self, width=30)
-        self.entry_produk.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+        ttk.Label(self, text="Kategori: ").grid(row=1, column=0, sticky="e", padx=10, pady=5)
+        self.combo_kategori = ttk.Combobox(self, width=27, state="readonly")
+        self.combo_kategori.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+        self.combo_kategori["values"] = ["Bahan Baku", "Peralatan", "Perlengkapan", "Biaya", "Beban"]
+        
+        ttk.Label(self, text="Keterangan: ").grid(row=2, column=0, sticky="e", padx=10, pady=5)
+        self.entry_keterangan = ttk.Entry(self, width=30)
+        self.entry_keterangan.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-        ttk.Label(self, text="Harga:").grid(row=2, column=0, sticky="e", padx=10, pady=5)
+        ttk.Label(self, text="Harga: ").grid(row=3, column=0, sticky="e", padx=10, pady=5)
         self.entry_harga = ttk.Entry(self, width=30)
-        self.entry_harga.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+        self.entry_harga.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
-        ttk.Label(self, text="Jumlah:").grid(row=3, column=0, sticky="e", padx=10, pady=5)
+        ttk.Label(self, text="Jumlah: ").grid(row=4, column=0, sticky="e", padx=10, pady=5)
         self.entry_jumlah = ttk.Entry(self, width=30)
-        self.entry_jumlah.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+        self.entry_jumlah.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
-        ttk.Button(self, text="Tambah", command=self.tambah_transaksi).grid(row=4, column=0, columnspan=2, pady=15)
+        ttk.Button(self, text="Tambah", command=self.tambah_transaksi).grid(row=5, column=0, columnspan=2, pady=15)
 
         self.tree = ttk.Treeview(self, columns=("nama", "jumlah", "harga", "total"), show="headings", height=8)
         self.tree.grid(row=5, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
@@ -40,7 +45,7 @@ class PembelianPage(tk.Frame):
         ttk.Button(self, text="Kembali ke menu utama", command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=7, column=0, columnspan=2, pady=5)
 
     def tambah_transaksi(self):
-        produk = self.entry_produk.get()
+        produk = self.entry_keterangan.get()
         harga = self.entry_harga.get()
         jumlah = self.entry_jumlah.get()
         

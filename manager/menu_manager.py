@@ -17,13 +17,9 @@ class MenuManagerPage(tk.Frame):
 
         ttk.Button(self, text="Penjualan", command=lambda: controller.show_frame("Input Edit Penjualan")).grid(column=1, row=1, padx=50, pady=60, sticky="nsew")
 
-        ttk.Button(self, text="Jurnal Umum", command=lambda: controller.show_frame("Input Penggajian")).grid(column=0, row=2, padx=50, pady=60, sticky="nsew")
+        ttk.Button(self, text="Jurnal Umum", command=lambda: controller.show_frame("Jurnal Umum")).grid(column=0, row=2, padx=50, pady=60, sticky="nsew")
 
-        # ttk.Button(self, text="Pengeluaran Kas", command=lambda: controller.show_frame("Input Transaksi")).grid(column=0, row=2, padx=50, pady=60, sticky="nsew")
-
-        # ttk.Button(self, text="Pemasukkan Kas", command=lambda: controller.show_frame("Input Transaksi")).grid(column=1, row=2, padx=50, pady=60, sticky="nsew")
-
-        # ttk.Button(self, text="Grafik", command=lambda: controller.show_frame("Input Transaksi")).grid(column=1, row=1, padx=50, pady=60, sticky="nsew")
+       
 
 
 

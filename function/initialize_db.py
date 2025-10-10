@@ -47,6 +47,7 @@ def initialize_db(self):
         c.execute('''CREATE TABLE IF NOT EXISTS transaksi_pembelian (
                   transaksi_pembelian_id TEXT PRIMARY KEY,
                   tanggal DATE,
+                  kategori TEXT,
                   total INTEGER,
                   keterangan TEXT)
                   ''')
@@ -54,7 +55,8 @@ def initialize_db(self):
         c.execute('''CREATE TABLE IF NOT EXISTS detail_transaksi_pembelian (
                   detail_pembelian_id TEXT PRIMARY KEY,
                   transaksi_pembelian_id TEXT,
-                  produk TEXT,
+                  keterangan TEXT,
+                  harga INTEGER,
                   jumlah INTEGER,
                   FOREIGN KEY(transaksi_pembelian_id) REFERENCES TRANSAKSI_PEMBELIAN (transaksi_pembelian_id))
                   ''')
