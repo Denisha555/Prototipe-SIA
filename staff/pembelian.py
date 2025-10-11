@@ -55,12 +55,12 @@ class PembelianPage(tk.Frame):
         self.item_count = 1
 
     def tambah_transaksi(self):
-        kategori = self.combo_kategori.get()
+        self.kategori = self.combo_kategori.get()
         keterangan = self.entry_keterangan.get().strip()
         harga = self.entry_harga.get().strip()
         jumlah = self.entry_jumlah.get().strip()
 
-        if not kategori:
+        if not self.kategori:
             messagebox.showerror("Error", "Pilih kategori terlebih dahulu!")
             return
 
@@ -83,7 +83,7 @@ class PembelianPage(tk.Frame):
         item_id = self.item_count
 
         # masukkan ke tabel
-        self.tree.insert("", "end", values=(item_id, kategori, keterangan, jumlah, f"Rp{harga:,.0f}", f"Rp{total:,.0f}"))
+        self.tree.insert("", "end", values=(item_id, self.kategori, keterangan, jumlah, f"Rp{harga:,.0f}", f"Rp{total:,.0f}"))
         self.item_count += 1
 
         # reset input
@@ -94,7 +94,6 @@ class PembelianPage(tk.Frame):
 
     def simpan_transaksi(self):
         transaksi_data = [self.tree.item(i)["values"] for i in self.tree.get_children()]
-        kategori = self.combo_kategori.get()
 
         if not transaksi_data:
             messagebox.showerror("Error", "Tidak ada transaksi untuk disimpan!")
@@ -115,7 +114,7 @@ class PembelianPage(tk.Frame):
         total_semua = sum([int(str(row[5]).replace("Rp", "").replace(",", "")) for row in transaksi_data])
 
         c.execute("INSERT INTO transaksi_pembelian (transaksi_pembelian_id, kategori, tanggal, total) VALUES (?, ?, ?, ?)", 
-                  (transaksi_id, kategori, today, total_semua))
+                  (transaksi_id, self.kategori, today, total_semua))
 
         count = 1
         for data in transaksi_data:
