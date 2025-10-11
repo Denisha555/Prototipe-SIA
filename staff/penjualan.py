@@ -119,21 +119,23 @@ class PenjualanPage(tk.Frame):
         datestr = today.strftime("%Y%m%d")
         transaksi_id = f"PJ{datestr}{antrian_str}"
 
-        # total keseluruhan
+        # total keseluruhan (pakai kolom total, yaitu index ke-5)
         total_semua = 0
         for row in transaksi_data:
-            total_val = int(row[4].replace("Rp", "").replace(",", ""))
+            total_val = int(str(row[5]).replace("Rp", "").replace(",", ""))
             total_semua += total_val
 
+        # simpan header transaksi
         c.execute(
-            "INSERT INTO transaksi_penjualan (transaksi_penjualan_id, tanggal, total) VALUES (?, ?, ?)",
-            (transaksi_id, today, total_semua)
+            "INSERT INTO transaksi_penjualan (transaksi_penjualan_id, tanggal, total, kategori) VALUES (?, ?, ?, ?)",
+            (transaksi_id, today, total_semua, "Pendapatan")
         )
 
+        # simpan detail transaksi
         count = 1
         for data in transaksi_data:
             jasa_id = data[0]
-            jumlah = data[2]
+            jumlah = data[3]  # jumlah kolom ke-3
             count_str = str(count).zfill(3)
             detail_id = f"DPJ{datestr}{antrian_str}{count_str}"
             c.execute(
@@ -150,3 +152,4 @@ class PenjualanPage(tk.Frame):
         # bersihkan tabel
         for i in self.tree.get_children():
             self.tree.delete(i)
+

@@ -33,6 +33,7 @@ def initialize_db(self):
                   transaksi_penjualan_id TEXT PRIMARY KEY,
                   tanggal DATE,
                   total INTEGER,
+                  kategori TEXT,
                   keterangan TEXT)
                   ''')
         
