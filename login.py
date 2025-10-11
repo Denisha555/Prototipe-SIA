@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from function.initialize_db import initialize_db
+from manager.jurnal_umum import JurnalUmumPage
 from pencatatan import PencatatanPage
 from pelaporan import PelaporanPage
 from grafik import GrafikPage
@@ -11,7 +12,8 @@ from penggajian import PenggajianPage
 from staff.menu_staff import MenuStaffPage
 from manager.menu_manager import MenuManagerPage
 from staff.pembelian import PembelianPage
-from staff.jasa import JasaPage
+from staff.jasa import JasaPage as JasaPageStaff
+from manager.jasa import JasaPage as JasaPageManager
 from staff.penjualan import PenjualanPage as PenjualanPageStaff
 from manager.penjualan import PenjualanPage as PenjualanPageManager
 
@@ -61,11 +63,13 @@ class LoginPage(tk.Tk):
         if name not in self.frames:
             PageClass = {
                 "Menu Utama Staff": MenuStaffPage,
-                "Input Jasa": JasaPage,
+                "Input Jasa Staff": JasaPageStaff,
                 "Input Penjualan": PenjualanPageStaff,
                 "Input Pembelian": PembelianPage,
                 "Menu Utama Manager": MenuManagerPage,
                 "Input Edit Penjualan": PenjualanPageManager,
+                "Input Jasa Manager": JasaPageManager,
+                "Jurnal Umum": JurnalUmumPage,
                 "Pencatatan": PencatatanPage,
                 "Pelaporan": PelaporanPage,
                 "Grafik": GrafikPage,

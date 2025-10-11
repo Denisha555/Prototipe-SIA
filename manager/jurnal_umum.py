@@ -39,6 +39,9 @@ class JurnalUmumPage(tk.Frame):
         for col in ("tanggal", "keterangan", "debit", "kredit"):
             self.tree.column(col, width=150, anchor="center")
 
+        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+                   ).grid(row=6, column=0, columnspan=2, pady=5)
+
     def load_laporan(self):
         bulan = self.combo_bulan.get().strip()
         tahun = self.entry_tahun.get().strip()

@@ -13,7 +13,7 @@ class MenuManagerPage(tk.Frame):
 
         ttk.Label(self, text="Menu Utama").grid(column=0, row=0, padx=10, pady=10, columnspan=2)
 
-        ttk.Button(self, text="Produk", command=lambda: controller.show_frame("Input Jasa")).grid(column=0, row=1, padx=50, pady=60, sticky="nsew")
+        ttk.Button(self, text="Jasa", command=lambda: controller.show_frame("Input Jasa Manager")).grid(column=0, row=1, padx=50, pady=60, sticky="nsew")
 
         ttk.Button(self, text="Penjualan", command=lambda: controller.show_frame("Input Edit Penjualan")).grid(column=1, row=1, padx=50, pady=60, sticky="nsew")
 
