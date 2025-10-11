@@ -3,11 +3,9 @@ from tkinter import ttk, messagebox
 import sqlite3
 from datetime import datetime
 
-# Asumsi: bulan_map.py berada di function/
 try:
     from function.bulan_map import bulan_map
 except ImportError:
-    # Fallback jika struktur folder berbeda
     bulan_map = {
         "Januari": "01", "Februari": "02", "Maret": "03", 
         "April": "04", "Mei": "05", "Juni": "06",
@@ -15,12 +13,10 @@ except ImportError:
         "Oktober": "10", "November": "11", "Desember": "12"
     }
 
-# --- Database & Helper Functions ---
 def _connect_db():
     return sqlite3.connect('data_keuangan.db')
 
 def _format_rupiah(amount):
-    """Fungsi helper untuk memformat angka menjadi string Rupiah."""
     return f"Rp{amount:,.0f}"
 
 class NeracaSaldoPage(tk.Frame):
@@ -31,21 +27,18 @@ class NeracaSaldoPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        # === Judul Halaman ===
         ttk.Label(
             self,
             text="🧾 Neraca Saldo (Sebelum Penyesuaian)",
             font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, columnspan=2, pady=(15, 10))
 
-        # === Form Pilihan Bulan & Tahun ===
         form_frame = ttk.Frame(self)
         form_frame.grid(row=1, column=0, columnspan=2, pady=10)
 
         bulan_list = list(bulan_map.keys())
         current_month_name = datetime.now().strftime("%B")
         
-        # Mapping nama bulan Inggris ke Indonesia untuk default value
         english_to_indo = {
             "January": "Januari", "February": "Februari", "March": "Maret", 
             "April": "April", "May": "Mei", "June": "Juni",
@@ -66,7 +59,6 @@ class NeracaSaldoPage(tk.Frame):
 
         ttk.Button(form_frame, text="Tampilkan Neraca Saldo", command=self.load_neraca_saldo).grid(row=0, column=4, padx=15)
 
-        # === Treeview (Tabel Neraca Saldo) ===
         tree_frame = ttk.Frame(self)
         tree_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
         tree_frame.grid_rowconfigure(0, weight=1)
@@ -93,7 +85,6 @@ class NeracaSaldoPage(tk.Frame):
 
 
     def load_neraca_saldo(self):
-        # 1. Validasi Input
         bulan_nama = self.combo_bulan.get()
         tahun = self.entry_tahun.get()
 
@@ -103,7 +94,7 @@ class NeracaSaldoPage(tk.Frame):
 
         try:
             bulan_num = bulan_map[bulan_nama]
-            int(tahun) # Cek apakah tahun valid
+            int(tahun)
         except ValueError:
             messagebox.showerror("Error", "Tahun harus berupa angka.")
             return
@@ -111,8 +102,6 @@ class NeracaSaldoPage(tk.Frame):
              messagebox.showerror("Error", "Bulan tidak valid.")
              return
 
-
-        # 2. Hapus data lama
         for i in self.tree.get_children():
             self.tree.delete(i)
 
@@ -123,15 +112,12 @@ class NeracaSaldoPage(tk.Frame):
         total_kredit_ns = 0
 
         try:
-            # 3. Ambil semua akun
             c.execute("SELECT kode_akun, nama_akun, saldo_normal FROM akun ORDER BY kode_akun ASC")
             semua_akun = c.fetchall()
 
             ada_data = False
             for kode_akun, nama_akun, saldo_normal in semua_akun:
                 
-                # 4. Hitung Total Debit dan Kredit untuk periode tersebut (UMUM saja)
-                # Filter 'UMUM' untuk memastikan ini adalah Neraca Saldo sebelum Penyesuaian
                 query_saldo = """
                     SELECT SUM(debit), SUM(kredit)
                     FROM jurnal_umum_detail
@@ -142,12 +128,10 @@ class NeracaSaldoPage(tk.Frame):
                 """
                 c.execute(query_saldo, (kode_akun, bulan_num, tahun))
                 
-                # total_debit dan total_kredit adalah mutasi, bukan saldo kumulatif
                 mutasi_debit, mutasi_kredit = c.fetchone()
                 mutasi_debit = mutasi_debit if mutasi_debit is not None else 0
                 mutasi_kredit = mutasi_kredit if mutasi_kredit is not None else 0
                 
-                # Hitung Saldo Akhir (Net Balance)
                 net_balance = mutasi_debit - mutasi_kredit
                 
                 debit_saldo = 0
@@ -158,11 +142,9 @@ class NeracaSaldoPage(tk.Frame):
                 elif net_balance < 0:
                     kredit_saldo = abs(net_balance)
 
-                # Hanya tampilkan akun yang memiliki mutasi/saldo
                 if mutasi_debit > 0 or mutasi_kredit > 0:
                     ada_data = True
                     
-                    # 5. Masukkan ke Treeview
                     self.tree.insert("", "end", values=(
                         kode_akun,
                         nama_akun,
@@ -173,7 +155,6 @@ class NeracaSaldoPage(tk.Frame):
                     total_debit_ns += debit_saldo
                     total_kredit_ns += kredit_saldo
             
-            # 6. Baris Total (Grand Total)
             if ada_data:
                 self.tree.insert("", "end", values=(
                     "", 
@@ -183,7 +164,6 @@ class NeracaSaldoPage(tk.Frame):
                 ), tags=('total',))
                 self.tree.tag_configure('total', font=('Helvetica', 10, 'bold'), background='#E0F7FA')
                 
-                # Cek Keseimbangan
                 if total_debit_ns != total_kredit_ns:
                     messagebox.showwarning("Peringatan", "Neraca Saldo TIDAK SEIMBANG! Mohon cek Jurnal Umum Anda.")
                 else:
