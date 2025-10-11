@@ -9,96 +9,140 @@ class PenjualanPage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        # Layout dua kolom utama
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=2)
-        self.columnconfigure(2, weight=1)
-        self.columnconfigure(3, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
-        # TITLE
-        ttk.Label(self, text="Manajemen Penjualan", font=("Arial", 16), ).grid(row=0, column=0, columnspan=2)
+        ttk.Label(
+            self, text="🛒 Manajemen Transaksi Penjualan",
+            font=("Helvetica", 18, "bold")
+        ).grid(row=0, column=0, columnspan=2, pady=20)
 
-        # === FRAME KIRI (Input Transaksi) ===
-        self.frame_kiri = ttk.LabelFrame(self, text="Input / Edit Transaksi Penjualan")
-        self.frame_kiri.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        # ================== FRAME KIRI ==================
+        frame_kiri = ttk.LabelFrame(self, text="Input / Edit Transaksi Penjualan")
+        frame_kiri.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
-        ttk.Label(self.frame_kiri, text="Produk:").grid(row=1, column=0, sticky="e", padx=5, pady=5)
-        self.combo_produk = ttk.Combobox(self.frame_kiri, width=25, state="readonly")
-        self.combo_produk.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(frame_kiri, text="Jasa:").grid(row=0, column=0, sticky="e", padx=10, pady=5)
+        self.combo_jasa = ttk.Combobox(frame_kiri, width=27, state="readonly")
+        self.combo_jasa.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
-        ttk.Label(self.frame_kiri, text="Jumlah:").grid(row=2, column=0, sticky="e", padx=5, pady=5)
-        self.entry_jumlah = ttk.Entry(self.frame_kiri, width=28)
-        self.entry_jumlah.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(frame_kiri, text="Deskripsi:").grid(row=1, column=0, sticky="e", padx=10, pady=5)
+        self.combo_deskripsi = ttk.Combobox(frame_kiri, width=27)
+        self.combo_deskripsi.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-        ttk.Button(self.frame_kiri, text="Tambah", command=self.tambah_transaksi).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Label(frame_kiri, text="Jumlah:").grid(row=2, column=0, sticky="e", padx=10, pady=5)
+        self.entry_jumlah = ttk.Entry(frame_kiri, width=30)
+        self.entry_jumlah.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-        self.tree_input = ttk.Treeview(self.frame_kiri, columns=("id", "nama", "jumlah", "harga", "total"), show="headings", height=6)
-        self.tree_input.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky="nsew")
-        for col in ("id", "nama", "jumlah", "harga", "total"):
-            self.tree_input.heading(col, text=col.capitalize())
+        ttk.Button(frame_kiri, text="Tambah", command=self.tambah_transaksi).grid(
+            row=3, column=0, columnspan=2, pady=10
+        )
 
-        ttk.Button(self.frame_kiri, text="Simpan Transaksi", command=self.simpan_transaksi).grid(row=5, column=0, columnspan=2, pady=10)
+        # Treeview untuk daftar jasa yang ditambahkan
+        self.tree_input = ttk.Treeview(
+            frame_kiri,
+            columns=("id", "nama", "deskripsi", "jumlah", "harga", "total"),
+            show="headings",
+            height=8
+        )
+        self.tree_input.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        ttk.Button(self.frame_kiri, text="Kembali", command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=6, column=0, columnspan=2, pady=5)
+        for col, text in [
+            ("id", "ID"),
+            ("nama", "Jasa"),
+            ("deskripsi", "Deskripsi"),
+            ("jumlah", "Jumlah"),
+            ("harga", "Harga (Rp)"),
+            ("total", "Total (Rp)")
+        ]:
+            self.tree_input.heading(col, text=text, anchor="center")
+            self.tree_input.column(col, anchor="center", width=120)
 
-        # === FRAME KANAN (Daftar Transaksi) ===
-        self.frame_kanan = ttk.LabelFrame(self, text="Daftar Transaksi Penjualan", padding=10)
-        self.frame_kanan.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
+        ttk.Button(frame_kiri, text="Simpan Transaksi", command=self.simpan_transaksi).grid(
+            row=5, column=0, columnspan=2, pady=10
+        )
 
-        self.tree_daftar = ttk.Treeview(self.frame_kanan, columns=("id", "tanggal", "total"), show="headings", height=15)
-        self.tree_daftar.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky="nsew")
+        ttk.Button(frame_kiri, text="Kembali ke Menu Utama",
+                   command=lambda: controller.show_frame("Menu Utama Manager")
+                   ).grid(row=6, column=0, columnspan=2, pady=5)
 
-        self.tree_daftar.heading("id", text="ID Transaksi")
-        self.tree_daftar.heading("tanggal", text="Tanggal")
-        self.tree_daftar.heading("total", text="Total (Rp)")
+        # ================== FRAME KANAN ==================
+        frame_kanan = ttk.LabelFrame(self, text="Daftar Transaksi Penjualan")
+        frame_kanan.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
-        self.tree_daftar.bind("<Double-1>", self.edit_transaksi)
+        self.tree_data = ttk.Treeview(
+            frame_kanan,
+            columns=("id", "tanggal", "total"),
+            show="headings",
+            height=15
+        )
+        self.tree_data.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        ttk.Button(self.frame_kanan, text="Hapus Transaksi", command=self.hapus_transaksi).grid(row=1, column=0, pady=5)
-        ttk.Button(self.frame_kanan, text="Refresh", command=self.load_daftar_transaksi).grid(row=1, column=1, pady=5)
+        for col, text in [
+            ("id", "ID Transaksi"),
+            ("tanggal", "Tanggal"),
+            ("total", "Total (Rp)")
+        ]:
+            self.tree_data.heading(col, text=text, anchor="center")
+            self.tree_data.column(col, anchor="center", width=150)
 
-        # Inisialisasi data
-        self.load_produk()
-        self.load_daftar_transaksi()
+        # Tambahkan scrollbar ke tree_data
+        scrollbar = ttk.Scrollbar(frame_kanan, orient="vertical", command=self.tree_data.yview)
+        self.tree_data.configure(yscrollcommand=scrollbar.set)
+        scrollbar.grid(row=0, column=1, sticky="ns")
 
-    # ========================== BAGIAN INPUT ===============================
-    def load_produk(self):
+        # ================== EVENT DAN DATA ==================
+        self.combo_jasa.bind("<<ComboboxSelected>>", self.update_deskripsi)
+        self.load_jasa()
+        self.load_transaksi_data()
+
+    # ---------------- Fungsi Tambahan ----------------
+    def update_deskripsi(self, event):
+        jasa_index = self.combo_jasa.current()
+        if jasa_index != -1:
+            deskripsi = self.jasa_data[jasa_index][3]
+            if deskripsi:
+                self.combo_deskripsi["values"] = [deskripsi]
+                self.combo_deskripsi.current(0)
+            else:
+                self.combo_deskripsi["values"] = ["(Tidak ada deskripsi)"]
+                self.combo_deskripsi.current(0)
+
+    def load_jasa(self):
         conn = sqlite3.connect("data_keuangan.db")
         c = conn.cursor()
-        c.execute("SELECT id, nama_produk, harga, stok FROM produk")
-        self.produk_data = c.fetchall()
+        c.execute("SELECT rowid, nama_jasa, harga, detail_jasa FROM jasa")
+        self.jasa_data = c.fetchall()
         conn.close()
 
-        self.combo_produk["values"] = [f"{p[1]} - Rp{p[2]}" for p in self.produk_data]
+        self.combo_jasa["values"] = [f"{j[1]} - Rp{j[2]:,.0f}" for j in self.jasa_data]
 
     def tambah_transaksi(self):
-        produk_index = self.combo_produk.current()
-        jumlah = self.entry_jumlah.get()
+        jasa_index = self.combo_jasa.current()
+        jumlah_str = self.entry_jumlah.get().strip()
 
-        if produk_index == -1 or not jumlah:
-            messagebox.showerror("Error", "Pilih produk dan isi jumlah!")
+        if jasa_index == -1:
+            messagebox.showerror("Error", "Pilih jasa terlebih dahulu!")
             return
-        
-        try:
-            jumlah = int(jumlah)
-        except ValueError:
-            messagebox.showerror("Error", "Jumlah harus angka!")
+        if not jumlah_str.isdigit() or int(jumlah_str) <= 0:
+            messagebox.showerror("Error", "Jumlah harus berupa angka positif!")
             return
-        
-        produk_id, nama, harga, stok = self.produk_data[produk_index]
-        if jumlah <= 0 or jumlah > stok:
-            messagebox.showerror("Error", "Jumlah tidak valid atau melebihi stok!")
-            return
-        
+
+        jumlah = int(jumlah_str)
+        jasa_id, nama, harga, deskripsi = self.jasa_data[jasa_index]
         total = harga * jumlah
-        self.tree_input.insert("", "end", values=(produk_id, nama, jumlah, harga, total))
-        self.combo_produk.set("")
+
+        self.tree_input.insert("", "end", values=(
+            jasa_id, nama, deskripsi, jumlah, f"Rp{harga:,.0f}", f"Rp{total:,.0f}"
+        ))
+
+        self.combo_jasa.set("")
+        self.combo_deskripsi.set("")
         self.entry_jumlah.delete(0, tk.END)
 
     def simpan_transaksi(self):
         transaksi_data = [self.tree_input.item(i)["values"] for i in self.tree_input.get_children()]
         if not transaksi_data:
-            messagebox.showerror("Error", "Belum ada produk yang ditambahkan!")
+            messagebox.showerror("Error", "Tidak ada transaksi untuk disimpan!")
             return
 
         conn = sqlite3.connect("data_keuangan.db")
@@ -107,82 +151,58 @@ class PenjualanPage(tk.Frame):
         today = datetime.date.today()
         c.execute("SELECT transaksi_penjualan_id FROM transaksi_penjualan WHERE tanggal = ?", (today,))
         existing = c.fetchall()
-        antrian_str = str(len(existing) + 1).zfill(3)
+        antrian = len(existing) + 1
+        antrian_str = str(antrian).zfill(3)
+
         datestr = today.strftime("%Y%m%d")
         transaksi_id = f"PJ{datestr}{antrian_str}"
 
-        total_semua = sum([int(row[4]) for row in transaksi_data])
+        # Hitung total keseluruhan
+        total_semua = 0
+        for row in transaksi_data:
+            total_val = int(str(row[5]).replace("Rp", "").replace(",", ""))
+            total_semua += total_val
 
-        c.execute("INSERT INTO transaksi_penjualan (transaksi_penjualan_id, tanggal, total) VALUES (?, ?, ?)", 
-                  (transaksi_id, today, total_semua))
+        # Simpan header transaksi
+        c.execute(
+            "INSERT INTO transaksi_penjualan (transaksi_penjualan_id, tanggal, total, kategori) VALUES (?, ?, ?, ?)",
+            (transaksi_id, today, total_semua, "Pendapatan")
+        )
 
+        # Simpan detail transaksi
         count = 1
         for data in transaksi_data:
-            detail_id = f"{transaksi_id}{str(count).zfill(3)}"
-            c.execute("INSERT INTO detail_transaksi_penjualan (detail_penjualan_id, transaksi_penjualan_id, produk_id, jumlah) VALUES (?, ?, ?, ?)",
-                      (detail_id, transaksi_id, data[0], data[2]))
-            c.execute("UPDATE produk SET stok = stok - ? WHERE id = ?", (data[2], data[0]))
+            jasa_id = data[0]
+            jumlah = data[3]
+            count_str = str(count).zfill(3)
+            detail_id = f"DPJ{datestr}{antrian_str}{count_str}"
+            c.execute(
+                "INSERT INTO detail_transaksi_penjualan (detail_penjualan_id, transaksi_penjualan_id, jasa_id, jumlah) VALUES (?, ?, ?, ?)",
+                (detail_id, transaksi_id, jasa_id, jumlah)
+            )
             count += 1
 
         conn.commit()
         conn.close()
 
-        messagebox.showinfo("Sukses", "Transaksi berhasil disimpan!")
+        messagebox.showinfo("Sukses", f"Transaksi {transaksi_id} berhasil disimpan!\nTotal: Rp{total_semua:,.0f}")
+
+        # Bersihkan tabel input
         for i in self.tree_input.get_children():
             self.tree_input.delete(i)
-        self.load_daftar_transaksi()
 
-    # ========================== BAGIAN KANAN (DAFTAR TRANSAKSI) ===============================
-    def load_daftar_transaksi(self):
+        self.load_transaksi_data()
+
+    def load_transaksi_data(self):
+        # Bersihkan data lama
+        for i in self.tree_data.get_children():
+            self.tree_data.delete(i)
+
         conn = sqlite3.connect("data_keuangan.db")
         c = conn.cursor()
         c.execute("SELECT transaksi_penjualan_id, tanggal, total FROM transaksi_penjualan ORDER BY tanggal DESC")
-        rows = c.fetchall()
+        data = c.fetchall()
         conn.close()
 
-        for i in self.tree_daftar.get_children():
-            self.tree_daftar.delete(i)
-        for row in rows:
-            self.tree_daftar.insert("", "end", values=row)
-
-    def hapus_transaksi(self):
-        selected = self.tree_daftar.selection()
-        if not selected:
-            messagebox.showwarning("Peringatan", "Pilih transaksi yang ingin dihapus!")
-            return
-        transaksi_id = self.tree_daftar.item(selected[0])["values"][0]
-
-        conn = sqlite3.connect("data_keuangan.db")
-        c = conn.cursor()
-        c.execute("DELETE FROM detail_transaksi_penjualan WHERE transaksi_penjualan_id = ?", (transaksi_id,))
-        c.execute("DELETE FROM transaksi_penjualan WHERE transaksi_penjualan_id = ?", (transaksi_id,))
-        conn.commit()
-        conn.close()
-
-        self.load_daftar_transaksi()
-        messagebox.showinfo("Sukses", "Transaksi berhasil dihapus.")
-
-    def edit_transaksi(self, event):
-        """Double-click untuk load data ke form kiri"""
-        selected = self.tree_daftar.selection()
-        if not selected:
-            return
-        transaksi_id = self.tree_daftar.item(selected[0])["values"][0]
-
-        conn = sqlite3.connect("data_keuangan.db")
-        c = conn.cursor()
-        c.execute("""
-            SELECT p.id, p.nama_produk, d.jumlah, p.harga, (d.jumlah * p.harga)
-            FROM detail_transaksi_penjualan d
-            JOIN produk p ON p.id = d.produk_id
-            WHERE d.transaksi_penjualan_id = ?
-        """, (transaksi_id,))
-        rows = c.fetchall()
-        conn.close()
-
-        for i in self.tree_input.get_children():
-            self.tree_input.delete(i)
-        for row in rows:
-            self.tree_input.insert("", "end", values=row)
-
-        messagebox.showinfo("Edit Mode", f"Data transaksi {transaksi_id} dimuat untuk diedit.")
+        for row in data:
+            self.tree_data.insert("", "end", values=row)
