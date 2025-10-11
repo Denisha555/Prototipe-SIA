@@ -4,6 +4,11 @@ from tkinter import ttk, messagebox
 
 from function.initialize_db import initialize_db
 from manager.jurnal_umum import JurnalUmumPage
+from manager.buku_besar import BukuBesarPage
+from manager.neraca_saldo import NeracaSaldoPage
+# from manager.worksheet import WorksheetPage
+from manager.jurnal_penutup import JurnalPenutupPage
+from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
 from pencatatan import PencatatanPage
 from pelaporan import PelaporanPage
 from grafik import GrafikPage
@@ -70,6 +75,11 @@ class LoginPage(tk.Tk):
                 "Input Edit Penjualan": PenjualanPageManager,
                 "Input Jasa Manager": JasaPageManager,
                 "Jurnal Umum": JurnalUmumPage,
+                "Buku Besar": BukuBesarPage,
+                "Neraca Saldo": NeracaSaldoPage,
+                # "Worksheet": WorksheetPage,
+                "Jurnal Penutup": JurnalPenutupPage,
+                "Jurnal Penyesuaian": JurnalPenyesuaianPage,
                 "Pencatatan": PencatatanPage,
                 "Pelaporan": PelaporanPage,
                 "Grafik": GrafikPage,

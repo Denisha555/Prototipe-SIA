@@ -182,6 +182,18 @@ class PenjualanPage(tk.Frame):
             )
             count += 1
 
+        keterangan_ju = f"Pendapatan Jasa dari Transaksi {transaksi_id}"
+            
+        c.execute("""
+            INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit)
+            VALUES (?, ?, ?, ?, ?)
+        """, (transaksi_id, today, '111', keterangan_ju, total_semua))
+            
+        c.execute("""
+            INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, kredit)
+            VALUES (?, ?, ?, ?, ?)
+        """, (transaksi_id, today, '401', keterangan_ju, total_semua))
+
         conn.commit()
         conn.close()
 

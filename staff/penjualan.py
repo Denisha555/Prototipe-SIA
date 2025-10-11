@@ -26,7 +26,7 @@ class PenjualanPage(tk.Frame):
         self.entry_jumlah = ttk.Entry(self, width=30)
         self.entry_jumlah.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
-        ttk.Button(self, text="Tambah", command=self.tambah_transaksi).grid(row=4, column=0, columnspan=2, pady=15)
+        ttk.Button(self, text="Tambahkan ke Transaksi", command=self.tambah_transaksi).grid(row=4, column=0, columnspan=2, pady=15)
 
         self.tree = ttk.Treeview(
             self,
@@ -143,6 +143,18 @@ class PenjualanPage(tk.Frame):
                 (detail_id, transaksi_id, jasa_id, jumlah)
             )
             count += 1
+
+        keterangan_ju = f"Pendapatan Jasa dari Transaksi {transaksi_id}"
+            
+        c.execute("""
+            INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit)
+            VALUES (?, ?, ?, ?, ?)
+        """, (transaksi_id, today, '111', keterangan_ju, total_semua))
+            
+        c.execute("""
+            INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, kredit)
+            VALUES (?, ?, ?, ?, ?)
+        """, (transaksi_id, today, '401', keterangan_ju, total_semua))
 
         conn.commit()
         conn.close()

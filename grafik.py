@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import matplotlib.pyplot as plt
 from get_data import get_data
-from bulan_map import bulan_map
+from function.bulan_map import bulan_map
 from matplotlib.ticker import FuncFormatter
 from collections import defaultdict
 import datetime

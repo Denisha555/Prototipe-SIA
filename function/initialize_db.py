@@ -61,6 +61,42 @@ def initialize_db(self):
                   jumlah INTEGER,
                   FOREIGN KEY(transaksi_pembelian_id) REFERENCES TRANSAKSI_PEMBELIAN (transaksi_pembelian_id))
                   ''')
+        
+        c.execute('''CREATE TABLE IF NOT EXISTS akun (
+                    kode_akun TEXT PRIMARY KEY,
+                    nama_akun TEXT NOT NULL,
+                    kategori TEXT NOT NULL
+                )''')
+        
+        c.execute('''CREATE TABLE IF NOT EXISTS jurnal_umum_detail (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    transaksi_ref_id TEXT, -- ID dari Penjualan, Pembelian, Gaji, dll.
+                    tanggal DATE NOT NULL,
+                    kode_akun TEXT NOT NULL,
+                    keterangan TEXT,
+                    debit REAL DEFAULT 0,
+                    kredit REAL DEFAULT 0,
+                    FOREIGN KEY (kode_akun) REFERENCES akun(kode_akun)
+                )''')
+        
+        initial_coa = [
+            ('111', 'Kas', 'Aset', 'Debit'),
+            ('112', 'Piutang Usaha', 'Aset', 'Debit'),
+            ('121', 'Perlengkapan', 'Aset', 'Debit'), 
+            ('122', 'Peralatan', 'Aset', 'Debit'),
+            ('211', 'Utang Usaha', 'Liabilitas', 'Kredit'),
+            ('212', 'Utang Gaji', 'Liabilitas', 'Kredit'),
+            ('311', 'Modal Pemilik', 'Ekuitas', 'Kredit'),
+            ('401', 'Pendapatan Jasa', 'Pendapatan', 'Kredit'), 
+            ('511', 'Beban Gaji', 'Beban', 'Debit'), 
+            ('512', 'Beban Pajak', 'Beban', 'Debit'), 
+            ('520', 'Beban Lain-lain', 'Beban', 'Debit'),
+        ]
+
+        c.execute("SELECT COUNT(*) FROM akun")
+        if c.fetchone()[0] == 0:
+            c.executemany("INSERT INTO akun (kode_akun, nama_akun, kategori, saldo_normal) VALUES (?, ?, ?, ?)", initial_coa)
+
 
         conn.commit()
         conn.close()

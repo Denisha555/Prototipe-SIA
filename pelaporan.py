@@ -2,7 +2,7 @@ import sqlite3
 import tkinter as tk
 from tkinter import ttk, messagebox
 from get_data import get_data 
-from bulan_map import bulan_map
+from function.bulan_map import bulan_map
 from datetime import datetime
 
 class PelaporanPage(tk.Frame):

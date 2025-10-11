@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
+from function.bulan_map import bulan_map 
+from datetime import datetime
 
+def _connect_db():
+    return sqlite3.connect('data_keuangan.db')
 
 class BukuBesarPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -18,197 +22,278 @@ class BukuBesarPage(tk.Frame):
             text="📘 Buku Besar",
             font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, columnspan=2, pady=(15, 10))
-
-        # === Form Pilihan Bulan & Tahun ===
+        
         form_frame = ttk.Frame(self)
         form_frame.grid(row=1, column=0, columnspan=2, pady=10)
 
-        bulan_list = [
-            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-        ]
+        bulan_list = list(bulan_map.keys())
+        self.akun_map = self._get_account_data()
+        akun_list = list(self.akun_map.keys())
 
-        ttk.Label(form_frame, text="Bulan:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+        ttk.Label(form_frame, text="Akun:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+        self.combo_akun = ttk.Combobox(form_frame, width=27, state="readonly", values=akun_list)
+        self.combo_akun.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        if akun_list:
+            self.combo_akun.current(0)
+            
+        ttk.Label(form_frame, text="Bulan:").grid(row=1, column=0, padx=10, pady=5, sticky="e")
         self.combo_bulan = ttk.Combobox(form_frame, width=27, state="readonly", values=bulan_list)
-        self.combo_bulan.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        self.combo_bulan.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
-        ttk.Label(form_frame, text="Tahun:").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+        ttk.Label(form_frame, text="Tahun:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
         self.entry_tahun = ttk.Entry(form_frame, width=30)
-        self.entry_tahun.grid(row=1, column=1, padx=5, pady=5, sticky="w")
-
-        ttk.Button(
-            form_frame,
-            text="Tampilkan",
-            command=self.load_laporan
-        ).grid(row=2, column=0, columnspan=2, pady=(10, 0))
-
-        # === Tombol Kembali ===
-        ttk.Button(
-            self,
-            text="Kembali ke Menu Utama",
-            command=lambda: controller.show_frame("Menu Utama Manager")
-        ).grid(row=2, column=0, columnspan=2, pady=10)
-
-        # === Area Scroll untuk Tabel ===
-        container = ttk.Frame(self)
-        container.grid(row=3, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
-
-        canvas = tk.Canvas(self)
-        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
-        self.scrollable_frame = ttk.Frame(canvas)
-
-        self.scrollable_inner = ttk.Frame(self.scrollable_frame)
-        self.scrollable_inner.grid(row=0, column=0, columnspan=2, sticky="n")
-
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        self.entry_tahun.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        
+        ttk.Button(form_frame, text="Tampilkan Buku Besar", command=self.show_buku_besar).grid(
+            row=3, column=0, columnspan=2, pady=10
         )
 
-        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="n")
-        canvas.configure(yscrollcommand=scrollbar.set)
+        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+                   ).grid(row=3, column=0, columnspan=2, pady=5)
+        
+        today = datetime.now()
+        current_year = today.strftime("%Y")
+        current_month_num = today.strftime("%m")
+        
+        current_month_name = None
+        for name, num in bulan_map.items():
+            if num == current_month_num:
+                current_month_name = name
+                break
+                
+        if current_month_name:
+            self.combo_bulan.set(current_month_name)
+        
+        self.entry_tahun.insert(0, current_year)
 
-        canvas.grid(row=5, column=0, columnspan=2, sticky="nsew", pady=10)
-        scrollbar.grid(row=5, column=1, sticky="ns", padx=(0, 15), columnspan=2)
+        # === Frame Utama untuk Buku Besar ===
+        self.bb_frame = ttk.Frame(self)
+        self.bb_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
+        self.bb_frame.grid_columnconfigure(0, weight=1)
+        self.bb_frame.grid_rowconfigure(0, weight=1)
+        
+        self.current_treeviews = []
+        
+        self._create_empty_treeview(self.bb_frame)
 
-    def load_laporan(self):
-        bulan = self.combo_bulan.get().strip()
-        tahun = self.entry_tahun.get().strip()
-
-        nama_ke_angka = {
-            "Januari": "01", "Februari": "02", "Maret": "03", "April": "04",
-            "Mei": "05", "Juni": "06", "Juli": "07", "Agustus": "08",
-            "September": "09", "Oktober": "10", "November": "11", "Desember": "12"
-        }
-        bulan_angka = nama_ke_angka.get(bulan)
-
-        if not bulan_angka or not tahun:
-            messagebox.showerror("Error", "Silakan pilih bulan dan isi tahun terlebih dahulu!")
-            return
-
-        # Bersihkan tabel lama
-        for widget in self.scrollable_frame.winfo_children():
+    def _create_empty_treeview(self, parent_frame):
+        
+        for widget in parent_frame.winfo_children():
             widget.destroy()
 
-        # === Ambil data dari database ===
-        conn = sqlite3.connect("data_keuangan.db")
+        ttk.Label(
+            parent_frame,
+            text="Akun: [Pilih Akun]",
+            font=("Helvetica", 14, "bold"),
+            anchor="w"
+        ).grid(row=0, column=0, sticky="ew", pady=(5, 0))
+        ttk.Label(
+            parent_frame,
+            text="Saldo Normal: -",
+            anchor="w"
+        ).grid(row=1, column=0, sticky="ew", pady=(0, 5))
+            
+        tree = ttk.Treeview(parent_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings")
+        tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
+        parent_frame.grid_rowconfigure(2, weight=1)
+        
+        tree.column("tanggal", width=100, anchor=tk.CENTER)
+        tree.heading("tanggal", text="Tanggal")
+        tree.column("keterangan", width=350, anchor=tk.W)
+        tree.heading("keterangan", text="Keterangan")
+        tree.column("debit", width=130, anchor=tk.E)
+        tree.heading("debit", text="Debit (Rp)")
+        tree.column("kredit", width=130, anchor=tk.E)
+        tree.heading("kredit", text="Kredit (Rp)")
+        tree.column("saldo", width=150, anchor=tk.E)
+        tree.heading("saldo", text="Saldo (Rp)")
+        
+        # Scrollbar
+        vsb = ttk.Scrollbar(parent_frame, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=vsb.set)
+        vsb.grid(row=2, column=1, sticky="ns")
+
+        tree.insert("", "end", values=("", "Pilih Akun, Bulan, dan Tahun untuk menampilkan Buku Besar...", "", "", ""))
+        tree.tag_configure('info', foreground='gray')
+        
+        self.current_treeviews = [tree]
+        
+
+    def _format_rupiah(self, amount):
+        is_negative = amount < 0
+        abs_amount = abs(amount)
+        formatted = f"{abs_amount:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+        return f"({formatted})" if is_negative else formatted
+
+    def _get_account_data(self):
+        conn = _connect_db()
         c = conn.cursor()
+        akun_map = {}
+        try:
+            c.execute("SELECT kode_akun, nama_akun, saldo_normal FROM akun ORDER BY kode_akun ASC")
+            for kode, nama, saldo_normal in c.fetchall():
+                akun_map[f"{kode} - {nama}"] = {'kode': kode, 'nama': nama, 'saldo_normal': saldo_normal}
+        except sqlite3.Error as e:
+            messagebox.showerror("Error Database", f"Gagal memuat daftar akun: {e}")
+        finally:
+            conn.close()
+        return akun_map
 
-        # Penjualan (Kas Masuk)
-        c.execute("""
-            SELECT tanggal, kategori, total
-            FROM transaksi_penjualan
-            WHERE strftime('%m', tanggal)=? AND strftime('%Y', tanggal)=?
-        """, (bulan_angka, tahun))
-        kas_masuk = c.fetchall()
+    def _get_beginning_balance(self, kode_akun, year, month):
+        conn = _connect_db()
+        c = conn.cursor()
+        
+        bulan_num = bulan_map[month]
+        
+        balance = 0
+        try:
+            c.execute("""
+                SELECT SUM(debit) - SUM(kredit)
+                FROM jurnal_umum_detail
+                WHERE kode_akun = ? AND tanggal < ?
+            """, (kode_akun, f"{year}-{bulan_num}-01"))
+            
+            result = c.fetchone()
+            if result and result[0] is not None:
+                balance = result[0]
 
-        # Pembelian (Kas Keluar)
-        c.execute("""
-            SELECT tanggal, kategori, total
-            FROM transaksi_pembelian
-            WHERE strftime('%m', tanggal)=? AND strftime('%Y', tanggal)=?
-        """, (bulan_angka, tahun))
-        kas_keluar = c.fetchall()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error Database", f"Gagal menghitung saldo awal: {e}")
+        finally:
+            conn.close()
+            
+        return balance
 
-        conn.close()
+    def _get_monthly_transactions(self, kode_akun, year, month):
+        conn = _connect_db()
+        c = conn.cursor()
+        
+        bulan_num = bulan_map[month]
+        
+        query = """
+            SELECT tanggal, keterangan, debit, kredit
+            FROM jurnal_umum_detail
+            WHERE kode_akun = ? 
+            AND strftime('%m', tanggal) = ?
+            AND strftime('%Y', tanggal) = ?
+            ORDER BY tanggal ASC, id ASC
+        """
+        transactions = []
+        try:
+            c.execute(query, (kode_akun, bulan_num, year))
+            transactions = c.fetchall()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error Database", f"Gagal memuat transaksi bulanan: {e}")
+        finally:
+            conn.close()
+            
+        return transactions
 
-        # === Siapkan struktur akun ===
-        akun_dict = {
-            "Kas": [],
-            "Pendapatan": [],
-            "Peralatan": [],
-            "Perlengkapan": [],
-            "Biaya": [],
-            "Beban": []
-        }
 
-        # --- Penjualan ---
-        for tanggal, kategori, total in kas_masuk:
-            akun_dict["Kas"].append((tanggal, "Pendapatan", total, 0))
-            akun_dict["Pendapatan"].append((tanggal, "Kas", 0, total))
+    def show_buku_besar(self):
+        for widget in self.bb_frame.winfo_children():
+            widget.destroy()
+        self.current_treeviews = []
+        
+        selected_akun_str = self.combo_akun.get()
+        selected_bulan = self.combo_bulan.get()
+        selected_tahun = self.entry_tahun.get()
+        
+        if not all([selected_akun_str, selected_bulan, selected_tahun]):
+            messagebox.showerror("Error", "Pilih Akun, Bulan, dan isi Tahun.")
+            self._create_empty_treeview(self.bb_frame)
+            return
+            
+        try:
+            akun_data = self.akun_map[selected_akun_str]
+        except KeyError:
+             messagebox.showerror("Error", "Akun tidak valid.")
+             self._create_empty_treeview(self.bb_frame)
+             return
+             
+        kode_akun = akun_data['kode']
+        nama_akun = akun_data['nama']
+        saldo_normal = akun_data['saldo_normal']
 
-        # --- Pembelian ---
-        for tanggal, kategori, total in kas_keluar:
-            if kategori in akun_dict:
-                akun_dict[kategori].append((tanggal, "Kas", total, 0))
+        saldo_awal = self._get_beginning_balance(kode_akun, selected_tahun, selected_bulan)
+        
+        transaksi_bulanan = self._get_monthly_transactions(kode_akun, selected_tahun, selected_bulan)
+
+        if not transaksi_bulanan and saldo_awal == 0:
+            messagebox.showinfo("Info", f"Tidak ada transaksi untuk akun {kode_akun} pada periode ini.")
+            self._create_empty_treeview(self.bb_frame)
+            return
+            
+        ttk.Label(
+            self.bb_frame,
+            text=f"Akun: {kode_akun} - {nama_akun}",
+            font=("Helvetica", 14, "bold"),
+            anchor="w"
+        ).grid(row=0, column=0, sticky="ew", pady=(5, 0))
+        ttk.Label(
+            self.bb_frame,
+            text=f"Saldo Normal: {saldo_normal}",
+            anchor="w"
+        ).grid(row=1, column=0, sticky="ew", pady=(0, 5))
+            
+        tree = ttk.Treeview(self.bb_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings")
+        tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
+        self.bb_frame.grid_rowconfigure(2, weight=1)
+        
+        tree.column("tanggal", width=100, anchor=tk.CENTER)
+        tree.heading("tanggal", text="Tanggal")
+        tree.column("keterangan", width=350, anchor=tk.W)
+        tree.heading("keterangan", text="Keterangan")
+        tree.column("debit", width=130, anchor=tk.E)
+        tree.heading("debit", text="Debit (Rp)")
+        tree.column("kredit", width=130, anchor=tk.E)
+        tree.heading("kredit", text="Kredit (Rp)")
+        tree.column("saldo", width=150, anchor=tk.E)
+        tree.heading("saldo", text=f"Saldo ({saldo_normal}) (Rp)")
+        
+        vsb = ttk.Scrollbar(self.bb_frame, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=vsb.set)
+        vsb.grid(row=2, column=1, sticky="ns")
+        
+        # --- HITUNG DAN INPUT DATA ---
+        saldo_berjalan = saldo_awal
+        total_debit = 0
+        total_kredit = 0
+        
+        tree.insert("", "end", values=(
+            selected_bulan,
+            "Saldo Awal",
+            "", 
+            "",
+            self._format_rupiah(saldo_berjalan)
+        ), tags=('saldo_awal',))
+        tree.tag_configure('saldo_awal', font=('Helvetica', 10, 'bold'), background='#F0F0F0')
+        
+        for tgl, ket, debit, kredit in transaksi_bulanan:
+            if saldo_normal == 'Debit':
+                saldo_berjalan += debit - kredit
             else:
-                akun_dict["Beban"].append((tanggal, "Kas", total, 0))
-            akun_dict["Kas"].append((tanggal, kategori, 0, total))
+                saldo_berjalan += kredit - debit
+                
+            total_debit += debit
+            total_kredit += kredit
 
-        # === Tampilkan data ke layar ===
-        ada_data = False
-        row = 0
-
-        for akun, transaksi in akun_dict.items():
-            if not transaksi:
-                continue
-
-            ada_data = True
-
-            # Frame untuk tiap akun
-            akun_frame = ttk.Frame(self.scrollable_frame)
-            akun_frame.grid(row=row, column=1, padx=15, pady=15, sticky="n")
-
-            ttk.Label(
-                akun_frame,
-                text=f"Akun: {akun}",
-                font=("Helvetica", 14, "bold")
-            ).pack(anchor="center", pady=(5, 5))
-
-            tree = ttk.Treeview(
-                akun_frame,
-                columns=("tanggal", "keterangan", "debit", "kredit", "saldo"),
-                show="headings",
-                height=8
-            )
-            tree.pack(padx=10, pady=5)
-
-            for col_name, text in zip(
-                ("tanggal", "keterangan", "debit", "kredit", "saldo"),
-                ("Tanggal", "Keterangan", "Debit (Rp)", "Kredit (Rp)", "Saldo (Rp)")
-            ):
-                tree.heading(col_name, text=text)
-                tree.column(col_name, anchor="center", width=130)
-
-            # Hitung saldo dan total
-            saldo = 0
-            total_debit = 0
-            total_kredit = 0
-
-            for tgl, ket, debit, kredit in transaksi:
-                saldo += debit - kredit
-                total_debit += debit
-                total_kredit += kredit
-
-                tree.insert("", "end", values=(
-                    tgl,
-                    ket,
-                    f"{debit:,.0f}" if debit else "",
-                    f"{kredit:,.0f}" if kredit else "",
-                    f"{saldo:,.0f}"
-                ))
-
-            # Baris total
             tree.insert("", "end", values=(
-                "", "Total", f"{total_debit:,.0f}", f"{total_kredit:,.0f}", f"{saldo:,.0f}"
+                tgl,
+                ket,
+                self._format_rupiah(debit) if debit else "",
+                self._format_rupiah(kredit) if kredit else "",
+                self._format_rupiah(saldo_berjalan)
             ))
-
-            row += 1  # tabel berikutnya di baris bawah
-
-        if not ada_data:
-            messagebox.showinfo("Info", "Tidak ada transaksi untuk bulan dan tahun ini.")
-
-
-# === TESTING MANDIRI ===
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Buku Besar")
-    root.geometry("1000x700")
-
-    class DummyController:
-        def show_frame(self, page_name):
-            print(f"Kembali ke {page_name}")
-
-    app = BukuBesarPage(root, DummyController())
-    app.pack(fill="both", expand=True)
-    root.mainloop()
+            
+        tree.insert("", "end", values=(
+            "", 
+            "SALDO AKHIR", 
+            self._format_rupiah(total_debit), 
+            self._format_rupiah(total_kredit), 
+            self._format_rupiah(saldo_berjalan)
+        ), tags=('saldo_akhir',))
+        
+        tree.tag_configure('saldo_akhir', font=('Helvetica', 11, 'bold'), background='#E0F7FA')
+        
+        self.current_treeviews.append(tree)
