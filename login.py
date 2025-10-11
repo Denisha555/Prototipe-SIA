@@ -11,7 +11,7 @@ from penggajian import PenggajianPage
 from staff.menu_staff import MenuStaffPage
 from manager.menu_manager import MenuManagerPage
 from staff.pembelian import PembelianPage
-from staff.produk import ProdukPage
+from staff.jasa import JasaPage
 from staff.penjualan import PenjualanPage as PenjualanPageStaff
 from manager.penjualan import PenjualanPage as PenjualanPageManager
 
@@ -61,7 +61,7 @@ class LoginPage(tk.Tk):
         if name not in self.frames:
             PageClass = {
                 "Menu Utama Staff": MenuStaffPage,
-                "Input Produk": ProdukPage,
+                "Input Jasa": JasaPage,
                 "Input Penjualan": PenjualanPageStaff,
                 "Input Pembelian": PembelianPage,
                 "Menu Utama Manager": MenuManagerPage,

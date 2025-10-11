@@ -16,7 +16,7 @@ class PembelianPage(tk.Frame):
         ttk.Label(self, text="Kategori: ").grid(row=1, column=0, sticky="e", padx=10, pady=5)
         self.combo_kategori = ttk.Combobox(self, width=27, state="readonly")
         self.combo_kategori.grid(row=1, column=1, padx=10, pady=5, sticky="w")
-        self.combo_kategori["values"] = ["Bahan Baku", "Peralatan", "Perlengkapan", "Biaya", "Beban"]
+        self.combo_kategori["values"] = ["Peralatan", "Perlengkapan", "Biaya", "Beban"]
         
         ttk.Label(self, text="Keterangan: ").grid(row=2, column=0, sticky="e", padx=10, pady=5)
         self.entry_keterangan = ttk.Entry(self, width=30)
@@ -32,51 +32,70 @@ class PembelianPage(tk.Frame):
 
         ttk.Button(self, text="Tambah", command=self.tambah_transaksi).grid(row=5, column=0, columnspan=2, pady=15)
 
-        self.tree = ttk.Treeview(self, columns=("nama", "jumlah", "harga", "total"), show="headings", height=8)
-        self.tree.grid(row=5, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        # ✅ Tambahkan kolom "id" di tabel tree
+        self.tree = ttk.Treeview(self, columns=("id", "kategori", "keterangan", "jumlah", "harga", "total"), show="headings", height=8)
+        self.tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        self.tree.heading("nama", text="Produk")
-        self.tree.heading("jumlah", text="Jumlah")
-        self.tree.heading("harga", text="Harga (Rp)")  
-        self.tree.heading("total", text="Total (Rp)") 
+        for col, text in [
+            ("id", "ID"),
+            ("kategori", "Kategori"),
+            ("keterangan", "Keterangan"),
+            ("jumlah", "Jumlah"),
+            ("harga", "Harga (Rp)"),
+            ("total", "Total (Rp)")
+        ]:
+            self.tree.heading(col, text=text, anchor="center")
+            self.tree.column(col, anchor="center", width=120)
 
-        ttk.Button(self, text="Simpan", command=self.simpan_transaksi).grid(row=6, column=0, columnspan=2, pady=15)
+        ttk.Button(self, text="Simpan", command=self.simpan_transaksi).grid(row=7, column=0, columnspan=2, pady=15)
 
-        ttk.Button(self, text="Kembali ke menu utama", command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=7, column=0, columnspan=2, pady=5)
+        ttk.Button(self, text="Kembali ke menu utama", command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=8, column=0, columnspan=2, pady=5)
+
+        # counter untuk id item sementara
+        self.item_count = 1
 
     def tambah_transaksi(self):
-        produk = self.entry_keterangan.get()
-        harga = self.entry_harga.get()
-        jumlah = self.entry_jumlah.get()
-        
+        kategori = self.combo_kategori.get()
+        keterangan = self.entry_keterangan.get().strip()
+        harga = self.entry_harga.get().strip()
+        jumlah = self.entry_jumlah.get().strip()
+
+        if not kategori:
+            messagebox.showerror("Error", "Pilih kategori terlebih dahulu!")
+            return
+
+        if not keterangan:
+            messagebox.showerror("Error", "Keterangan tidak boleh kosong!")
+            return
+
         try:
             jumlah = int(jumlah)
-        except ValueError:
-            messagebox.showerror("Error", "Jumlah harus angka!")
-            return
-        
-        try:
             harga = int(harga)
         except ValueError:
-            messagebox.showerror("Error", "Harga harus angka!")
-        
-        if jumlah <= 0:
-            messagebox.showerror("Error", "Jumlah harus lebih besar dari 0!")
+            messagebox.showerror("Error", "Harga dan Jumlah harus berupa angka!")
             return
         
-        if harga <= 0:
-            messagebox.showerror("Error", "Harga harus lebih besar dari 0!")
+        if jumlah <= 0 or harga <= 0:
+            messagebox.showerror("Error", "Harga dan Jumlah harus lebih besar dari 0!")
             return
-        
-        
-        total = harga * jumlah
 
-        self.tree.insert("", "end", values=(produk, jumlah, harga, total))
-        self.combo_produk.set("")
+        total = harga * jumlah
+        item_id = self.item_count
+
+        # masukkan ke tabel
+        self.tree.insert("", "end", values=(item_id, kategori, keterangan, jumlah, f"Rp{harga:,.0f}", f"Rp{total:,.0f}"))
+        self.item_count += 1
+
+        # reset input
+        self.combo_kategori.set("")
+        self.entry_keterangan.delete(0, tk.END)
+        self.entry_harga.delete(0, tk.END)
         self.entry_jumlah.delete(0, tk.END)
 
     def simpan_transaksi(self):
         transaksi_data = [self.tree.item(i)["values"] for i in self.tree.get_children()]
+        kategori = self.combo_kategori.get()
+
         if not transaksi_data:
             messagebox.showerror("Error", "Tidak ada transaksi untuk disimpan!")
             return
@@ -91,28 +110,34 @@ class PembelianPage(tk.Frame):
         antrian_str = str(antrian).zfill(3)
 
         datestr = today.strftime("%Y%m%d")
-        transaksi_id = f"PJ{datestr}{antrian_str}"
+        transaksi_id = f"PB{datestr}{antrian_str}"
 
-        total_semua = sum([int(row[4]) for row in transaksi_data])
+        total_semua = sum([int(str(row[5]).replace("Rp", "").replace(",", "")) for row in transaksi_data])
 
-        c.execute("INSERT INTO transaksi_pembelian (transaksi_pembelian_id, tanggal, total) VALUES (?, ?, ?)", (transaksi_id, today, total_semua))
+        c.execute("INSERT INTO transaksi_pembelian (transaksi_pembelian_id, kategori, tanggal, total) VALUES (?, ?, ?, ?)", 
+                  (transaksi_id, kategori, today, total_semua))
 
         count = 1
         for data in transaksi_data:
             count_str = str(count).zfill(3)
-            detail_id = f"PJ{datestr}{antrian_str}{count_str}"
+            detail_id = f"DPB{datestr}{antrian_str}{count_str}"
+            keterangan = data[2]
+            jumlah = data[3]
+            harga = int(str(data[4]).replace("Rp", "").replace(",", ""))
+
             c.execute(
-                "INSERT INTO detail_transaksi_pembelian (detail_pembelian_id, transaksi_pembelian_id, produk_id, jumlah) VALUES (?, ?, ?, ?)",
-                (detail_id, transaksi_id, data[0], data[2])
+                "INSERT INTO detail_transaksi_pembelian (detail_pembelian_id, transaksi_pembelian_id, keterangan, jumlah, harga) VALUES (?, ?, ?, ?, ?)",
+                (detail_id, transaksi_id, keterangan, jumlah, harga)
             )
-            count+=1
+            count += 1
 
         conn.commit()
         conn.close()
 
-        messagebox.showinfo("Sukses", "Transaksi berhasil disimpan!")
+        messagebox.showinfo("Sukses", f"Transaksi {transaksi_id} berhasil disimpan!\nTotal: Rp{total_semua:,.0f}")
 
+        # bersihkan tabel
         for i in self.tree.get_children():
             self.tree.delete(i)
-        self.combo_produk.set("")
-        self.entry_jumlah.delete(0, tk.END)
+
+        self.item_count = 1

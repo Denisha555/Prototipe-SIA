@@ -22,12 +22,12 @@ def initialize_db(self):
                     password TEXT,
                     role TEXT)''')
         
-        c.execute('''CREATE TABLE IF NOT EXISTS produk (
+        c.execute('''CREATE TABLE IF NOT EXISTS jasa (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  nama_produk TEXT,
+                  nama_jasa TEXT,
+                  detail_jasa TEXT,
                   gambar BLOB,
-                  harga INTEGER,
-                  stok INTEGER)''')
+                  harga INTEGER)''')
         
         c.execute('''CREATE TABLE IF NOT EXISTS transaksi_penjualan (
                   transaksi_penjualan_id TEXT PRIMARY KEY,
@@ -39,9 +39,9 @@ def initialize_db(self):
         c.execute('''CREATE TABLE IF NOT EXISTS detail_transaksi_penjualan (
                   detail_penjualan_id TEXT PRIMARY KEY,
                   transaksi_penjualan_id TEXT,
-                  produk_id TEXT,
+                  jasa_id TEXT,
                   jumlah INTEGER,
-                  FOREIGN KEY(produk_id) REFERENCES PRODUK (id),
+                  FOREIGN KEY(jasa_id) REFERENCES jasa (id),
                   FOREIGN KEY(transaksi_penjualan_id) REFERENCES TRANSAKSI_PENJUALAN (transaksi_penjualan_id))''')
         
         c.execute('''CREATE TABLE IF NOT EXISTS transaksi_pembelian (
