@@ -16,7 +16,8 @@ from pajak import PajakPage
 from penggajian import PenggajianPage
 from staff.menu_staff import MenuStaffPage
 from manager.menu_manager import MenuManagerPage
-from staff.pembelian import PembelianPage
+from staff.pembelian import PembelianPage as PembelianPageStaff
+from manager.pembelian import PembelianPage as PembelianPageManager
 from staff.jasa import JasaPage as JasaPageStaff
 from manager.jasa import JasaPage as JasaPageManager
 from staff.penjualan import PenjualanPage as PenjualanPageStaff
@@ -70,9 +71,10 @@ class LoginPage(tk.Tk):
                 "Menu Utama Staff": MenuStaffPage,
                 "Input Jasa Staff": JasaPageStaff,
                 "Input Penjualan": PenjualanPageStaff,
-                "Input Pembelian": PembelianPage,
+                "Input Pembelian": PembelianPageStaff,
                 "Menu Utama Manager": MenuManagerPage,
                 "Input Edit Penjualan": PenjualanPageManager,
+                "Input Edit Pembelian": PembelianPageManager,
                 "Input Jasa Manager": JasaPageManager,
                 "Jurnal Umum": JurnalUmumPage,
                 "Buku Besar": BukuBesarPage,

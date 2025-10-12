@@ -25,11 +25,14 @@ class PembelianPage(tk.Frame):
         self.debit_accounts_map = self._get_debit_accounts()
         akun_list = list(self.debit_accounts_map.keys())
 
-        ttk.Label(self, text="🛒 Input Transaksi Pembelian", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+        ttk.Label(self, text="🛒 Manajemen Transaksi Pembelian", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+
+        frame_kiri = ttk.LabelFrame(self, text="Input Edit Transaksi Pembelian")
+        frame_kiri.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         # ❗ KOREKSI: Pilihan Akun (Ganti Kategori)
-        ttk.Label(self, text="Akun Pembelian: ").grid(row=1, column=0, sticky="e", padx=10, pady=5)
-        self.combo_akun = ttk.Combobox(self, width=27, state="readonly", values=akun_list)
+        ttk.Label(frame_kiri, text="Akun Pembelian: ").grid(row=1, column=0, sticky="e", padx=10, pady=5)
+        self.combo_akun = ttk.Combobox(frame_kiri, width=27, state="readonly", values=akun_list)
         self.combo_akun.grid(row=1, column=1, padx=10, pady=5, sticky="w")
         
         # Set default value ke akun pertama (jika ada)
@@ -37,50 +40,69 @@ class PembelianPage(tk.Frame):
             self.combo_akun.current(0)
             
         # Baris Keterangan
-        ttk.Label(self, text="Keterangan Detail: ").grid(row=2, column=0, sticky="e", padx=10, pady=5)
-        self.entry_keterangan = ttk.Entry(self, width=30)
+        ttk.Label(frame_kiri, text="Keterangan Detail: ").grid(row=2, column=0, sticky="e", padx=10, pady=5)
+        self.entry_keterangan = ttk.Entry(frame_kiri, width=30)
         self.entry_keterangan.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
         # Baris Harga
-        ttk.Label(self, text="Harga Satuan: ").grid(row=3, column=0, sticky="e", padx=10, pady=5)
-        self.entry_harga = ttk.Entry(self, width=30)
+        ttk.Label(frame_kiri, text="Harga Satuan: ").grid(row=3, column=0, sticky="e", padx=10, pady=5)
+        self.entry_harga = ttk.Entry(frame_kiri, width=30)
         self.entry_harga.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
         # Baris Jumlah
-        ttk.Label(self, text="Kuantitas: ").grid(row=4, column=0, sticky="e", padx=10, pady=5)
-        self.entry_jumlah = ttk.Entry(self, width=30)
+        ttk.Label(frame_kiri, text="Kuantitas: ").grid(row=4, column=0, sticky="e", padx=10, pady=5)
+        self.entry_jumlah = ttk.Entry(frame_kiri, width=30)
         self.entry_jumlah.grid(row=4, column=1, padx=10, pady=5, sticky="w")
 
-        ttk.Button(self, text="Tambah", command=self.tambah_transaksi).grid(row=5, column=0, columnspan=2, pady=15)
+        ttk.Button(frame_kiri, text="Tambah", command=self.tambah_transaksi).grid(row=5, column=0, columnspan=2, pady=15)
 
         # Tabel Treeview
         # ❗ KOREKSI: Ganti 'kategori' menjadi 'akun' di header
-        self.tree = ttk.Treeview(self, columns=("id", "akun", "keterangan", "jumlah", "harga", "total"), show="headings", height=8)
+        self.tree = ttk.Treeview(frame_kiri, columns=("id", "akun", "keterangan", "jumlah", "harga", "total"), show="headings", height=8)
         self.tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        self.tree.column("id", width=0, stretch=tk.NO) 
+        self.tree.column("id", width=10, stretch=tk.YES) 
         self.tree.heading("id", text="ID")
-        self.tree.column("akun", width=150, anchor="w")
+        self.tree.column("akun", width=150, anchor="center", stretch=tk.YES)
         self.tree.heading("akun", text="Akun (Debit)")
-        self.tree.column("keterangan", width=200, anchor="w")
+        self.tree.column("keterangan", width=150, anchor="center", stretch=tk.YES)
         self.tree.heading("keterangan", text="Keterangan Detail")
-        self.tree.column("jumlah", width=80, anchor="center")
+        self.tree.column("jumlah", width=60, anchor="center", stretch=tk.YES)
         self.tree.heading("jumlah", text="Kuantitas")
-        self.tree.column("harga", width=120, anchor="e")
+        self.tree.column("harga", width=150, anchor="center", stretch=tk.YES)
         self.tree.heading("harga", text="Harga (Rp)")
-        self.tree.column("total", width=150, anchor="e")
+        self.tree.column("total", width=150, anchor="center", stretch=tk.YES)
         self.tree.heading("total", text="Total (Rp)")
         
         # Scrollbar untuk Treeview
-        vsb = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
+        vsb = ttk.Scrollbar(frame_kiri, orient="vertical", command=self.tree.yview)
         vsb.grid(row=6, column=1, sticky="nse", padx=(0, 10))
         self.tree.configure(yscrollcommand=vsb.set)
         
-        ttk.Button(self, text="Simpan", command=self.simpan_transaksi).grid(row=7, column=0, columnspan=2, pady=15)
+        ttk.Button(frame_kiri, text="Simpan", command=self.simpan_transaksi).grid(row=7, column=0, columnspan=2, pady=15)
 
-        ttk.Button(self, text="Kembali ke menu utama", command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=8, column=0, columnspan=2, pady=5)
+        ttk.Button(frame_kiri, text="Kembali ke menu utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=8, column=0, columnspan=2, pady=5)
 
         self.item_count = 1
+
+        frame_kanan = ttk.LabelFrame(self, text="Daftar Transaksi Pembelian")
+        frame_kanan.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+        self.tree_kanan = ttk.Treeview(frame_kanan, columns=("id", "tanggal", "keterangan", "total"), show="headings", height=10)
+        self.tree_kanan.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
+
+        self.tree_kanan.column("id", width=0, stretch=tk.NO)
+        self.tree_kanan.heading("id", text="ID")
+        self.tree_kanan.column("tanggal", width=100, anchor="center")
+        self.tree_kanan.heading("tanggal", text="Tanggal")
+        self.tree_kanan.column("keterangan", width=200, anchor="w")
+        self.tree_kanan.heading("keterangan", text="Keterangan")
+        self.tree_kanan.column("total", width=150, anchor="e")
+        self.tree_kanan.heading("total", text="Total (Rp)")
+
+        # Scrollbar untuk Treeview
+        vsb_kanan = ttk.Scrollbar(frame_kanan, orient="vertical", command=self.tree_kanan.yview)
+        vsb_kanan.grid(row=1, column=2, sticky="nse", padx=(0, 10))
+        self.tree_kanan.configure(yscrollcommand=vsb_kanan.set)
         
     def _get_debit_accounts(self):
         """Mengambil akun yang relevan untuk pembelian (Aset Debit dan Semua Beban)."""
@@ -263,3 +285,15 @@ class PembelianPage(tk.Frame):
         for i in self.tree.get_children():
             self.tree.delete(i)
             self.item_count = 1
+
+    def load_daftar_transaksi(self):
+        conn = _connect_db()
+        c = conn.cursor()
+
+        c.execute("SELECT transaksi_pembelian_id, tanggal, total FROM transaksi_pembelian ORDER BY tanggal DESC")
+        rows = c.fetchall()
+
+        for row in rows:
+            self.tree_kanan.insert("", tk.END, values=row)
+
+        conn.close()
