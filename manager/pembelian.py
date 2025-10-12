@@ -300,13 +300,3 @@ class PembelianPage(tk.Frame):
 
         conn.close()
 
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    class dummy:
-        def show_frame(self, frame):
-            pass
-    
-    app = PembelianPage(root, dummy())
-    app.pack()
-    root.mainloop()
