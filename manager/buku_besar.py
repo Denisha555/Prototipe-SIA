@@ -44,7 +44,7 @@ class BukuBesarPage(tk.Frame):
         self.entry_tahun = ttk.Entry(form_frame, width=30)
         self.entry_tahun.grid(row=2, column=1, padx=5, pady=5, sticky="w")
         
-        ttk.Button(form_frame, text="Tampilkan Buku Besar", command=self.show_buku_besar).grid(
+        ttk.Button(form_frame, text="Tampilkan", command=self.show_buku_besar).grid(
             row=3, column=0, columnspan=2, pady=10
         )
 

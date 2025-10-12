@@ -38,9 +38,9 @@ class JurnalUmumPage(tk.Frame):
         self.tree.heading("kode_akun", text="Kode Akun")
         self.tree.column("nama_akun", width=200, anchor=tk.W)
         self.tree.heading("nama_akun", text="Nama Akun")
-        self.tree.column("debit", width=140, anchor=tk.E)
+        self.tree.column("debit", width=140, anchor=tk.CENTER)
         self.tree.heading("debit", text="Debit (Rp)")
-        self.tree.column("kredit", width=140, anchor=tk.E)
+        self.tree.column("kredit", width=140, anchor=tk.CENTER)
         self.tree.heading("kredit", text="Kredit (Rp)")
         
         ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")

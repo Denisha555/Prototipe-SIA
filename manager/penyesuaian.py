@@ -3,133 +3,115 @@ from tkinter import ttk, messagebox
 import sqlite3
 from datetime import date
 
+def cek_nomor_akun(nama_akun):
+    conn = sqlite3.connect("data_keuangan.db")
+    c = conn.cursor()
+    c.execute("SELECT kode_akun FROM akun WHERE nama_akun = ?", (nama_akun,))
+    akun = c.fetchone()
+    conn.close()
+    return akun[0] if akun else None
+
+
 class PenyesuaianPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-        ttk.Label(self, text="🧾 Penyesuaian", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
+        ttk.Label(self, text="🧾 Penyesuaian", font=("Helvetica", 18, "bold")).grid(
+            row=0, column=0, columnspan=2, pady=15
+        )
 
         # === Form Input ===
-        row_data = 1
-        ttk.Label(self, text="Tanggal:").grid(row=row_data, column=0, sticky="e", padx=10, pady=5)
-        self.entry_tanggal = ttk.Entry(self, width=30, state="readonly")
-        self.entry_tanggal.grid(row=row_data, column=1, sticky="w", padx=10, pady=5)
+        ttk.Label(self, text="Tanggal:").grid(row=1, column=0, sticky="e", padx=10, pady=5)
+        self.entry_tanggal = ttk.Entry(self, width=30)
+        self.entry_tanggal.grid(row=1, column=1, sticky="w", padx=10, pady=5)
         self.entry_tanggal.insert(0, date.today().strftime("%Y-%m-%d"))
+        self.entry_tanggal.config(state="readonly")
 
-        row_data =+1
-        ttk.Label(self, text="Akun Debit:").grid(row=row_data, column=0, sticky="e", padx=10, pady=5)
-        self.combo_debit = ttk.Combobox(self, width=27, state="readonly")
-        self.combo_debit.grid(row=row_data, column=1, sticky="w", padx=10, pady=5)
+        ttk.Label(self, text="Akun:").grid(row=2, column=0, sticky="e", padx=10, pady=5)
+        self.combo_akun = ttk.Combobox(self, width=27, state="readonly")
+        self.combo_akun.grid(row=2, column=1, sticky="w", padx=10, pady=5)
 
-        row_data =+1
-        ttk.Label(self, text="Akun Kredit:").grid(row=row_data, column=0, sticky="e", padx=10, pady=5)
-        self.combo_kredit = ttk.Combobox(self, width=27, state="readonly")
-        self.combo_kredit.grid(row=row_data, column=1, sticky="w", padx=10, pady=5)
-
-        row_data =+1
-        ttk.Label(self, text="Nominal (Rp):").grid(row=row_data, column=0, sticky="e", padx=10, pady=5)
+        ttk.Label(self, text="Nominal (Rp):").grid(row=3, column=0, sticky="e", padx=10, pady=5)
         self.entry_nominal = ttk.Entry(self, width=30)
-        self.entry_nominal.grid(row=row_data, column=1, sticky="w", padx=10, pady=5)
+        self.entry_nominal.grid(row=3, column=1, sticky="w", padx=10, pady=5)
 
-        ttk.Button(self, text="Tambah ke Daftar", command=self.tambah_ke_tabel).grid(row=6, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="💾 Simpan", command=self.simpan_ke_db).grid(
+            row=4, column=0, columnspan=2, pady=10
+        )
 
-        # === Tabel Data ===
-        self.tree = ttk.Treeview(self, columns=("tanggal", "keterangan", "debit", "kredit", "nominal"), show="headings", height=8)
-        self.tree.grid(row=7, column=0, columnspan=2, padx=15, pady=10, sticky="nsew")
+        ttk.Button(
+            self,
+            text="⬅️ Kembali ke Menu Utama",
+            command=lambda: controller.show_frame("Menu Utama Manager")
+        ).grid(row=5, column=0, columnspan=2, pady=5)
 
-        self.tree.heading("tanggal", text="Tanggal")
-        self.tree.heading("keterangan", text="Keterangan")
-        self.tree.heading("debit", text="Akun Debit")
-        self.tree.heading("kredit", text="Akun Kredit")
-        self.tree.heading("nominal", text="Nominal (Rp)")
-
-        self.tree.column("tanggal", width=100, anchor="center")
-        self.tree.column("keterangan", width=150)
-        self.tree.column("debit", width=120)
-        self.tree.column("kredit", width=120)
-        self.tree.column("nominal", width=100, anchor="e")
-
-        # === Tombol Simpan & Navigasi ===
-        ttk.Button(self, text="💾 Simpan ke Database", command=self.simpan_ke_db).grid(row=8, column=0, columnspan=2, pady=10)
-        ttk.Button(self, text="◀️ Kembali ke Menu", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=9, column=0, columnspan=2, pady=5)
-
-        # Load daftar akun dari database
         self.load_akun()
 
     def load_akun(self):
-        """Ambil daftar akun dari tabel akun"""
+        """Ambil daftar akun tertentu dari tabel akun"""
         conn = sqlite3.connect("data_keuangan.db")
         c = conn.cursor()
-        c.execute("SELECT kode_akun, nama_akun FROM akun")
+        c.execute("SELECT kode_akun, nama_akun FROM akun WHERE kode_akun IN ('113', '121')")
         akun_list = [f"{row[0]} - {row[1]}" for row in c.fetchall()]
         conn.close()
+        self.combo_akun["values"] = akun_list
 
-        self.combo_debit["values"] = akun_list
-        self.combo_kredit["values"] = akun_list
-
-    def tambah_ke_tabel(self):
+    def simpan_ke_db(self):
         tanggal = self.entry_tanggal.get().strip()
-        keterangan = self.entry_keterangan.get().strip()
-        debit = self.combo_debit.get().strip()
-        kredit = self.combo_kredit.get().strip()
-        nominal = self.entry_nominal.get().strip()
+        akun = self.combo_akun.get().strip()
+        nominal_str = self.entry_nominal.get().strip()
 
-        if not all([tanggal, keterangan, debit, kredit, nominal]):
-            messagebox.showerror("Error", "Semua kolom wajib diisi!")
+        if not akun or not nominal_str:
+            messagebox.showerror("Error", "Semua field harus diisi!")
             return
 
         try:
-            float(nominal)
+            nominal = float(nominal_str)
         except ValueError:
             messagebox.showerror("Error", "Nominal harus berupa angka!")
             return
 
-        self.tree.insert("", "end", values=(tanggal, keterangan, debit, kredit, nominal))
-
-        # Kosongkan input setelah tambah
-        self.entry_keterangan.delete(0, tk.END)
-        self.entry_nominal.delete(0, tk.END)
-
-    def simpan_ke_db(self):
         conn = sqlite3.connect("data_keuangan.db")
         c = conn.cursor()
 
-        rows = self.tree.get_children()
-        if not rows:
-            messagebox.showwarning("Peringatan", "Tidak ada data untuk disimpan.")
-            return
+        try:
+            if akun.startswith("113"):
+                # Penyesuaian Perlengkapan
+                entries = [
+                    ("Beban Perlengkapan", nominal, 0),
+                    ("Perlengkapan", 0, nominal)
+                ]
+            elif akun.startswith("121"):
+                # Penyesuaian Penyusutan Peralatan
+                entries = [
+                    ("Beban Penyusutan Peralatan", nominal, 0),
+                    ("Akumulasi Penyusutan Peralatan", 0, nominal)
+                ]
+            else:
+                messagebox.showerror("Error", "Akun tidak dikenali untuk penyesuaian!")
+                conn.close()
+                return
 
-        for row in rows:
-            tanggal, keterangan, debit, kredit, nominal = self.tree.item(row)["values"]
-            nominal = float(nominal)
+            for nama_akun, debit, kredit in entries:
+                kode_akun = cek_nomor_akun(nama_akun)
+                if not kode_akun:
+                    messagebox.showerror("Error", f"Akun '{nama_akun}' tidak ditemukan di database.")
+                    conn.close()
+                    return
 
-            # Ambil kode akun dari combo (misal "111 - Kas" → ambil "111")
-            debit_kode = debit.split(" - ")[0]
-            kredit_kode = kredit.split(" - ")[0]
+                c.execute("""
+                    INSERT INTO transaksi_penyesuaian (tanggal, kode_akun, debit, kredit)
+                    VALUES (?, ?, ?, ?)
+                """, (tanggal, kode_akun, debit, kredit))
 
-            # Simpan dua baris: satu debit, satu kredit
-            c.execute("""
-                INSERT INTO jurnal_umum_detail (tanggal, kode_akun, keterangan, debit, kredit)
-                VALUES (?, ?, ?, ?, ?)
-            """, (tanggal, debit_kode, keterangan, nominal, 0))
-            c.execute("""
-                INSERT INTO jurnal_umum_detail (tanggal, kode_akun, keterangan, debit, kredit)
-                VALUES (?, ?, ?, ?, ?)
-            """, (tanggal, kredit_kode, keterangan, 0, nominal))
+            conn.commit()
+            messagebox.showinfo("Sukses", "Data penyesuaian berhasil disimpan!")
 
-        conn.commit()
-        conn.close()
+            self.entry_nominal.delete(0, tk.END)
+            self.combo_akun.set("")
 
-        messagebox.showinfo("Sukses", "penyesuaian berhasil disimpan.")
-        for row in rows:
-            self.tree.delete(row)
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    class dummy:
-        def show_frame(self, frame_name):
-            pass
-    app = PenyesuaianPage(root, dummy())
-    app.pack()
-    app.mainloop()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error Database", str(e))
+        finally:
+            conn.close()

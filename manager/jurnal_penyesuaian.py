@@ -12,7 +12,7 @@ class JurnalPenyesuaianPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        ttk.Label(self, text="📘 Jurnal Umum", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
+        ttk.Label(self, text="📘 Jurnal Penyesuaian", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
         bulan_list = list(bulan_map.keys())
 
@@ -27,7 +27,7 @@ class JurnalPenyesuaianPage(tk.Frame):
         ttk.Button(self, text="Tampilkan", command=self.load_laporan).grid(row=3, column=0, columnspan=2, pady=10)
 
         # Treeview untuk jurnal umum
-        self.tree = ttk.Treeview(self, columns=("tanggal", "keterangan", "kode_akun", "nama_akun", "debit", "kredit"), show="headings", height=15)
+        self.tree = ttk.Treeview(self, columns=("tanggal", "keterangan", "kode_akun", "debit", "kredit"), show="headings", height=15)
         self.tree.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
         self.tree.column("tanggal", width=70, anchor=tk.CENTER)
@@ -36,30 +36,13 @@ class JurnalPenyesuaianPage(tk.Frame):
         self.tree.heading("keterangan", text="Keterangan")
         self.tree.column("kode_akun", width=70, anchor=tk.CENTER)
         self.tree.heading("kode_akun", text="Kode Akun")
-        self.tree.column("nama_akun", width=200, anchor=tk.W)
-        self.tree.heading("nama_akun", text="Nama Akun")
-        self.tree.column("debit", width=140, anchor=tk.E)
+        self.tree.column("debit", width=140, anchor=tk.CENTER)
         self.tree.heading("debit", text="Debit (Rp)")
-        self.tree.column("kredit", width=140, anchor=tk.E)
+        self.tree.column("kredit", width=140, anchor=tk.CENTER)
         self.tree.heading("kredit", text="Kredit (Rp)")
         
         ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
                    ).grid(row=6, column=0, columnspan=2, pady=5)
-        
-        today = datetime.now()
-        current_year = today.strftime("%Y")
-        current_month_num = today.strftime("%m")
-        
-        current_month_name = None
-        for name, num in bulan_map.items():
-            if num == current_month_num:
-                current_month_name = name
-                break
-                
-        if current_month_name:
-            self.combo_bulan.set(current_month_name)
-        
-        self.entry_tahun.insert(0, current_year)
 
     def _connect_db(self):
         return sqlite3.connect('data_keuangan.db')
