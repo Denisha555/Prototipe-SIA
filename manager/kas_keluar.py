@@ -51,6 +51,9 @@ class KasKeluarPage(tk.Frame):
 
         ttk.Button(frame_kiri, text="Simpan", command=self.simpan_transaksi).grid(row=4, column=0, columnspan=2, pady=10)
 
+        ttk.Button(frame_kiri, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+                   ).grid(row=6, column=0, columnspan=2, pady=5)
+
         frame_kanan = ttk.LabelFrame(self, text="Daftar Kas Keluar")
         frame_kanan.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
         self.tree_kanan = ttk.Treeview(frame_kanan, columns=("id", "tanggal", "keterangan", "nominal"), show="headings", height=10)

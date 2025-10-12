@@ -36,13 +36,13 @@ class PenyesuaianPage(tk.Frame):
         self.entry_nominal = ttk.Entry(self, width=30)
         self.entry_nominal.grid(row=3, column=1, sticky="w", padx=10, pady=5)
 
-        ttk.Button(self, text="💾 Simpan", command=self.simpan_ke_db).grid(
+        ttk.Button(self, text="Simpan", command=self.simpan_ke_db).grid(
             row=4, column=0, columnspan=2, pady=10
         )
 
         ttk.Button(
             self,
-            text="⬅️ Kembali ke Menu Utama",
+            text="Kembali ke Menu Utama",
             command=lambda: controller.show_frame("Menu Utama Manager")
         ).grid(row=5, column=0, columnspan=2, pady=5)
 

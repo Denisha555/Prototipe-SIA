@@ -4,6 +4,15 @@ import sqlite3
 from function.bulan_map import bulan_map
 from datetime import datetime
 
+def _format_rupiah(amount):
+    try:
+        amount = int(amount)
+        if amount == 0:
+            return ""
+        return f"{amount:,.0f}".replace(",", ".")
+    except (TypeError, ValueError):
+        return "-"
+
 
 class JurnalPenyesuaianPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -37,6 +46,8 @@ class JurnalPenyesuaianPage(tk.Frame):
         ttk.Button(
             self, text="Tampilkan", command=self.load_laporan
         ).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+                    ).grid(row=6, column=0, columnspan=2, pady=5)
 
         # === Treeview untuk menampilkan data ===
         self.tree = ttk.Treeview(
@@ -87,6 +98,10 @@ class JurnalPenyesuaianPage(tk.Frame):
             # Hapus data lama
             for item in self.tree.get_children():
                 self.tree.delete(item)
+            
+            total_debit = 0
+            total_kredit = 0
+            last_ref_id = None
 
             if not rows:
                 messagebox.showinfo("Info", "Tidak ada data penyesuaian untuk bulan ini.")
@@ -95,12 +110,35 @@ class JurnalPenyesuaianPage(tk.Frame):
             # Tambah data baru
             for row in rows:
                 tanggal, kode_akun, nama_akun, debit, kredit = row
-                debit_str = f"{debit:,.0f}" if debit else "-"
-                kredit_str = f"{kredit:,.0f}" if kredit else "-"
+                debit = debit if debit is not None else 0
+                kredit = kredit if kredit is not None else 0
+
+                if kredit > 0:
+                    nama_akun = f"        {nama_akun}"
+                
+                debit_str = _format_rupiah(debit)
+                kredit_str = _format_rupiah(kredit)
+
                 self.tree.insert(
                     "", "end", values=(tanggal, kode_akun, nama_akun, debit_str, kredit_str)
                 )
 
+                total_debit += debit
+                total_kredit += kredit
+
+            # Baris Total
+            self.tree.insert("", "end", values=(
+                "", "", "TOTAL", _format_rupiah(total_debit), _format_rupiah(total_kredit)
+            ), tags=('total',))
+            self.tree.tag_configure('total', font=('Helvetica', 10, 'bold'), background='#E0F7FA')
+            
+            if total_debit != total_kredit:
+                 messagebox.showwarning("Peringatan", "Jurnal Penyesuaian TIDAK SEIMBANG! Mohon cek transaksi Anda.")
+            else:
+                 messagebox.showinfo("Sukses", "Jurnal Penyesuaian berhasil dimuat dan SEIMBANG.")
+
+
         except Exception as e:
             messagebox.showerror("Error", f"Gagal memuat data: {e}")
             print(e)
+            

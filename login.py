@@ -6,7 +6,8 @@ from function.initialize_db import initialize_db
 from manager.jurnal_umum import JurnalUmumPage
 from manager.buku_besar import BukuBesarPage
 from manager.neraca_saldo import NeracaSaldoPage
-# from manager.worksheet import WorksheetPage
+from manager.worksheet import WorksheetPage
+from manager.laba_rugi import LabaRugiPage
 from manager.jurnal_penutup import JurnalPenutupPage
 from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
 from manager.penyesuaian import PenyesuaianPage
@@ -80,7 +81,8 @@ class LoginPage(tk.Tk):
                 "Jurnal Umum": JurnalUmumPage,
                 "Buku Besar": BukuBesarPage,
                 "Neraca Saldo": NeracaSaldoPage,
-                # "Worksheet": WorksheetPage,
+                "Worksheet": WorksheetPage,
+                "Laba Rugi": LabaRugiPage,
                 "Jurnal Penutup": JurnalPenutupPage,
                 "Penyesuaian": PenyesuaianPage,
                 "Jurnal Penyesuaian": JurnalPenyesuaianPage,

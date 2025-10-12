@@ -17,7 +17,13 @@ def _connect_db():
     return sqlite3.connect('data_keuangan.db')
 
 def _format_rupiah(amount):
-    return f"Rp{amount:,.0f}"
+    try:
+        amount = int(amount)
+        if amount == 0:
+            return ""
+        return f"{amount:,}".replace(",", ".")
+    except (TypeError, ValueError):
+        return ""
 
 class NeracaSaldoPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -71,9 +77,9 @@ class NeracaSaldoPage(tk.Frame):
         self.tree.column("akun", width=250, anchor="w")
         self.tree.heading("akun", text="Nama Akun")
         self.tree.column("debit", width=150, anchor="e")
-        self.tree.heading("debit", text="Saldo Debit (Rp)")
+        self.tree.heading("debit", text="Saldo Debit") # Menghilangkan (Rp)
         self.tree.column("kredit", width=150, anchor="e")
-        self.tree.heading("kredit", text="Saldo Kredit (Rp)")
+        self.tree.heading("kredit", text="Saldo Kredit") # Menghilangkan (Rp)
 
         vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
         vsb.grid(row=0, column=1, sticky="ns")
@@ -137,19 +143,21 @@ class NeracaSaldoPage(tk.Frame):
                 debit_saldo = 0
                 kredit_saldo = 0
 
+                # Penentuan saldo akhir
                 if net_balance > 0:
                     debit_saldo = net_balance
                 elif net_balance < 0:
                     kredit_saldo = abs(net_balance)
 
-                if mutasi_debit > 0 or mutasi_kredit > 0:
+                # Hanya tampilkan akun yang memiliki saldo
+                if debit_saldo > 0 or kredit_saldo > 0:
                     ada_data = True
                     
                     self.tree.insert("", "end", values=(
                         kode_akun,
                         nama_akun,
-                        _format_rupiah(debit_saldo) if debit_saldo > 0 else "",
-                        _format_rupiah(kredit_saldo) if kredit_saldo > 0 else ""
+                        _format_rupiah(debit_saldo),
+                        _format_rupiah(kredit_saldo)
                     ))
 
                     total_debit_ns += debit_saldo
@@ -170,7 +178,7 @@ class NeracaSaldoPage(tk.Frame):
                     messagebox.showinfo("Sukses", "Neraca Saldo berhasil dimuat dan SEIMBANG.")
 
             else:
-                messagebox.showinfo("Info", "Tidak ada data transaksi untuk periode ini.")
+                messagebox.showinfo("Info", "Tidak ada data transaksi yang menghasilkan saldo untuk periode ini.")
 
 
         except sqlite3.Error as e:
