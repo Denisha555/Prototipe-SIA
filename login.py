@@ -117,6 +117,9 @@ class LoginPage(tk.Tk):
         else:
             messagebox.showerror("Gagal", "Username atau password salah.")
 
+        self.entry_username.delete(0, tk.END)
+        self.entry_password.delete(0, tk.END)
+
         conn.close()
 
 

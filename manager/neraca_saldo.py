@@ -57,7 +57,7 @@ class NeracaSaldoPage(tk.Frame):
         self.entry_tahun.grid(row=0, column=3, padx=5, pady=5, sticky="w")
         self.entry_tahun.insert(0, str(datetime.now().year))
 
-        ttk.Button(form_frame, text="Tampilkan Neraca Saldo", command=self.load_neraca_saldo).grid(row=0, column=4, padx=15)
+        ttk.Button(form_frame, text="Tampilkan", command=self.load_neraca_saldo).grid(row=0, column=4, padx=15)
 
         tree_frame = ttk.Frame(self)
         tree_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
