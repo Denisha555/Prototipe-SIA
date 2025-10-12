@@ -88,21 +88,23 @@ class PembelianPage(tk.Frame):
         frame_kanan = ttk.LabelFrame(self, text="Daftar Transaksi Pembelian")
         frame_kanan.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
         self.tree_kanan = ttk.Treeview(frame_kanan, columns=("id", "tanggal", "keterangan", "total"), show="headings", height=10)
-        self.tree_kanan.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
+        self.tree_kanan.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
         self.tree_kanan.column("id", width=0, stretch=tk.NO)
         self.tree_kanan.heading("id", text="ID")
         self.tree_kanan.column("tanggal", width=100, anchor="center")
         self.tree_kanan.heading("tanggal", text="Tanggal")
-        self.tree_kanan.column("keterangan", width=200, anchor="w")
+        self.tree_kanan.column("keterangan", width=200, anchor="center")
         self.tree_kanan.heading("keterangan", text="Keterangan")
-        self.tree_kanan.column("total", width=150, anchor="e")
+        self.tree_kanan.column("total", width=150, anchor="center")
         self.tree_kanan.heading("total", text="Total (Rp)")
 
         # Scrollbar untuk Treeview
         vsb_kanan = ttk.Scrollbar(frame_kanan, orient="vertical", command=self.tree_kanan.yview)
-        vsb_kanan.grid(row=1, column=2, sticky="nse", padx=(0, 10))
+        vsb_kanan.grid(row=0, column=2, sticky="nse", padx=(0, 10))
         self.tree_kanan.configure(yscrollcommand=vsb_kanan.set)
+
+        self.load_daftar_transaksi()
         
     def _get_debit_accounts(self):
         """Mengambil akun yang relevan untuk pembelian (Aset Debit dan Semua Beban)."""
@@ -290,10 +292,21 @@ class PembelianPage(tk.Frame):
         conn = _connect_db()
         c = conn.cursor()
 
-        c.execute("SELECT transaksi_pembelian_id, tanggal, total FROM transaksi_pembelian ORDER BY tanggal DESC")
+        c.execute("SELECT transaksi_pembelian_id, tanggal, total, kategori FROM transaksi_pembelian ORDER BY tanggal DESC")
         rows = c.fetchall()
 
         for row in rows:
-            self.tree_kanan.insert("", tk.END, values=row)
+            self.tree_kanan.insert("", tk.END, values=(row[0], row[1], row[3], row[2]))
 
         conn.close()
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    class dummy:
+        def show_frame(self, frame):
+            pass
+    
+    app = PembelianPage(root, dummy())
+    app.pack()
+    root.mainloop()
