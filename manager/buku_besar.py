@@ -113,7 +113,6 @@ class BukuBesarPage(tk.Frame):
         tree.configure(yscrollcommand=vsb.set)
         vsb.grid(row=2, column=1, sticky="ns")
 
-        tree.insert("", "end", values=("", "Pilih Akun, Bulan, dan Tahun untuk menampilkan Buku Besar...", "", "", ""))
         tree.tag_configure('info', foreground='gray')
         
         self.current_treeviews = [tree]

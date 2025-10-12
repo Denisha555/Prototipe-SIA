@@ -9,6 +9,7 @@ from manager.neraca_saldo import NeracaSaldoPage
 # from manager.worksheet import WorksheetPage
 from manager.jurnal_penutup import JurnalPenutupPage
 from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
+from manager.penyesuaian import PenyesuaianPage
 from pencatatan import PencatatanPage
 from pelaporan import PelaporanPage
 from grafik import GrafikPage
@@ -16,8 +17,8 @@ from pajak import PajakPage
 from penggajian import PenggajianPage
 from staff.menu_staff import MenuStaffPage
 from manager.menu_manager import MenuManagerPage
-from staff.pembelian import PembelianPage as PembelianPageStaff
-from manager.pembelian import PembelianPage as PembelianPageManager
+from staff.kas_keluar import KasKeluarPage as KasKeluarPageStaff
+from manager.kas_keluar import KasKeluarPage as KasKeluarPageManager
 from staff.jasa import JasaPage as JasaPageStaff
 from manager.jasa import JasaPage as JasaPageManager
 from staff.penjualan import PenjualanPage as PenjualanPageStaff
@@ -71,16 +72,17 @@ class LoginPage(tk.Tk):
                 "Menu Utama Staff": MenuStaffPage,
                 "Input Jasa Staff": JasaPageStaff,
                 "Input Penjualan": PenjualanPageStaff,
-                "Input Pembelian": PembelianPageStaff,
+                "Input Kas Keluar": KasKeluarPageStaff,
                 "Menu Utama Manager": MenuManagerPage,
                 "Input Edit Penjualan": PenjualanPageManager,
-                "Input Edit Pembelian": PembelianPageManager,
+                "Input Edit Kas Keluar": KasKeluarPageManager,
                 "Input Jasa Manager": JasaPageManager,
                 "Jurnal Umum": JurnalUmumPage,
                 "Buku Besar": BukuBesarPage,
                 "Neraca Saldo": NeracaSaldoPage,
                 # "Worksheet": WorksheetPage,
                 "Jurnal Penutup": JurnalPenutupPage,
+                "Penyesuaian": PenyesuaianPage,
                 "Jurnal Penyesuaian": JurnalPenyesuaianPage,
                 "Pencatatan": PencatatanPage,
                 "Pelaporan": PelaporanPage,

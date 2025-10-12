@@ -48,8 +48,8 @@ class MenuStaffPage(tk.Frame):
             column=1, row=0, padx=20, pady=20, sticky="nsew"
         )
 
-        ttk.Button(menu_frame, text="💰 Input Pembelian", style="Menu.TButton",
-                   command=lambda: controller.show_frame("Input Pembelian")).grid(
+        ttk.Button(menu_frame, text="💰 Input Pengeluaran", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Input Kas Keluar")).grid(
             column=0, row=1, padx=20, pady=20, sticky="nsew"
         )
 

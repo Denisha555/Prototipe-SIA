@@ -45,21 +45,12 @@ def initialize_db(self):
                   FOREIGN KEY(jasa_id) REFERENCES jasa (id),
                   FOREIGN KEY(transaksi_penjualan_id) REFERENCES TRANSAKSI_PENJUALAN (transaksi_penjualan_id))''')
         
-        c.execute('''CREATE TABLE IF NOT EXISTS transaksi_pembelian (
-                  transaksi_pembelian_id TEXT PRIMARY KEY,
+        c.execute('''CREATE TABLE IF NOT EXISTS transaksi_kas_keluar (
+                  transaksi_kas_keluar_id TEXT PRIMARY KEY,
                   tanggal DATE,
                   kategori TEXT,
-                  total INTEGER,
+                  nominal INTEGER,
                   keterangan TEXT)
-                  ''')
-        
-        c.execute('''CREATE TABLE IF NOT EXISTS detail_transaksi_pembelian (
-                  detail_pembelian_id TEXT PRIMARY KEY,
-                  transaksi_pembelian_id TEXT,
-                  keterangan TEXT,
-                  harga INTEGER,
-                  jumlah INTEGER,
-                  FOREIGN KEY(transaksi_pembelian_id) REFERENCES TRANSAKSI_PEMBELIAN (transaksi_pembelian_id))
                   ''')
         
         c.execute('''CREATE TABLE IF NOT EXISTS akun (
@@ -96,7 +87,6 @@ def initialize_db(self):
         c.execute("SELECT COUNT(*) FROM akun")
         if c.fetchone()[0] == 0:
             c.executemany("INSERT INTO akun (kode_akun, nama_akun, kategori, saldo_normal) VALUES (?, ?, ?, ?)", initial_coa)
-
 
         conn.commit()
         conn.close()

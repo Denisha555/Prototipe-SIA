@@ -36,21 +36,28 @@ class MenuManagerPage(tk.Frame):
         data_frame.grid_columnconfigure(0, weight=1)
         
         row_data = 0
-        ttk.Button(data_frame, text="✅ Jasa (Kelola Jasa)", style="Menu.TButton",
+        ttk.Button(data_frame, text="✅ Kelola Jasa", style="Menu.TButton",
                    command=lambda: controller.show_frame("Input Jasa Manager")).grid(
                        column=0, row=row_data, padx=10, pady=10, sticky="ew"
                    )
         row_data += 1
-        ttk.Button(data_frame, text="🛒 Penjualan (Kelola Penjualan)", style="Menu.TButton",
+        ttk.Button(data_frame, text="🛒 Kelola Penjualan", style="Menu.TButton",
                    command=lambda: controller.show_frame("Input Edit Penjualan")).grid(
                        column=0, row=row_data, padx=10, pady=10, sticky="ew"
                    )
         
         row_data += 1
-        ttk.Button(data_frame, text="🛒 Pembelian (Kelola Pembelian)", style="Menu.TButton",
-                   command=lambda: controller.show_frame("Input Edit Pembelian")).grid(
+        ttk.Button(data_frame, text="🛒 Kelola Pengeluaran", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Input Edit Kas Keluar")).grid(
                        column=0, row=row_data, padx=10, pady=10, sticky="ew"
                    )
+        
+        row_data += 1
+        ttk.Button(data_frame, text="🧾 Penyesuaian", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Input Edit Karyawan")).grid(
+                       column=0, row=row_data, padx=10, pady=10, sticky="ew"
+                   )
+                    
         # Gaji & Pajak kalau ada
 
         # FRAME SIKLUS AKUNTANSI??
