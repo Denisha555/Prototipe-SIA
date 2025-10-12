@@ -86,7 +86,7 @@ class MenuManagerPage(tk.Frame):
                        column=0, row=row_siklus, padx=10, pady=10, sticky="ew"
                    )
         row_siklus += 1
-        ttk.Button(siklus_frame, text="🗂️ Kertas Kerja (Worksheet)", style="Menu.TButton",
+        ttk.Button(siklus_frame, text="🗂️ Neraca Lajur (Worksheet)", style="Menu.TButton",
                    command=lambda: controller.show_frame("Worksheet")).grid(
                        column=0, row=row_siklus, padx=10, pady=10, sticky="ew"
                    )

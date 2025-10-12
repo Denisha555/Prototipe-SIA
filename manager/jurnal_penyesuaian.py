@@ -64,8 +64,11 @@ class JurnalPenyesuaianPage(tk.Frame):
         self.tree.heading("debit", text="Debit (Rp)")
         self.tree.heading("kredit", text="Kredit (Rp)")
 
-        for col in ("tanggal", "kode_akun", "nama_akun", "debit", "kredit"):
-            self.tree.column(col, width=150, anchor="center")
+        self.tree.column("tanggal", width=150, anchor="center")
+        self.tree.column("kode_akun", width=150, anchor="center")
+        self.tree.column("nama_akun", width=150, anchor="w")
+        self.tree.column("debit", width=130, anchor="e")
+        self.tree.column("kredit", width=130, anchor="e")
 
         # Scrollbar
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)

@@ -143,7 +143,7 @@ class LabaRugiPage(tk.Frame):
         )
 
         self.tree.column("nama", width=350, anchor="w")
-        self.tree.heading("nama", text="Uraian")
+        self.tree.heading("nama", text="Rincian")
         self.tree.column("jumlah", width=150, anchor="e")
         self.tree.heading("jumlah", text="Jumlah (Rp)")
 

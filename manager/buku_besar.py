@@ -97,15 +97,15 @@ class BukuBesarPage(tk.Frame):
         tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
         parent_frame.grid_rowconfigure(2, weight=1)
         
-        tree.column("tanggal", width=100, anchor=tk.CENTER)
+        tree.column("tanggal", width=150, anchor=tk.CENTER)
         tree.heading("tanggal", text="Tanggal")
-        tree.column("keterangan", width=350, anchor=tk.W)
+        tree.column("keterangan", width=240, anchor=tk.W)
         tree.heading("keterangan", text="Keterangan")
-        tree.column("debit", width=130, anchor=tk.E)
+        tree.column("debit", width=150, anchor=tk.E)
         tree.heading("debit", text="Debit (Rp)")
-        tree.column("kredit", width=130, anchor=tk.E)
+        tree.column("kredit", width=150, anchor=tk.E)
         tree.heading("kredit", text="Kredit (Rp)")
-        tree.column("saldo", width=150, anchor=tk.E)
+        tree.column("saldo", width=170, anchor=tk.E)
         tree.heading("saldo", text="Saldo (Rp)")
         
         # Scrollbar
