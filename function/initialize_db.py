@@ -77,7 +77,7 @@ def initialize_db(self):
                     kode_akun TEXT NOT NULL,
                     keterangan TEXT,
                     debit REAL DEFAULT 0,
-                    kredit TEXT DEFAULT 0,
+                    kredit REAL DEFAULT 0,
                     FOREIGN KEY (kode_akun) REFERENCES akun(kode_akun))
                 ''')
         
@@ -101,6 +101,6 @@ def initialize_db(self):
         c.execute("SELECT COUNT(*) FROM akun")
         if c.fetchone()[0] == 0:
             c.executemany("INSERT INTO akun (kode_akun, nama_akun, kategori, saldo_normal) VALUES (?, ?, ?, ?)", initial_coa)
-        
+
         conn.commit()
         conn.close()

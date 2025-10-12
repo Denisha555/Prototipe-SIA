@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
-from function.bulan_map import bulan_map 
+from function.bulan_map import bulan_map
 from datetime import datetime
+
 
 class JurnalPenyesuaianPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -12,125 +13,94 @@ class JurnalPenyesuaianPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        ttk.Label(self, text="📘 Jurnal Penyesuaian", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
+        ttk.Label(
+            self, text="📘 Jurnal Penyesuaian", font=("Helvetica", 18, "bold")
+        ).grid(row=0, column=0, columnspan=2, pady=15)
 
         bulan_list = list(bulan_map.keys())
 
         ttk.Label(self, text="Bulan: ").grid(row=1, column=0, sticky="e", pady=5)
-        self.combo_bulan = ttk.Combobox(self, width=27, state="readonly", values=bulan_list)
+        self.combo_bulan = ttk.Combobox(
+            self, width=27, state="readonly", values=bulan_list
+        )
         self.combo_bulan.grid(row=1, column=1, sticky="w", pady=5)
+
+        bulan_ini = datetime.now().month
+        bulan_nama_default = list(bulan_map.keys())[bulan_ini - 1]
+        self.combo_bulan.set(bulan_nama_default)
 
         ttk.Label(self, text="Tahun: ").grid(row=2, column=0, sticky="e", pady=5)
         self.entry_tahun = ttk.Entry(self, width=30)
         self.entry_tahun.grid(row=2, column=1, sticky="w", pady=5)
+        self.entry_tahun.insert(0, datetime.now().year)
 
-        ttk.Button(self, text="Tampilkan", command=self.load_laporan).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(
+            self, text="Tampilkan", command=self.load_laporan
+        ).grid(row=3, column=0, columnspan=2, pady=10)
 
-        # Treeview untuk jurnal umum
-        self.tree = ttk.Treeview(self, columns=("tanggal", "keterangan", "kode_akun", "debit", "kredit"), show="headings", height=15)
-        self.tree.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        # === Treeview untuk menampilkan data ===
+        self.tree = ttk.Treeview(
+            self,
+            columns=("tanggal", "kode_akun", "nama_akun", "debit", "kredit"),
+            show="headings",
+            height=15,
+        )
+        self.tree.grid(row=4, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
 
-        self.tree.column("tanggal", width=70, anchor=tk.CENTER)
         self.tree.heading("tanggal", text="Tanggal")
-        self.tree.column("keterangan", width=300, anchor=tk.W) 
-        self.tree.heading("keterangan", text="Keterangan")
-        self.tree.column("kode_akun", width=70, anchor=tk.CENTER)
         self.tree.heading("kode_akun", text="Kode Akun")
-        self.tree.column("debit", width=140, anchor=tk.CENTER)
+        self.tree.heading("nama_akun", text="Nama Akun")
         self.tree.heading("debit", text="Debit (Rp)")
-        self.tree.column("kredit", width=140, anchor=tk.CENTER)
         self.tree.heading("kredit", text="Kredit (Rp)")
-        
-        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
-                   ).grid(row=6, column=0, columnspan=2, pady=5)
 
-    def _connect_db(self):
-        return sqlite3.connect('data_keuangan.db')
+        for col in ("tanggal", "kode_akun", "nama_akun", "debit", "kredit"):
+            self.tree.column(col, width=150, anchor="center")
 
-    def _format_rupiah(self, amount):
-        if amount is None or amount == 0:
-            return ""
-        return f"{int(amount):,.0f}".replace(",", "X").replace(".", ",").replace("X", ".") 
-    
-    def _get_bulan_angka(self, nama_bulan):
-        return bulan_map.get(nama_bulan, None)
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scrollbar.set)
+        scrollbar.grid(row=4, column=2, sticky="ns")
 
     def load_laporan(self):
-        for i in self.tree.get_children():
-            self.tree.delete(i)
+        bulan_nama = self.combo_bulan.get().strip()
+        tahun = self.entry_tahun.get().strip()
 
-        bulan = self.combo_bulan.get()
-        tahun = self.entry_tahun.get()
-
-        if not bulan or not tahun.isdigit() or len(tahun) != 4:
-            messagebox.showerror("Error", "Silakan pilih bulan dan isi tahun terlebih dahulu!")
+        if not bulan_nama or not tahun:
+            messagebox.showerror("Error", "Silakan pilih bulan dan isi tahun terlebih dahulu.")
             return
-
-        bulan_angka = self._get_bulan_angka(bulan)
-        if not bulan_angka:
-            messagebox.showerror("Error", "Nama bulan tidak valid.")
-            return
-
-        conn = self._connect_db()
-        c = conn.cursor()
-        total_debit = 0
-        total_kredit = 0
-
+        
         try:
+            bulan = bulan_map.get(bulan_nama)
+            conn = sqlite3.connect("data_keuangan.db")
+            c = conn.cursor()
             query = """
-                SELECT j.tanggal, j.transaksi_ref_id, j.keterangan,
-                    j.kode_akun, a.nama_akun, j.debit, j.kredit
-                FROM jurnal_umum_detail j
-                JOIN akun a ON j.kode_akun = a.kode_akun
-                WHERE strftime('%m', j.tanggal) = ? AND strftime('%Y', j.tanggal) = ?
-                ORDER BY j.tanggal, j.transaksi_ref_id, j.kredit DESC
+                SELECT t.tanggal, t.kode_akun, a.nama_akun, t.debit, t.kredit
+                FROM transaksi_penyesuaian t
+                JOIN akun a ON t.kode_akun = a.kode_akun
+                WHERE strftime('%m', t.tanggal) = ? AND strftime('%Y', t.tanggal) = ?
+                ORDER BY t.tanggal ASC
             """
-            c.execute(query, (bulan_angka, tahun))
-            results = c.fetchall()
+            c.execute(query, (bulan, tahun))
+            rows = c.fetchall()
+            conn.close()
 
-            if not results:
-                messagebox.showinfo("Info", f"Tidak ada data Jurnal Umum untuk {bulan} {tahun}.")
+            # Hapus data lama
+            for item in self.tree.get_children():
+                self.tree.delete(item)
+
+            if not rows:
+                messagebox.showinfo("Info", "Tidak ada data penyesuaian untuk bulan ini.")
                 return
 
-            last_ref_id = None
-            
-            for tanggal, ref_id, keterangan_transaksi, kode_akun, nama_akun, debit, kredit in results:
-                
-                if ref_id != last_ref_id:
-                    if last_ref_id is not None:
-                        self.tree.insert("", "end", values=("--", "", "", "", "", ""), tags=('separator',))
-                    last_ref_id = ref_id
-                
-                if kredit > 0:
-                    nama_akun = f"        {nama_akun}"
-                    
-                # Formatting Rupiah
-                formatted_debit = self._format_rupiah(debit) if debit > 0 else ""
-                formatted_kredit = self._format_rupiah(kredit) if kredit > 0 else ""
-                
-                total_debit += debit
-                total_kredit += kredit
+            # Tambah data baru
+            for row in rows:
+                tanggal, kode_akun, nama_akun, debit, kredit = row
+                debit_str = f"{debit:,.0f}" if debit else "-"
+                kredit_str = f"{kredit:,.0f}" if kredit else "-"
+                self.tree.insert(
+                    "", "end", values=(tanggal, kode_akun, nama_akun, debit_str, kredit_str)
+                )
 
-                # Masukkan data ke Treeview
-                self.tree.insert("", "end", values=(
-                    tanggal, 
-                    f"[{ref_id}] {keterangan_transaksi}", # Menampilkan ID referensi dan keterangan
-                    kode_akun, 
-                    nama_akun, 
-                    formatted_debit, 
-                    formatted_kredit
-                ))
-            
-            # Total
-            self.tree.insert("", "end", values=("", "", "", "TOTAL", self._format_rupiah(total_debit), self._format_rupiah(total_kredit)), tags=('total',))
-            
-            self.tree.tag_configure('total', font=('Helvetica', 10, 'bold'), background='#E0F7FA')
-            self.tree.tag_configure('separator', background='#EEEEEE')
-            
-            if round(total_debit) != round(total_kredit):
-                 messagebox.showwarning("Peringatan", "Jurnal tidak seimbang (Debit ≠ Kredit). Periksa data.")
-
-        except sqlite3.Error as e:
-            messagebox.showerror("Error Database", f"Gagal mengambil data Jurnal Umum: {e}")
-        finally:
-            conn.close()
+        except Exception as e:
+            messagebox.showerror("Error", f"Gagal memuat data: {e}")
+            print(e)
