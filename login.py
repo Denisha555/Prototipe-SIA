@@ -10,7 +10,8 @@ from manager.worksheet import WorksheetPage
 from manager.laba_rugi import LabaRugiPage
 from manager.jurnal_penutup import JurnalPenutupPage
 from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
-from manager.penyesuaian import PenyesuaianPage
+from manager.penyesuaian import PenyesuaianPage as PenyesuaianPageManager
+from staff.penyesuaian import PenyesuaianPage as PenyesuaianPageStaff
 from pencatatan import PencatatanPage
 from pelaporan import PelaporanPage
 from grafik import GrafikPage
@@ -74,6 +75,7 @@ class LoginPage(tk.Tk):
                 "Input Jasa Staff": JasaPageStaff,
                 "Input Penjualan": PenjualanPageStaff,
                 "Input Kas Keluar": KasKeluarPageStaff,
+                "Penyesuaian Staff": PenyesuaianPageStaff,
                 "Menu Utama Manager": MenuManagerPage,
                 "Input Edit Penjualan": PenjualanPageManager,
                 "Input Edit Kas Keluar": KasKeluarPageManager,
@@ -84,7 +86,7 @@ class LoginPage(tk.Tk):
                 "Worksheet": WorksheetPage,
                 "Laba Rugi": LabaRugiPage,
                 "Jurnal Penutup": JurnalPenutupPage,
-                "Penyesuaian": PenyesuaianPage,
+                "Penyesuaian Manager": PenyesuaianPageManager,
                 "Jurnal Penyesuaian": JurnalPenyesuaianPage,
                 "Pencatatan": PencatatanPage,
                 "Pelaporan": PelaporanPage,

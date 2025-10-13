@@ -43,7 +43,7 @@ class MenuStaffPage(tk.Frame):
             column=0, row=0, padx=20, pady=20, sticky="nsew"
         )
 
-        ttk.Button(menu_frame, text="🛍️ Input Penjualan", style="Menu.TButton",
+        ttk.Button(menu_frame, text="🛒 Input Penjualan", style="Menu.TButton",
                    command=lambda: controller.show_frame("Input Penjualan")).grid(
             column=1, row=0, padx=20, pady=20, sticky="nsew"
         )
@@ -53,9 +53,14 @@ class MenuStaffPage(tk.Frame):
             column=0, row=1, padx=20, pady=20, sticky="nsew"
         )
 
-        ttk.Button(menu_frame, text="◀️ Kembali ke Login", style="Danger.TButton",
-                   command=lambda: controller.show_frame("Login")).grid(
+        ttk.Button(menu_frame, text="✔️ Input Penyesuaian", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Penyesuaian Staff")).grid(
             column=1, row=1, padx=20, pady=20, sticky="nsew"
+        )
+
+        ttk.Button(menu_frame, text="Kembali Ke Login", style="Danger.TButton",
+                   command=lambda: controller.show_frame("Login")).grid(
+            column=0, row=2, columnspan=2, padx=300, pady=20, sticky="nsew"
         )
 
         # ✨ Footer kosong untuk spasi bawah
