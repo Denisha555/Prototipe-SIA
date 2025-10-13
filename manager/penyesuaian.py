@@ -17,6 +17,9 @@ class PenyesuaianPage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
         ttk.Label(self, text="🧾 Penyesuaian", font=("Helvetica", 18, "bold")).grid(
             row=0, column=0, columnspan=2, pady=15
         )
@@ -104,6 +107,11 @@ class PenyesuaianPage(tk.Frame):
                     INSERT INTO transaksi_penyesuaian (tanggal, kode_akun, debit, kredit)
                     VALUES (?, ?, ?, ?)
                 """, (tanggal, kode_akun, debit, kredit))
+
+                c.execute("""
+                    INSERT INTO jurnal_umum_detail (tanggal, kode_akun, keterangan, debit, kredit, jenis_jurnal)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (tanggal, kode_akun, nama_akun, debit, kredit, 'PENYESUAIAN'))
 
             conn.commit()
             messagebox.showinfo("Sukses", "Data penyesuaian berhasil disimpan!")

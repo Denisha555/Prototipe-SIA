@@ -54,7 +54,7 @@ class MenuManagerPage(tk.Frame):
         
         row_data += 1
         ttk.Button(data_frame, text="🧾 Penyesuaian", style="Menu.TButton",
-                   command=lambda: controller.show_frame("Penyesuaian")).grid(
+                   command=lambda: controller.show_frame("Penyesuaian Manager")).grid(
                        column=0, row=row_data, padx=10, pady=10, sticky="ew"
                    )
                     

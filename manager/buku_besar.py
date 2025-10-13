@@ -178,6 +178,7 @@ class BukuBesarPage(tk.Frame):
             ORDER BY tanggal ASC, id ASC
         """
         transactions = []
+
         try:
             c.execute(query, (kode_akun, bulan_num, year))
             transactions = c.fetchall()
@@ -185,6 +186,8 @@ class BukuBesarPage(tk.Frame):
             messagebox.showerror("Error Database", f"Gagal memuat transaksi bulanan: {e}")
         finally:
             conn.close()
+
+        
             
         return transactions
 
