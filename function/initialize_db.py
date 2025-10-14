@@ -68,6 +68,7 @@ def initialize_db(self):
                     keterangan TEXT,
                     debit REAL DEFAULT 0,
                     kredit REAL DEFAULT 0,
+                    jenis_jurnal TEXT DEFAULT "UMUM",
                     FOREIGN KEY (kode_akun) REFERENCES akun(kode_akun)
                 )''')
         
