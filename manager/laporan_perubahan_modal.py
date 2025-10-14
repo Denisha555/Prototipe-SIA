@@ -161,7 +161,6 @@ class LaporanPerubahanModalPage(tk.Frame):
 
         modal_akhir = modal_awal + laba_bersih
         self.treeview.insert("", "end", values=("Modal Akhir", f"{modal_akhir:,.0f}"), tags=("akhir",))
-
         # Atur style background tag-nya
         self.treeview.tag_configure("akhir", font=('Helvetica', 11, 'bold'), background='#E0F7FA')
 
