@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
-from datetime import datetime
+import datetime
 from function.bulan_map import bulan_map
 
 
@@ -76,7 +76,7 @@ class LaporanPerubahanModalPage(tk.Frame):
         self.grid_columnconfigure(1, weight=1)
 
         # Ambil bulan & tahun saat ini
-        now = datetime.now()
+        now = datetime.datetime.now()
         bulan_sekarang = now.strftime("%B")  # nama bulan (English)
         tahun_sekarang = str(now.year)
 
@@ -163,6 +163,47 @@ class LaporanPerubahanModalPage(tk.Frame):
         self.treeview.insert("", "end", values=("Modal Akhir", f"{modal_akhir:,.0f}"), tags=("akhir",))
         # Atur style background tag-nya
         self.treeview.tag_configure("akhir", font=('Helvetica', 11, 'bold'), background='#E0F7FA')
+
+        today = datetime.date.today()
+        datestr = today.strftime("%Y-%m-%d")
+
+        conn = sqlite3.connect('data_keuangan.db')
+        c = conn.cursor()
+        c.execute("""
+            SELECT id FROM rekap_modal
+            WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
+        """, (bulan_num, tahun))
+        data = c.fetchall()
+        conn.close()
+
+        if isinstance(modal_awal, tuple):
+            modal_awal = modal_awal[0]
+        if isinstance(modal_akhir, tuple):
+            modal_akhir = modal_akhir[0]
+
+        try:
+            conn = sqlite3.connect('data_keuangan.db')
+            c = conn.cursor()
+            if not data:
+                print("Belum ada data")
+                c.execute("""
+                    INSERT INTO rekap_modal (tanggal, modal_awal, modal_akhir) 
+                    VALUES (?, ?, ?)
+                """, (datestr, modal_awal, modal_akhir))
+                conn.commit()
+            elif data:
+                print("Ada data")
+                c.execute("""
+                    UPDATE rekap_modal 
+                    SET modal_akhir = ?, modal_awal = ?
+                    WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
+                """, (modal_akhir, modal_awal, bulan_num, tahun))
+                conn.commit() 
+            conn.close()
+            
+        except(sqlite3.Error) as error:
+            print("Error while connecting to sqlite", error)
+
 
     # === Fungsi hitung laba rugi ===
     def hitung_laba_rugi(self, bulan_num, tahun):

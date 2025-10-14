@@ -82,6 +82,13 @@ def initialize_db(self):
                     FOREIGN KEY (kode_akun) REFERENCES akun(kode_akun))
                 ''')
         
+        c.execute('''CREATE TABLE IF NOT EXISTS rekap_modal(
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  tanggal DATE,
+                  modal_awal INTEGER,
+                  modal_akhir INTEGER)
+                ''')
+        
         initial_coa = [
             ('111', 'Kas', 'Aset', 'Debit'),
             ('112', 'Piutang Usaha', 'Aset', 'Debit'),
