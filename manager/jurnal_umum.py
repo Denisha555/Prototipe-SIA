@@ -99,7 +99,7 @@ class JurnalUmumPage(tk.Frame):
                     j.kode_akun, a.nama_akun, j.debit, j.kredit
                 FROM jurnal_umum_detail j
                 JOIN akun a ON j.kode_akun = a.kode_akun
-                WHERE strftime('%m', j.tanggal) = ? AND strftime('%Y', j.tanggal) = ?
+                WHERE strftime('%m', j.tanggal) = ? AND strftime('%Y', j.tanggal) = ? AND j.jenis_jurnal = 'UMUM'
                 ORDER BY j.tanggal, j.transaksi_ref_id, j.kredit DESC
             """
             c.execute(query, (bulan_angka, tahun))

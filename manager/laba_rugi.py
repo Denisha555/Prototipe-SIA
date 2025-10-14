@@ -221,6 +221,8 @@ class LabaRugiPage(tk.Frame):
             'Rp' if laba_bersih != 0 else ''
         )
         
+        self.laba_bersih = laba_bersih
+        
         self.tree.tag_configure('header_section', font=('Helvetica', 10, 'bold'), foreground='#005662') 
         self.tree.tag_configure('separator', background='#EEEEEE')
         self.tree.tag_configure('subtotal', font=('Helvetica', 10, 'bold'), background='#F0F0F0') 

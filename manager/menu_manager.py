@@ -101,6 +101,13 @@ class MenuManagerPage(tk.Frame):
                    command=lambda: controller.show_frame("Laba Rugi")).grid(
                        column=0, row=row_laporan, padx=10, pady=10, sticky="ew"
                    )
+        
+        row_laporan += 1
+        ttk.Button(laporan_frame, text="📊 Laporan Perubahan Modal", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Laporan Perubahan Modal")).grid(
+                       column=0, row=row_laporan, padx=10, pady=10, sticky="ew"
+                   )
+    
         row_laporan += 1
         ttk.Button(laporan_frame, text="💼 Neraca", style="Menu.TButton",
                    command=lambda: controller.show_frame("Neraca")).grid(

@@ -13,6 +13,7 @@ from manager.jurnal_penutup import JurnalPenutupPage
 from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
 from manager.penyesuaian import PenyesuaianPage as PenyesuaianPageManager
 from staff.penyesuaian import PenyesuaianPage as PenyesuaianPageStaff
+from manager.laporan_perubahan_modal import LaporanPerubahanModalPage
 from pencatatan import PencatatanPage
 from pelaporan import PelaporanPage
 from grafik import GrafikPage
@@ -86,6 +87,7 @@ class LoginPage(tk.Tk):
                 "Neraca Saldo": NeracaSaldoPage,
                 "Worksheet": WorksheetPage,
                 "Laba Rugi": LabaRugiPage,
+                "Laporan Perubahan Modal": LaporanPerubahanModalPage,
                 "Neraca": NeracaPage,
                 "Jurnal Penutup": JurnalPenutupPage,
                 "Penyesuaian Manager": PenyesuaianPageManager,

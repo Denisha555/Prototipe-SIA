@@ -20,11 +20,11 @@ class NeracaPage(tk.Frame):
 
         bulan_list = list(bulan_map.keys())
 
-        ttk.Label(self, text="Bulan:").grid(row=1, column=0, sticky="e", pady=5)
+        ttk.Label(self, text="Bulan:").grid(row=1, column=0, sticky="e", pady=5, padx= 20)
         self.combo_bulan = ttk.Combobox(self, width=25, state="readonly", values=bulan_list)
         self.combo_bulan.grid(row=1, column=1, sticky="w", pady=5)
 
-        ttk.Label(self, text="Tahun:").grid(row=2, column=0, sticky="e", pady=5)
+        ttk.Label(self, text="Tahun:").grid(row=2, column=0, sticky="e", pady=5, padx= 20)
         self.entry_tahun = ttk.Entry(self, width=28)
         self.entry_tahun.grid(row=2, column=1, sticky="w", pady=5)
 
@@ -33,17 +33,20 @@ class NeracaPage(tk.Frame):
         )
 
         # Frame isi tabel Aktiva & Pasiva
-        self.frame_isi = ttk.Frame(self)
-        self.frame_isi.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=10)
+        self.frame_isi_kiri = ttk.Frame(self)
+        self.frame_isi_kiri.grid(row=4, column=0, sticky="nse", pady=10)
 
-        self.tree_aktiva = ttk.Treeview(self.frame_isi, columns=("akun", "saldo"), show="headings", height=12)
+        self.tree_aktiva = ttk.Treeview(self.frame_isi_kiri, columns=("akun", "saldo"), show="headings", height=12)
         self.tree_aktiva.heading("akun", text="Aktiva")
         self.tree_aktiva.heading("saldo", text="Saldo (Rp)")
         self.tree_aktiva.column("akun", width=200)
         self.tree_aktiva.column("saldo", width=120, anchor="e")
         self.tree_aktiva.grid(row=0, column=0, padx=20)
 
-        self.tree_pasiva = ttk.Treeview(self.frame_isi, columns=("akun", "saldo"), show="headings", height=12)
+        self.frame_isi_kanan = ttk.Frame(self)
+        self.frame_isi_kanan.grid(row=4, column=1, sticky="nsw", pady=10)
+
+        self.tree_pasiva = ttk.Treeview(self.frame_isi_kanan, columns=("akun", "saldo"), show="headings", height=12)
         self.tree_pasiva.heading("akun", text="Pasiva")
         self.tree_pasiva.heading("saldo", text="Saldo (Rp)")
         self.tree_pasiva.column("akun", width=250)
@@ -113,12 +116,3 @@ class NeracaPage(tk.Frame):
             messagebox.showwarning("⚠️ Tidak Seimbang", 
                 f"Total Aktiva ({total_aktiva:,.0f}) ≠ Total Pasiva ({total_pasiva:,.0f})")
 
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    class Dummy:
-        def show_frame(self, f): pass
-    app = NeracaPage(root, Dummy())
-    app.pack(fill="both", expand=True)
-    root.mainloop()
