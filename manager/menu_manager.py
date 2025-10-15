@@ -113,16 +113,28 @@ class MenuManagerPage(tk.Frame):
                    command=lambda: controller.show_frame("Neraca")).grid(
                        column=0, row=row_laporan, padx=10, pady=10, sticky="ew"
                    )
+        
+        row_laporan += 1
+        ttk.Button(laporan_frame, text="📖 Laporan Arus Kas", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Laporan Arus Kas")).grid(
+                       column=0, row=row_laporan, padx=10, pady=10, sticky="ew"
+                   )
+        
         row_laporan += 1
         ttk.Button(laporan_frame, text="🔄 Jurnal Penutup", style="Menu.TButton",
                    command=lambda: controller.show_frame("Jurnal Penutup")).grid(
                        column=0, row=row_laporan, padx=10, pady=10, sticky="ew"
                    )
+        
         row_laporan += 1
         ttk.Button(laporan_frame, text="🔒 Neraca Saldo Setelah Penutupan", style="Menu.TButton",
                    command=lambda: controller.show_frame("Neraca Saldo Setelah Penutupan")).grid(
                        column=0, row=row_laporan, padx=10, pady=10, sticky="ew"
                    )
+        
+        # buat scrollbar
+        scrollbar = ttk.Scrollbar(self, orient="vertical")
+        scrollbar.grid(column=3, row=1, rowspan=2, sticky="ns")
         
         # KEMBALI
         ttk.Button(self, text="◀️ Kembali ke Login", 

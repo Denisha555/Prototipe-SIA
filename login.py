@@ -5,6 +5,7 @@ from tkinter import ttk, messagebox
 from function.initialize_db import initialize_db
 from manager.jurnal_umum import JurnalUmumPage
 from manager.buku_besar import BukuBesarPage
+from manager.laporan_arus_kas import LaporanArusKasPage
 from manager.neraca import NeracaPage
 from manager.neraca_saldo import NeracaSaldoPage
 from manager.worksheet import WorksheetPage
@@ -89,6 +90,7 @@ class LoginPage(tk.Tk):
                 "Laba Rugi": LabaRugiPage,
                 "Laporan Perubahan Modal": LaporanPerubahanModalPage,
                 "Neraca": NeracaPage,
+                "Laporan Arus Kas": LaporanArusKasPage,
                 "Jurnal Penutup": JurnalPenutupPage,
                 "Penyesuaian Manager": PenyesuaianPageManager,
                 "Jurnal Penyesuaian": JurnalPenyesuaianPage,
