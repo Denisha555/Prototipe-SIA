@@ -98,12 +98,14 @@ def initialize_db(self):
             ('211', 'Utang Usaha', 'Liabilitas', 'Kredit'),
             ('212', 'Utang Gaji', 'Liabilitas', 'Kredit'),
             ('311', 'Modal Pemilik', 'Ekuitas', 'Kredit'),
+            ('312', 'Prive', 'Ekuitas', 'Debit'),
             ('401', 'Pendapatan Jasa', 'Pendapatan', 'Kredit'), 
             ('511', 'Beban Gaji', 'Beban', 'Debit'), 
             ('512', 'Beban Pajak', 'Beban', 'Debit'), 
             ('513', 'Beban Perlengkapan', 'Beban', 'Debit'),
             ('514', 'Beban Penyusutan Peralatan', 'Beban', 'Debit'),
             ('520', 'Beban Lain-lain', 'Beban', 'Debit'),
+            ('600', 'Ikhtisar Laba/Rugi', 'Nominal', 'Debit')
         ]
 
         c.execute("SELECT COUNT(*) FROM akun")
