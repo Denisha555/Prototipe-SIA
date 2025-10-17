@@ -60,10 +60,10 @@ class MenuStaffPage(tk.Frame):
 
         ttk.Button(menu_frame, text="Kembali Ke Login", style="Danger.TButton",
                    command=lambda: controller.show_frame("Login")).grid(
-            column=0, row=2, columnspan=2, padx=300, pady=20, sticky="nsew"
+            column=0, row=2, columnspan=2, padx=550, pady=20, sticky="nsew"
         )
 
         # ✨ Footer kosong untuk spasi bawah
-        ttk.Label(self, text="", background="#f4f6f8").grid(column=0, row=2, columnspan=2, pady=20)
+        ttk.Label(self, text="").grid(column=0, row=2, columnspan=2, pady=20)
 
 
