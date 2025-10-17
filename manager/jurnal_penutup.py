@@ -52,7 +52,7 @@ class JurnalPenutupPage(tk.Frame):
         bulan_sekarang = english_to_indo.get(bulan_sekarang_eng, "Januari")
 
         ttk.Label(
-            self, text="📝 Laporan Jurnal Penutup", font=("Helvetica", 18, "bold")
+            self, text="📝 Jurnal Penutup", font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, columnspan=2, pady=15)
 
         # --- FORM INPUT ---
@@ -207,8 +207,7 @@ class JurnalPenutupPage(tk.Frame):
 
         # Menutup ILL
         if laba_bersih != 0:
-            ket = "Laba Bersih" if laba_bersih > 0 else "Rugi Bersih"
-            closing_entries.append(("", f"Menutup Ikhtisar {ket}", "", "", "", 'header'))
+            closing_entries.append(("", f"Menutup Laba/Rugi", "", "", "", 'header'))
             if laba_bersih > 0:
                 closing_entries.append((tanggal_penutup, f"  {ILL_NAMA}", ILL_KODE, _format_rupiah(laba_bersih), "", ''))
                 closing_entries.append((tanggal_penutup, f"  {MODAL_NAMA}", MODAL_KODE, "", _format_rupiah(laba_bersih), 'subentry'))
