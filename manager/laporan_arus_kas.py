@@ -73,7 +73,7 @@ class LaporanArusKasPage(tk.Frame):
         self.treeview.column("subtotal", width=120, anchor="e")
         self.treeview.grid(row=4, column=0, columnspan=2, pady=10, padx=20, sticky="nsew")
 
-        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=5, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=5, column=0, columnspan=2, pady=10)
 
     # === FUNGSI AMBIL SALDO KAS AWAL ===
     def _get_cash_initial_balance(self, start_of_month_date):

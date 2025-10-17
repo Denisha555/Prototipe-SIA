@@ -153,7 +153,7 @@ class LabaRugiPage(tk.Frame):
         self.tree.grid(row=0, column=0, sticky="nsew")
         vsb.grid(row=0, column=1, sticky="ns")
 
-        ttk.Button(self, text="Kembali ke menu utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=3, column=0, pady=10)
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=3, column=0, pady=10)
 
 
     def load_report(self):

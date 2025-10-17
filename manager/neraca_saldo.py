@@ -87,7 +87,7 @@ class NeracaSaldoPage(tk.Frame):
         
         self.tree.grid(row=0, column=0, sticky="nsew")
         
-        ttk.Button(self, text="Kembali ke menu utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=3, column=0, columnspan=2, pady=10)
 
 
     def load_neraca_saldo(self):

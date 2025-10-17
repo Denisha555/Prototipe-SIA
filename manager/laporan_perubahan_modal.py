@@ -113,7 +113,7 @@ class LaporanPerubahanModalPage(tk.Frame):
         self.treeview.column("nominal", width=150, anchor="e")
         self.treeview.grid(row=4, column=0, columnspan=2, pady=10)
 
-        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=5, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=5, column=0, columnspan=2, pady=10)
 
     # === Fungsi utama tampilkan laporan ===
     def tampil(self):

@@ -64,7 +64,7 @@ class NeracaPage(tk.Frame):
 
         ttk.Button(
             self,
-            text="Kembali Ke Menu Utama",
+            text="Kembali ke Menu Utama",
             command=lambda: controller.show_frame("Menu Utama Manager"),
         ).grid(row=6, column=0, columnspan=2, pady=10)
 

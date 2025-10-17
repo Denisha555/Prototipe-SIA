@@ -93,10 +93,10 @@ class BukuBesarPage(tk.Frame):
             self,
             text="📘 Buku Besar",
             font=("Helvetica", 18, "bold")
-        ).grid(row=1, column=0, columnspan=2, pady=(15, 10))
+        ).grid(row=0, column=0, columnspan=2, pady=(15, 10))
         
         form_frame = ttk.Frame(self)
-        form_frame.grid(row=2, column=0, columnspan=2, pady=10)
+        form_frame.grid(row=1, column=0, columnspan=2, pady=10)
 
         bulan_list = list(bulan_map.keys())
         self.akun_map = self._get_account_data()
@@ -120,10 +120,8 @@ class BukuBesarPage(tk.Frame):
             row=3, column=0, columnspan=2, pady=10
         )
 
-        ttk.Button(self, text="Kembali ke Menu Utama", 
-                   command=lambda: self.controller.show_frame("Menu Utama Manager")).grid(
-                       row=0, column=0, sticky="w", padx=20, pady=10
-                   )
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+                   ).grid(row=3, column=0, columnspan=2, pady=5)
         
         today = datetime.now()
         current_year = today.strftime("%Y")
@@ -142,7 +140,7 @@ class BukuBesarPage(tk.Frame):
 
         # === Frame Utama untuk Buku Besar ===
         self.bb_frame = ttk.LabelFrame(self, text="Rincian Buku Besar")
-        self.bb_frame.grid(row=3, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
+        self.bb_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
         self.bb_frame.grid_columnconfigure(0, weight=1)
         self.bb_frame.grid_rowconfigure(0, weight=1)
         

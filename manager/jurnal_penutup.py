@@ -88,17 +88,10 @@ class JurnalPenutupPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        ttk.Button(self, 
-                   text="Kembali ke Menu Utama", 
-                   command=lambda: self.controller.show_frame("Menu Utama Manager"),
-                   style="Back.TButton").grid(
-                       row=0, column=0, sticky="w", padx=20, pady=(10, 0)
-                   )
-
-        ttk.Label(self, text="🔄 Jurnal Penutup", font=("Helvetica", 18, "bold")).grid(row=1, column=0, columnspan=2, pady=(15, 10))
+        ttk.Label(self, text="🔄 Jurnal Penutup", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=(15, 10))
 
         form_frame = ttk.Frame(self)
-        form_frame.grid(row=2, column=0, columnspan=2, pady=5)
+        form_frame.grid(row=1, column=0, columnspan=2, pady=5)
         form_frame.grid_columnconfigure(0, weight=1)
         form_frame.grid_columnconfigure(1, weight=1)
         
@@ -121,10 +114,12 @@ class JurnalPenutupPage(tk.Frame):
         self.entry_tahun.grid(row=1, column=1, sticky="w", pady=5)
         self.entry_tahun.insert(0, str(now.year))
 
-        ttk.Button(self, text="Tampilkan", command=self.tampilkan_jurnal_penutup).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Tampilkan", command=self.tampilkan_jurnal_penutup).grid(row=2, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+                   ).grid(row=4, column=0, columnspan=2, pady=5)
         
         tree_frame = ttk.Frame(self)
-        tree_frame.grid(row=4, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
+        tree_frame.grid(row=3, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
         tree_frame.grid_columnconfigure(0, weight=1)
         tree_frame.grid_rowconfigure(0, weight=1)
 

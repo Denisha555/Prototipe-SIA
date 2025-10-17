@@ -46,7 +46,7 @@ class JurnalPenyesuaianPage(tk.Frame):
         ttk.Button(
             self, text="Tampilkan", command=self.load_laporan
         ).grid(row=3, column=0, columnspan=2, pady=10)
-        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
                     ).grid(row=6, column=0, columnspan=2, pady=5)
 
         # === Treeview untuk menampilkan data ===

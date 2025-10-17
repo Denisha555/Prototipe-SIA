@@ -43,7 +43,7 @@ class JurnalUmumPage(tk.Frame):
         self.tree.column("kredit", width=100, anchor=tk.E)
         self.tree.heading("kredit", text="Kredit (Rp)")
         
-        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+        ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
                    ).grid(row=6, column=0, columnspan=2, pady=5)
         
         today = datetime.now()

@@ -51,7 +51,7 @@ class KasKeluarPage(tk.Frame):
 
         ttk.Button(frame_kiri, text="Simpan", command=self.simpan_transaksi).grid(row=4, column=0, columnspan=2, pady=10)
 
-        ttk.Button(frame_kiri, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
+        ttk.Button(frame_kiri, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
                    ).grid(row=6, column=0, columnspan=2, pady=5)
 
         frame_kanan = ttk.LabelFrame(self, text="Daftar Kas Keluar")
