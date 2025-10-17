@@ -30,7 +30,7 @@ class LaporanArusKasPage(tk.Frame):
             }
             bulan_sekarang = eng_to_id.get(bulan_sekarang, bulan_sekarang)
 
-        ttk.Label(self, text="📊 Laporan Perubahan Modal", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
+        ttk.Label(self, text="📊 Laporan Arus Kas", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
 
         ttk.Label(self, text="Bulan:").grid(row=1, column=0, sticky="e", padx=5, pady=5)
         self.combo_bulan = ttk.Combobox(self, values=list(bulan_map.keys()), state="readonly", width=25)
@@ -44,10 +44,12 @@ class LaporanArusKasPage(tk.Frame):
 
         ttk.Button(self, text="Tampilkan", command=self.tampil).grid(row=3, column=0, columnspan=2, pady=10)
 
-        self.treeview = ttk.Treeview(self, columns=("keterangan", "nominal"), show="headings", height=10)
+        self.treeview = ttk.Treeview(self, columns=("keterangan", "detail", 'nominal'), show="headings", height=10)
         self.treeview.heading("keterangan", text="Keterangan")
+        self.treeview.heading("detail", text="Detail")
         self.treeview.heading("nominal", text="Nominal (Rp)")
         self.treeview.column("keterangan", width=250)
+        self.treeview.column("detail", width=150)
         self.treeview.column("nominal", width=150, anchor="e")
         self.treeview.grid(row=4, column=0, columnspan=2, pady=10)
 
@@ -80,6 +82,19 @@ class LaporanArusKasPage(tk.Frame):
         self.treeview.delete(*self.treeview.get_children())
 
         # === Ambil modal awal (akun 311 misalnya) ===
+        conn = sqlite3.connect('data_keuangan.db')
+        c = conn.cursor()
+        c.execute("""
+            SELECT kredit
+            FROM jurnal_umum_detail
+            WHERE kode_akun = '311'
+              AND strftime('%m', tanggal) = ?
+              AND strftime('%Y', tanggal) = ?
+        """, (bulan_num, tahun))
+        row = c.fetchone()
+        modal_awal = row[0] if row and row[0] is not None else 0
+        conn.close()
+
         conn = sqlite3.connect('data_keuangan.db')
         c = conn.cursor()
         c.execute("""
@@ -143,18 +158,10 @@ class LaporanArusKasPage(tk.Frame):
             print("Error while connecting to sqlite", error)
 
 
-    # === Fungsi hitung laba rugi ===
-    def hitung_laba_rugi(self, bulan_num, tahun):
-        data = _get_account_balances(bulan_num, tahun)
-        total_pendapatan = sum(item["kredit"] - item["debit"] for item in data if item["kategori"] == "Pendapatan")
-        total_beban = sum(item["debit"] - item["kredit"] for item in data if item["kategori"] == "Beban")
-        return total_pendapatan - total_beban
-
-
 # === Testing mandiri ===
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Laporan Perubahan Modal")
-    app = LaporanPerubahanModalPage(root, None)
+    app = LaporanArusKasPage(root, None)
     app.pack(fill="both", expand=True)
     root.mainloop()

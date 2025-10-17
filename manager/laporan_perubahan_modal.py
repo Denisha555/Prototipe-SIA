@@ -185,14 +185,12 @@ class LaporanPerubahanModalPage(tk.Frame):
             conn = sqlite3.connect('data_keuangan.db')
             c = conn.cursor()
             if not data:
-                print("Belum ada data")
                 c.execute("""
                     INSERT INTO rekap_modal (tanggal, modal_awal, modal_akhir) 
                     VALUES (?, ?, ?)
                 """, (datestr, modal_awal, modal_akhir))
                 conn.commit()
             elif data:
-                print("Ada data")
                 c.execute("""
                     UPDATE rekap_modal 
                     SET modal_akhir = ?, modal_awal = ?

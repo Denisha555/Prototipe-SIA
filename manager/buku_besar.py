@@ -170,7 +170,7 @@ class BukuBesarPage(tk.Frame):
         bulan_num = bulan_map[month]
         
         query = """
-            SELECT tanggal, keterangan, debit, kredit
+            SELECT tanggal, keterangan, debit, kredit, jenis_jurnal
             FROM jurnal_umum_detail
             WHERE kode_akun = ? 
             AND strftime('%m', tanggal) = ?
@@ -187,8 +187,6 @@ class BukuBesarPage(tk.Frame):
         finally:
             conn.close()
 
-        
-            
         return transactions
 
 
@@ -271,7 +269,7 @@ class BukuBesarPage(tk.Frame):
         ), tags=('saldo_awal',))
         tree.tag_configure('saldo_awal', font=('Helvetica', 10, 'bold'), background='#F0F0F0')
         
-        for tgl, ket, debit, kredit in transaksi_bulanan:
+        for tgl, ket, debit, kredit, jenis in transaksi_bulanan:
             if saldo_normal == 'Debit':
                 saldo_berjalan += debit - kredit
             else:
@@ -280,13 +278,22 @@ class BukuBesarPage(tk.Frame):
             total_debit += debit
             total_kredit += kredit
 
-            tree.insert("", "end", values=(
-                tgl,
-                ket,
-                self._format_rupiah(debit) if debit else "",
-                self._format_rupiah(kredit) if kredit else "",
-                self._format_rupiah(saldo_berjalan)
-            ))
+            if jenis == 'PENYESUAIAN':
+                tree.insert("", "end", values=(
+                    tgl,
+                    f"Penyesuaian {ket}",
+                    self._format_rupiah(debit) if debit else "",
+                    self._format_rupiah(kredit) if kredit else "",
+                    self._format_rupiah(saldo_berjalan)
+                ))
+            else:
+                tree.insert("", "end", values=(
+                    tgl,
+                    ket,
+                    self._format_rupiah(debit) if debit else "",
+                    self._format_rupiah(kredit) if kredit else "",
+                    self._format_rupiah(saldo_berjalan)
+                ))
             
         tree.insert("", "end", values=(
             "", 
