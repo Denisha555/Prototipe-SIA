@@ -21,10 +21,10 @@ class BukuBesarPage(tk.Frame):
             self,
             text="📘 Buku Besar",
             font=("Helvetica", 18, "bold")
-        ).grid(row=0, column=0, columnspan=2, pady=(15, 10))
+        ).grid(row=1, column=0, columnspan=2, pady=(15, 10))
         
         form_frame = ttk.Frame(self)
-        form_frame.grid(row=1, column=0, columnspan=2, pady=10)
+        form_frame.grid(row=2, column=0, columnspan=2, pady=10)
 
         bulan_list = list(bulan_map.keys())
         self.akun_map = self._get_account_data()
@@ -48,8 +48,10 @@ class BukuBesarPage(tk.Frame):
             row=3, column=0, columnspan=2, pady=10
         )
 
-        ttk.Button(self, text="Kembali Ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
-                   ).grid(row=3, column=0, columnspan=2, pady=5)
+        ttk.Button(self, text="Kembali ke Menu Utama", 
+                   command=lambda: self.controller.show_frame("Menu Utama Manager")).grid(
+                       row=0, column=0, sticky="w", padx=20, pady=10
+                   )
         
         today = datetime.now()
         current_year = today.strftime("%Y")
@@ -67,8 +69,8 @@ class BukuBesarPage(tk.Frame):
         self.entry_tahun.insert(0, current_year)
 
         # === Frame Utama untuk Buku Besar ===
-        self.bb_frame = ttk.Frame(self)
-        self.bb_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
+        self.bb_frame = ttk.LabelFrame(self, text="Rincian Buku Besar")
+        self.bb_frame.grid(row=3, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
         self.bb_frame.grid_columnconfigure(0, weight=1)
         self.bb_frame.grid_rowconfigure(0, weight=1)
         
@@ -77,22 +79,6 @@ class BukuBesarPage(tk.Frame):
         self._create_empty_treeview(self.bb_frame)
 
     def _create_empty_treeview(self, parent_frame):
-        
-        for widget in parent_frame.winfo_children():
-            widget.destroy()
-
-        ttk.Label(
-            parent_frame,
-            text="Akun: [Pilih Akun]",
-            font=("Helvetica", 14, "bold"),
-            anchor="w"
-        ).grid(row=0, column=0, sticky="ew", pady=(5, 0))
-        ttk.Label(
-            parent_frame,
-            text="Saldo Normal: -",
-            anchor="w"
-        ).grid(row=1, column=0, sticky="ew", pady=(0, 5))
-            
         tree = ttk.Treeview(parent_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings")
         tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
         parent_frame.grid_rowconfigure(2, weight=1)
@@ -119,6 +105,8 @@ class BukuBesarPage(tk.Frame):
         
 
     def _format_rupiah(self, amount):
+        if amount == 0:
+            return ""
         is_negative = amount < 0
         abs_amount = abs(amount)
         formatted = f"{abs_amount:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
@@ -224,18 +212,8 @@ class BukuBesarPage(tk.Frame):
             self._create_empty_treeview(self.bb_frame)
             return
             
-        ttk.Label(
-            self.bb_frame,
-            text=f"Akun: {kode_akun} - {nama_akun}",
-            font=("Helvetica", 14, "bold"),
-            anchor="w"
-        ).grid(row=0, column=0, sticky="ew", pady=(5, 0))
-        ttk.Label(
-            self.bb_frame,
-            text=f"Saldo Normal: {saldo_normal}",
-            anchor="w"
-        ).grid(row=1, column=0, sticky="ew", pady=(0, 5))
-            
+        self.bb_frame.config(text=f"Rincian Buku Besar: {kode_akun} - {nama_akun}")
+
         tree = ttk.Treeview(self.bb_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings")
         tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
         self.bb_frame.grid_rowconfigure(2, weight=1)
@@ -262,7 +240,7 @@ class BukuBesarPage(tk.Frame):
         
         tree.insert("", "end", values=(
             selected_bulan,
-            "Saldo Awal",
+            "SALDO AWAL",
             "", 
             "",
             self._format_rupiah(saldo_berjalan)
@@ -297,12 +275,21 @@ class BukuBesarPage(tk.Frame):
             
         tree.insert("", "end", values=(
             "", 
-            "SALDO AKHIR", 
+            "TOTAL MUTASI", 
             self._format_rupiah(total_debit), 
             self._format_rupiah(total_kredit), 
+            ""
+        ), tags=('saldo_mutasi',))
+
+        tree.insert("", "end", values=(
+            "", 
+            "SALDO AKHIR", 
+            "", 
+            "", 
             self._format_rupiah(saldo_berjalan)
         ), tags=('saldo_akhir',))
-        
+
+        tree.tag_configure('saldo_mutasi', font=('Helvetica', 10, 'italic'), background='#F0F0F0')
         tree.tag_configure('saldo_akhir', font=('Helvetica', 11, 'bold'), background='#E0F7FA')
         
         self.current_treeviews.append(tree)
