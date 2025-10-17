@@ -151,7 +151,7 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
             if ada_data:
                 self.tree.insert("", "end", values=(
                     "", 
-                    "TOTAL NERACA SALDO SETELAH PENUTUPAN", 
+                    "TOTAL", 
                     _format_rupiah(total_debit_nssp), 
                     _format_rupiah(total_kredit_nssp)
                 ), tags=('total',))

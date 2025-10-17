@@ -1,11 +1,83 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
-from function.bulan_map import bulan_map 
 from datetime import datetime
+from calendar import monthrange 
+
+try:
+    from function.bulan_map import bulan_map
+except ImportError:
+    bulan_map = {
+        "Januari": "01", "Februari": "02", "Maret": "03", 
+        "April": "04", "Mei": "05", "Juni": "06",
+        "Juli": "07", "Agustus": "08", "September": "09",
+        "Oktober": "10", "November": "11", "Desember": "12"
+    }
+
+ILL_KODE = '313'
+ILL_NAMA = 'Ikhtisar Laba/Rugi' 
+MODAL_KODE = '311'
+MODAL_NAMA = 'Modal Pemilik'
+JENIS_JURNAL = 'PENUTUP'
 
 def _connect_db():
     return sqlite3.connect('data_keuangan.db')
+
+def _format_rupiah_util(amount):
+    try:
+        amount = int(amount)
+        if amount == 0:
+            return ""
+        return f"{amount:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+    except (TypeError, ValueError):
+        return ""
+
+def _get_closing_date(bulan_num, tahun):
+    try:
+        _, last_day = monthrange(int(tahun), int(bulan_num))
+        return f"{tahun}-{bulan_num}-{last_day:02d}"
+    except Exception:
+        return f"{tahun}-{bulan_num}-30"
+
+def _get_account_balances_for_closing(bulan_num, tahun):
+    conn = _connect_db()
+    c = conn.cursor()
+
+    c.execute("SELECT kode_akun FROM akun WHERE kode_akun = ?", (ILL_KODE,))
+    if not c.fetchone():
+        c.execute("INSERT INTO akun (kode_akun, nama_akun, kategori, saldo_normal) VALUES (?, ?, 'Ekuitas', 'Kredit')", (ILL_KODE, ILL_NAMA))
+        conn.commit()
+    
+    query = """
+        SELECT a.kode_akun, a.nama_akun, a.saldo_normal, 
+                SUM(CASE WHEN jd.jenis_jurnal != 'PENUTUP' THEN jd.debit ELSE 0 END) AS total_debit, 
+                SUM(CASE WHEN jd.jenis_jurnal != 'PENUTUP' THEN jd.kredit ELSE 0 END) AS total_kredit
+        FROM akun a
+        LEFT JOIN jurnal_umum_detail jd ON a.kode_akun = jd.kode_akun
+        WHERE (a.kategori IN ('Pendapatan', 'Beban') OR a.kode_akun = '312') 
+          AND strftime('%m', jd.tanggal) = ?
+          AND strftime('%Y', jd.tanggal) = ?
+        GROUP BY a.kode_akun, a.nama_akun, a.saldo_normal
+    """
+    c.execute(query, (bulan_num, tahun))
+    rows = c.fetchall()
+    conn.close()
+
+    balances = {}
+    for kode, nama, sn, debit, kredit in rows:
+        debit = debit or 0
+        kredit = kredit or 0
+        
+        if sn == 'Kredit':
+            saldo = kredit - debit
+        else: 
+            saldo = debit - kredit
+
+        balances[kode] = {
+            'nama': nama,
+            'saldo': saldo
+        }
+    return balances
 
 class BukuBesarPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -78,6 +150,123 @@ class BukuBesarPage(tk.Frame):
         
         self._create_empty_treeview(self.bb_frame)
 
+    # FUNGSI JURNAL PENUTUP
+    def _calculate_closing_entries(self, balances, bulan_num, tahun):
+        """Menghitung entri jurnal penutup."""
+        tanggal_penutup = _get_closing_date(bulan_num, tahun)
+        closing_entries = []
+        total_debit = 0
+        total_kredit = 0
+        
+        # Menutup Akun Pendapatan
+        pendapatan_to_close = {k: v for k, v in balances.items() if k.startswith('4') and v['saldo'] > 0}
+        total_pendapatan = sum(item['saldo'] for item in pendapatan_to_close.values())
+
+        if total_pendapatan > 0:
+            closing_entries.append(("", "Menutup Akun Pendapatan", "", "", "", 'header'))
+            closing_entries.append((tanggal_penutup, f"  {ILL_NAMA}", ILL_KODE, "", _format_rupiah_util(total_pendapatan), 'subentry'))
+            total_kredit += total_pendapatan
+            for kode, item in pendapatan_to_close.items():
+                closing_entries.append((tanggal_penutup, item['nama'], kode, _format_rupiah_util(item['saldo']), "", ''))
+                total_debit += item['saldo']
+        closing_entries.append(("", "", "", "", "", 'spacer'))
+
+        # Menutup Akun Beban
+        beban_to_close = {k: v for k, v in balances.items() if k.startswith('5') and v['saldo'] > 0}
+        total_beban = sum(abs(item['saldo']) for item in beban_to_close.values())
+
+        if total_beban > 0:
+            closing_entries.append(("", "Menutup Akun Beban", "", "", "", 'header'))
+            closing_entries.append((tanggal_penutup, ILL_NAMA, ILL_KODE, _format_rupiah_util(total_beban), "", ''))
+            total_debit += total_beban
+            for kode, item in beban_to_close.items():
+                saldo_abs = abs(item['saldo'])
+                closing_entries.append((tanggal_penutup, f"  {item['nama']}", kode, "", _format_rupiah_util(saldo_abs), 'subentry'))
+                total_kredit += saldo_abs
+        closing_entries.append(("", "", "", "", "", 'spacer'))
+        
+        # Menutup Ikhtisar Laba/Rugi ke Modal
+        laba_bersih = total_pendapatan - total_beban
+        
+        if laba_bersih != 0:
+            closing_entries.append(("", "Menutup Ikhtisar Laba/Rugi ke Modal", "", "", "", 'header'))
+            if laba_bersih > 0: # Laba
+                closing_entries.append((tanggal_penutup, ILL_NAMA, ILL_KODE, _format_rupiah_util(laba_bersih), "", ''))
+                closing_entries.append((tanggal_penutup, f"  {MODAL_NAMA}", MODAL_KODE, "", _format_rupiah_util(laba_bersih), 'subentry'))
+                total_debit += laba_bersih
+                total_kredit += laba_bersih
+            else: # Rugi
+                rugi = abs(laba_bersih)
+                closing_entries.append((tanggal_penutup, MODAL_NAMA, MODAL_KODE, _format_rupiah_util(rugi), "", ''))
+                closing_entries.append((tanggal_penutup, f"  {ILL_NAMA}", ILL_KODE, "", _format_rupiah_util(rugi), 'subentry'))
+                total_debit += rugi
+                total_kredit += rugi
+            closing_entries.append(("", "", "", "", "", 'spacer'))
+
+        # Menutup Akun Prive
+        prive_to_close = {k: v for k, v in balances.items() if k == '312' and v['saldo'] > 0}
+        total_prive = sum(abs(item['saldo']) for item in prive_to_close.values())
+
+        if total_prive > 0:
+            closing_entries.append(("", "Menutup Akun Prive", "", "", "", 'header'))
+            prive_kode = '312'
+            prive_nama = self.akun_map.get(f"{prive_kode} - Prive Pemilik", {}).get('nama', 'Prive Pemilik')
+            
+            closing_entries.append((tanggal_penutup, MODAL_NAMA, MODAL_KODE, _format_rupiah_util(total_prive), "", ''))
+            closing_entries.append((tanggal_penutup, f"  {prive_nama}", prive_kode, "", _format_rupiah_util(total_prive), 'subentry'))
+            
+            total_debit += total_prive
+            total_kredit += total_prive
+            
+        return closing_entries, total_debit, total_kredit
+
+    def _auto_post_jurnal_penutup(self, bulan_num, tahun):
+        balances = _get_account_balances_for_closing(bulan_num, tahun)
+        entries_to_post, total_debit, total_kredit = self._calculate_closing_entries(balances, bulan_num, tahun)
+        
+        if total_debit != total_kredit:
+            return False 
+            
+        conn = _connect_db()
+        c = conn.cursor()
+        
+        try:
+            # Hapus Jurnal Penutup lama
+            c.execute("""
+                DELETE FROM jurnal_umum_detail 
+                WHERE jenis_jurnal = ? AND strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
+            """, (JENIS_JURNAL, bulan_num, tahun))
+
+            # Posting Entri baru
+            transaksi_id = f"JP-{tahun}{bulan_num}-{datetime.now().strftime('%H%M%S')}"
+
+            for tanggal, nama, kode, debit, kredit, tag in entries_to_post:
+                if tag in ('header', 'spacer', 'total'):
+                    continue
+                    
+                debit_val = int(str(debit).replace('.', '').replace(',', '') or 0)
+                kredit_val = int(str(kredit).replace('.', '').replace(',', '') or 0)
+                
+                keterangan_db = nama.strip()
+                if keterangan_db.startswith('  '):
+                    keterangan_db = keterangan_db[2:] 
+
+                if debit_val > 0 or kredit_val > 0:
+                    c.execute("""
+                        INSERT INTO jurnal_umum_detail 
+                        (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit, jenis_jurnal)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (transaksi_id, tanggal, kode, keterangan_db, debit_val, kredit_val, JENIS_JURNAL))
+
+            conn.commit()
+            return True
+            
+        except sqlite3.Error as e:
+            conn.rollback()
+            return False
+        finally:
+            conn.close()
+
     def _create_empty_treeview(self, parent_frame):
         tree = ttk.Treeview(parent_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings")
         tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
@@ -103,13 +292,12 @@ class BukuBesarPage(tk.Frame):
         
         self.current_treeviews = [tree]
         
-
     def _format_rupiah(self, amount):
         if amount == 0:
             return ""
         is_negative = amount < 0
         abs_amount = abs(amount)
-        formatted = f"{abs_amount:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+        formatted = f"{int(abs_amount):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
         return f"({formatted})" if is_negative else formatted
 
     def _get_account_data(self):
@@ -134,11 +322,15 @@ class BukuBesarPage(tk.Frame):
         
         balance = 0
         try:
-            c.execute("""
+            query = """
                 SELECT SUM(debit) - SUM(kredit)
                 FROM jurnal_umum_detail
-                WHERE kode_akun = ? AND tanggal < ?
-            """, (kode_akun, f"{year}-{bulan_num}-01"))
+                WHERE kode_akun = ? 
+                  AND tanggal < ?
+                  -- Hanya UMUM dan PENYESUAIAN yang membentuk Saldo Awal, PENUTUP hanya memengaruhi bulan itu.
+                  AND (jenis_jurnal IS NULL OR jenis_jurnal NOT IN ('PENUTUP')) 
+            """
+            c.execute(query, (kode_akun, f"{year}-{bulan_num}-01"))
             
             result = c.fetchone()
             if result and result[0] is not None:
@@ -163,6 +355,8 @@ class BukuBesarPage(tk.Frame):
             WHERE kode_akun = ? 
             AND strftime('%m', tanggal) = ?
             AND strftime('%Y', tanggal) = ?
+            -- Sudah mencakup PENUTUP
+            AND (jenis_jurnal IS NULL OR jenis_jurnal IN ('UMUM', 'PENYESUAIAN', 'PENUTUP'))
             ORDER BY tanggal ASC, id ASC
         """
         transactions = []
@@ -203,8 +397,11 @@ class BukuBesarPage(tk.Frame):
         nama_akun = akun_data['nama']
         saldo_normal = akun_data['saldo_normal']
 
-        saldo_awal = self._get_beginning_balance(kode_akun, selected_tahun, selected_bulan)
+        bulan_num = bulan_map[selected_bulan]
         
+        self._auto_post_jurnal_penutup(bulan_num, selected_tahun)
+
+        saldo_awal = self._get_beginning_balance(kode_akun, selected_tahun, selected_bulan)
         transaksi_bulanan = self._get_monthly_transactions(kode_akun, selected_tahun, selected_bulan)
 
         if not transaksi_bulanan and saldo_awal == 0:
@@ -248,6 +445,10 @@ class BukuBesarPage(tk.Frame):
         tree.tag_configure('saldo_awal', font=('Helvetica', 10, 'bold'), background='#F0F0F0')
         
         for tgl, ket, debit, kredit, jenis in transaksi_bulanan:
+            debit = debit or 0
+            kredit = kredit or 0
+
+            # Hitung saldo berjalan
             if saldo_normal == 'Debit':
                 saldo_berjalan += debit - kredit
             else:
@@ -257,27 +458,28 @@ class BukuBesarPage(tk.Frame):
             total_kredit += kredit
 
             if jenis == 'PENYESUAIAN':
-                tree.insert("", "end", values=(
-                    tgl,
-                    f"Penyesuaian {ket}",
-                    self._format_rupiah(debit) if debit else "",
-                    self._format_rupiah(kredit) if kredit else "",
-                    self._format_rupiah(saldo_berjalan)
-                ))
+                keterangan_tampil = f"AJP {ket}"
+                tag_style = 'penyesuaian'
+            elif jenis == 'PENUTUP':
+                keterangan_tampil = f"JP {ket}"
+                tag_style = 'penutup'
             else:
-                tree.insert("", "end", values=(
-                    tgl,
-                    ket,
-                    self._format_rupiah(debit) if debit else "",
-                    self._format_rupiah(kredit) if kredit else "",
-                    self._format_rupiah(saldo_berjalan)
-                ))
+                keterangan_tampil = ket
+                tag_style = ''
+                
+            tree.insert("", "end", values=(
+                tgl,
+                keterangan_tampil,
+                self._format_rupiah(debit) if debit else "",
+                self._format_rupiah(kredit) if kredit else "",
+                self._format_rupiah(saldo_berjalan)
+            ), tags=(tag_style,))
             
         tree.insert("", "end", values=(
             "", 
             "SALDO AKHIR", 
-            "", 
-            "", 
+            self._format_rupiah(total_debit),
+            self._format_rupiah(total_kredit),
             self._format_rupiah(saldo_berjalan)
         ), tags=('saldo_akhir',))
 

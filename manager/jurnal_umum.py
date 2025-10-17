@@ -94,13 +94,23 @@ class JurnalUmumPage(tk.Frame):
         total_kredit = 0
 
         try:
+            # PERBAIKAN QUERY: JOIN dengan tabel 'akun' untuk mendapatkan nama_akun
+            # dan pastikan kolom yang diambil urutannya benar.
             query = """
-                SELECT j.tanggal, j.transaksi_ref_id, j.keterangan,
-                    j.kode_akun, a.nama_akun, j.debit, j.kredit
-                FROM jurnal_umum_detail j
-                JOIN akun a ON j.kode_akun = a.kode_akun
-                WHERE strftime('%m', j.tanggal) = ? AND strftime('%Y', j.tanggal) = ? AND j.jenis_jurnal = 'UMUM'
-                ORDER BY j.tanggal, j.transaksi_ref_id, j.kredit DESC
+                SELECT 
+                    jud.tanggal, 
+                    jud.transaksi_ref_id, 
+                    jud.keterangan, 
+                    jud.kode_akun, 
+                    a.nama_akun,  -- KOLOM TAMBAHAN DARI TABEL AKUN
+                    jud.debit, 
+                    jud.kredit
+                FROM jurnal_umum_detail jud
+                JOIN akun a ON jud.kode_akun = a.kode_akun  -- Lakukan JOIN
+                WHERE strftime('%m', jud.tanggal) = ?
+                  AND strftime('%Y', jud.tanggal) = ?
+                  AND jud.jenis_jurnal = 'UMUM' -- FILTER HANYA JURNAL UMUM
+                ORDER BY jud.tanggal ASC, jud.transaksi_ref_id ASC, jud.kredit DESC 
             """
             c.execute(query, (bulan_angka, tahun))
             results = c.fetchall()
@@ -111,13 +121,20 @@ class JurnalUmumPage(tk.Frame):
 
             last_ref_id = None
             
+            # PASTIKAN URUTAN UNPACKING SESUAI DENGAN QUERY (7 KOLOM)
             for tanggal, ref_id, keterangan_transaksi, kode_akun, nama_akun, debit, kredit in results:
+                
+                # Pastikan debit dan kredit adalah numerik (int/float)
+                # Nilai None/NULL dari database diubah menjadi 0
+                debit = debit if debit is not None else 0
+                kredit = kredit if kredit is not None else 0
                 
                 if ref_id != last_ref_id:
                     if last_ref_id is not None:
                         self.tree.insert("", "end", values=("--", "", "", "", "", ""), tags=('separator',))
                     last_ref_id = ref_id
                 
+                # Baris yang error (kredit kini sudah angka)
                 if kredit > 0:
                     nama_akun = f"        {nama_akun}"
                     
@@ -131,7 +148,7 @@ class JurnalUmumPage(tk.Frame):
                 # Masukkan data ke Treeview
                 self.tree.insert("", "end", values=(
                     tanggal, 
-                    f"[{ref_id}] {keterangan_transaksi}", # Menampilkan ID referensi dan keterangan
+                    f"[{ref_id}] {keterangan_transaksi}",
                     kode_akun, 
                     nama_akun, 
                     formatted_debit, 
