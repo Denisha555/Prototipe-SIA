@@ -229,9 +229,6 @@ class LabaRugiPage(tk.Frame):
         self.tree.tag_configure('grand_total', font=('Helvetica', 11, 'bold'), background='#E0F7FA') 
         self.tree.tag_configure('item', font=('Helvetica', 10), foreground='#424242')
 
-        messagebox.showinfo("Sukses", f"Laporan Laba Rugi untuk bulan {bulan_nama} {tahun} berhasil dimuat.")
-
-
     def insert_row(self, label, amount_str, tag, prefix=""):
         formatted_amount = f"{prefix} {amount_str}" if prefix else amount_str
         self.tree.insert("", "end", values=(label, formatted_amount), tags=(tag,))

@@ -113,7 +113,6 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
 
             ada_data = False
             for kode_akun, nama_akun, saldo_normal in semua_akun_riil:
-                h
                 query_saldo = """
                     SELECT SUM(debit), SUM(kredit)
                     FROM jurnal_umum_detail

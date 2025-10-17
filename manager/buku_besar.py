@@ -275,21 +275,12 @@ class BukuBesarPage(tk.Frame):
             
         tree.insert("", "end", values=(
             "", 
-            "TOTAL MUTASI", 
-            self._format_rupiah(total_debit), 
-            self._format_rupiah(total_kredit), 
-            ""
-        ), tags=('saldo_mutasi',))
-
-        tree.insert("", "end", values=(
-            "", 
             "SALDO AKHIR", 
             "", 
             "", 
             self._format_rupiah(saldo_berjalan)
         ), tags=('saldo_akhir',))
 
-        tree.tag_configure('saldo_mutasi', font=('Helvetica', 10, 'italic'), background='#F0F0F0')
         tree.tag_configure('saldo_akhir', font=('Helvetica', 11, 'bold'), background='#E0F7FA')
         
         self.current_treeviews.append(tree)

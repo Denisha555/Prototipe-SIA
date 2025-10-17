@@ -229,6 +229,6 @@ class JurnalPenutupPage(tk.Frame):
             self.tree.insert("", "end", values=(tanggal, nama, kode, debit, kredit), tags=(tag,))
         
         # Konfigurasi Gaya
-        self.tree.tag_configure("header", font=('Helvetica', 10, 'bold'), background='#B3E5FC', foreground='#000000')
+        self.tree.tag_configure("header", font=('Helvetica', 10, 'bold'), background='#E0F7FA', foreground='#000000')
         self.tree.tag_configure("subentry", background='#F5F5F5')
         self.tree.tag_configure("spacer", background='white')

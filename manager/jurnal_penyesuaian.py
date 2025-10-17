@@ -137,8 +137,6 @@ class JurnalPenyesuaianPage(tk.Frame):
             
             if total_debit != total_kredit:
                  messagebox.showwarning("Peringatan", "Jurnal Penyesuaian TIDAK SEIMBANG! Mohon cek transaksi Anda.")
-            else:
-                 messagebox.showinfo("Sukses", "Jurnal Penyesuaian berhasil dimuat dan SEIMBANG.")
 
 
         except Exception as e:

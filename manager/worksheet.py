@@ -304,7 +304,7 @@ class WorksheetPage(tk.Frame):
         if (total_ns[0] == total_ns[1] and total_ajp[0] == total_ajp[1] and 
             total_nsd[0] == total_nsd[1] and total_lr[0] == total_lr[1] and 
             total_ner[0] == total_ner[1]):
-            messagebox.showinfo("Sukses", "Kertas Kerja berhasil dimuat dan SEIMBANG.")
+            pass
         else:
             messagebox.showwarning("Peringatan", "Kertas Kerja **TIDAK SEIMBANG**! Periksa entri dan perhitungan Anda.")
 

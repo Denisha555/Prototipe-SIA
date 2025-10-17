@@ -174,8 +174,6 @@ class NeracaSaldoPage(tk.Frame):
                 
                 if total_debit_ns != total_kredit_ns:
                     messagebox.showwarning("Peringatan", "Neraca Saldo TIDAK SEIMBANG! Mohon cek Jurnal Umum Anda.")
-                else:
-                    messagebox.showinfo("Sukses", "Neraca Saldo berhasil dimuat dan SEIMBANG.")
 
             else:
                 messagebox.showinfo("Info", "Tidak ada data transaksi yang menghasilkan saldo untuk periode ini.")
