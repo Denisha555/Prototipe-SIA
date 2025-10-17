@@ -8,6 +8,7 @@ from manager.buku_besar import BukuBesarPage
 from manager.laporan_arus_kas import LaporanArusKasPage
 from manager.neraca import NeracaPage
 from manager.neraca_saldo import NeracaSaldoPage
+from manager.neraca_saldo_setelah_penutupan import NeracaSaldoSetelahPenutupanPage
 from manager.worksheet import WorksheetPage
 from manager.laba_rugi import LabaRugiPage
 from manager.jurnal_penutup import JurnalPenutupPage
@@ -86,6 +87,7 @@ class LoginPage(tk.Tk):
                 "Jurnal Umum": JurnalUmumPage,
                 "Buku Besar": BukuBesarPage,
                 "Neraca Saldo": NeracaSaldoPage,
+                "Neraca Saldo Setelah Penutupan": NeracaSaldoSetelahPenutupanPage,
                 "Worksheet": WorksheetPage,
                 "Laba Rugi": LabaRugiPage,
                 "Laporan Perubahan Modal": LaporanPerubahanModalPage,
