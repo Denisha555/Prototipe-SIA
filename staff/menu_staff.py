@@ -18,7 +18,7 @@ class MenuStaffPage(tk.Frame):
                         font=("Helvetica", 12, "bold"),
                         padding=12,
                         foreground="black",
-                        background="#dc3545")
+                        background="#dc3545",)
 
         # 🔲 Layout utama
         self.grid_rowconfigure(0, weight=1)
@@ -60,7 +60,7 @@ class MenuStaffPage(tk.Frame):
 
         ttk.Button(menu_frame, text="Kembali Ke Login", style="Danger.TButton",
                    command=lambda: controller.show_frame("Login")).grid(
-            column=0, row=2, columnspan=2, padx=550, pady=20, sticky="nsew"
+            column=0, row=2, columnspan=2, padx=450, pady=20, sticky="nsew"
         )
 
         # ✨ Footer kosong untuk spasi bawah

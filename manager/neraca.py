@@ -153,9 +153,11 @@ class NeracaPage(tk.Frame):
         total_pasiva = sum(s for _, s in pasiva)
 
         if kategori == "Aktiva":
-            self.tree.insert("", "end", values=("TOTAL AKTIVA", f"{total_aktiva:,.0f}"))
+            self.tree.insert("", "end", values=("TOTAL AKTIVA", f"{total_aktiva:,.0f}"), tags="total")
         else:
-            self.tree.insert("", "end", values=("TOTAL PASIVA", f"{total_pasiva:,.0f}"))
+            self.tree.insert("", "end", values=("TOTAL PASIVA", f"{total_pasiva:,.0f}"), tags="total")
+
+        self.tree.tag_configure("total", font=('Helvetica', 11, 'bold'), background='#E0F7FA')
 
         # Cek keseimbangan
         if total_aktiva != total_pasiva:
