@@ -7,7 +7,7 @@ try:
     from function.bulan_map import bulan_map
 except ImportError:
     bulan_map = {
-        "Januari": "01", "Februari": "02", "Maret": "03", 
+        "Januari": "01", "Februari": "02", "Maret": "03",
         "April": "04", "Mei": "05", "Juni": "06",
         "Juli": "07", "Agustus": "08", "September": "09",
         "Oktober": "10", "November": "11", "Desember": "12"
@@ -31,7 +31,6 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        # --- Tata letak utama ---
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
@@ -41,29 +40,18 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
             font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, columnspan=2, pady=(15, 10))
         
-        # --- Frame form pilihan bulan & tahun ---
+        # Frame filter bulan & tahun
         form_frame = ttk.Frame(self)
         form_frame.grid(row=1, column=0, columnspan=2, pady=10)
 
         ttk.Label(form_frame, text="Bulan:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
 
-        # Buat urutan bulan bahasa Indonesia
-        bulan_order = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                       "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
-
+        bulan_order = list(bulan_map.keys())
         self.combo_bulan = ttk.Combobox(form_frame, values=bulan_order, state="readonly", width=15)
         self.combo_bulan.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
-        # Dapatkan nama bulan sekarang dalam bahasa Indonesia
         current_month_num = datetime.now().strftime("%m")
-        default_bulan = None
-        for nama, num in bulan_map.items():
-            if num == current_month_num:
-                default_bulan = nama
-                break
-        if not default_bulan:
-            default_bulan = bulan_order[int(current_month_num) - 1]
-
+        default_bulan = next((nama for nama, num in bulan_map.items() if num == current_month_num), bulan_order[0])
         self.combo_bulan.set(default_bulan)
 
         ttk.Label(form_frame, text="Tahun:").grid(row=0, column=2, padx=10, pady=5, sticky="e")
@@ -77,7 +65,7 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
         ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
                    ).grid(row=3, column=0, columnspan=2, pady=5)
 
-        # --- Treeview hasil ---
+        # Treeview hasil
         tree_frame = ttk.Frame(self)
         tree_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
         tree_frame.grid_rowconfigure(0, weight=1)
@@ -130,9 +118,9 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
         total_kredit_nssp = 0
 
         try:
-            # Ambil akun riil saja
+            # Ambil akun riil (aktiva, kewajiban, modal)
             c.execute("""
-                SELECT kode_akun, nama_akun, saldo_normal 
+                SELECT kode_akun, nama_akun 
                 FROM akun 
                 WHERE kode_akun LIKE '1%' OR kode_akun LIKE '2%' OR kode_akun LIKE '3%'
                 ORDER BY kode_akun ASC
@@ -140,48 +128,36 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
             semua_akun_riil = c.fetchall()
 
             ada_data = False
-            for kode_akun, nama_akun, saldo_normal in semua_akun_riil:
-                query_saldo = """
+            for kode_akun, nama_akun in semua_akun_riil:
+                c.execute("""
                     SELECT SUM(debit), SUM(kredit)
                     FROM jurnal_umum_detail
                     WHERE kode_akun = ?
                       AND strftime('%Y-%m', tanggal) <= ?
-                """
-                c.execute(query_saldo, (kode_akun, batas_waktu))
+                """, (kode_akun, batas_waktu))
                 
                 mutasi_debit, mutasi_kredit = c.fetchone()
-                mutasi_debit = mutasi_debit if mutasi_debit is not None else 0
-                mutasi_kredit = mutasi_kredit if mutasi_kredit is not None else 0
+                mutasi_debit = mutasi_debit or 0
+                mutasi_kredit = mutasi_kredit or 0
                 
                 net_balance = mutasi_debit - mutasi_kredit
-                
-                debit_saldo = 0
-                kredit_saldo = 0
-
-                if net_balance > 0:
-                    debit_saldo = net_balance
-                elif net_balance < 0:
-                    kredit_saldo = abs(net_balance)
+                debit_saldo = max(net_balance, 0)
+                kredit_saldo = max(-net_balance, 0)
 
                 if debit_saldo > 0 or kredit_saldo > 0:
                     ada_data = True
-                    
                     self.tree.insert("", "end", values=(
                         kode_akun,
                         nama_akun,
                         _format_rupiah(debit_saldo),
                         _format_rupiah(kredit_saldo)
                     ))
-
                     total_debit_nssp += debit_saldo
                     total_kredit_nssp += kredit_saldo
             
             if ada_data:
                 self.tree.insert("", "end", values=(
-                    "", 
-                    "TOTAL", 
-                    _format_rupiah(total_debit_nssp), 
-                    _format_rupiah(total_kredit_nssp)
+                    "", "TOTAL", _format_rupiah(total_debit_nssp), _format_rupiah(total_kredit_nssp)
                 ), tags=('total',))
                 self.tree.tag_configure('total', font=('Helvetica', 10, 'bold'), background='#E0F7FA')
                 
@@ -190,7 +166,28 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
             else:
                 messagebox.showinfo("Info", f"Tidak ada data saldo akun riil hingga {bulan} {tahun}.")
 
+            # ===== Simpan total saldo akhir sebagai saldo awal bulan depan =====
+            bulan_next = int(bulan_num)
+            tahun_next = tahun_int
+            if bulan_next == 12:
+                bulan_next = 1
+                tahun_next += 1
+            else:
+                bulan_next += 1
+
+            tanggal_next = f"{tahun_next}-{bulan_next:02d}-01"
+            total_saldo_akhir = total_debit_nssp  # atau total_kredit_nssp, karena seimbang
+
+            # Cek apakah sudah ada data untuk tanggal tersebut
+            c.execute("SELECT COUNT(*) FROM saldo_awal WHERE tanggal = ?", (tanggal_next,))
+            exists = c.fetchone()[0] > 0
+
+            if exists:
+                c.execute("UPDATE saldo_awal SET saldo_awal = ? WHERE tanggal = ?", (total_saldo_akhir, tanggal_next))
+            else:
+                c.execute("INSERT INTO saldo_awal (saldo_awal, tanggal) VALUES (?, ?)", (total_saldo_akhir, tanggal_next))
+
         except sqlite3.Error as e:
-            messagebox.showerror("Error Database", f"Terjadi kesalahan saat memuat Neraca Saldo Setelah Penutupan: {e}")
+            messagebox.showerror("Error Database", f"Terjadi kesalahan: {e}")
         finally:
             conn.close()
