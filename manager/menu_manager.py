@@ -130,9 +130,6 @@ class MenuManagerPage(tk.Frame):
         ttk.Button(laporan_frame, text="🔒 Neraca Saldo Setelah Penutupan", style="Menu.TButton",
                    command=lambda: controller.show_frame("Neraca Saldo Setelah Penutupan")).grid(
             column=0, row=5, padx=10, pady=10, sticky="ew")
-        ttk.Button(laporan_frame, text="📝 Neraca Saldo Setelah Pembalik", style="Menu.TButton",
-                   command=lambda: controller.show_frame("Neraca Saldo Setelah Penutupan")).grid(
-            column=0, row=6, padx=10, pady=10, sticky="ew")
 
         # ===============================
         # TOMBOL KEMBALI KE LOGIN

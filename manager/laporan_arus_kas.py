@@ -280,12 +280,6 @@ class LaporanArusKasPage(tk.Frame):
         insert_row("Neto Pendanaan", "", _format_rupiah(neto_pendanaan), tag='subtotal')
         total_neto += neto_pendanaan
         
-        insert_row("") # Spacer
-
-        # KENAIKAN/PENURUNAN KAS
-        keterangan_neto = "Kenaikan Kas" if total_neto >= 0 else "Penurunan Kas"
-        insert_row(keterangan_neto, "", _format_rupiah(abs(total_neto)), tag='subtotal')
-        
         insert_row("")
 
         # SALDO KAS AKHIR PERIODE
