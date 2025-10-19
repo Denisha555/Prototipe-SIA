@@ -9,18 +9,48 @@ class GrafikKomposisiAsetPage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        ttk.Label(self, text="📊 Grafik Komposisi Aset", font=("Helvetica", 18, "bold")).pack(pady=15)
+        # ===============================
+        # STYLE
+        # ===============================
+        style = ttk.Style()
+        style.configure("Title.TLabel", font=("Helvetica", 18, "bold"))
+        style.configure("Primary.TButton",
+                        font=("Helvetica", 12, "bold"),
+                        padding=10)
+        style.configure("Danger.TButton",
+                        font=("Helvetica", 12, "bold"),
+                        padding=10)
 
-        ttk.Button(self, text="Tampilkan", command=self.tampilkan_grafik).pack(pady=10)
+        # ===============================
+        # TITLE
+        # ===============================
+        ttk.Label(self, text="📊 Grafik Komposisi Aset", style="Title.TLabel").pack(pady=(20, 10))
 
-        # Canvas matplotlib
-        self.figure = plt.Figure(figsize=(7, 5), dpi=100)
+        ttk.Button(self, text="Tampilkan Grafik", style="Primary.TButton",
+                   command=self.tampilkan_grafik).pack(pady=10)
+        
+        # ===============================
+        # TOMBOL KEMBALI
+        # ===============================
+        ttk.Button(self, text="◀️ Kembali ke Menu Utama",
+                   style="Danger.TButton",
+                   command=lambda: controller.show_frame("Menu Utama Manager")
+                   ).pack(pady=(10, 25))
+
+        # ===============================
+        # CANVAS MATPLOTLIB
+        # ===============================
+        self.figure = plt.Figure(figsize=(6, 6), dpi=100)
         self.ax = self.figure.add_subplot(111)
-        self.canvas = FigureCanvasTkAgg(self.figure, self)
-        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        ttk.Button(self, text="Kembali ke Menu Utama",
-                   command=lambda: controller.show_frame("Menu Utama Manager")).pack(pady=5)
+        # sembunyikan axes dulu biar gak kelihatan kotak kosong
+        self.ax.axis('off')
+        self.ax.text(0.5, 0.5, "Belum ada grafik.\nTekan 'Tampilkan Grafik' untuk menampilkan.",
+                     ha='center', va='center', fontsize=11, color='gray')
+
+        self.canvas = FigureCanvasTkAgg(self.figure, self)
+        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        self.canvas.draw()
 
     def tampilkan_grafik(self):
         try:
@@ -34,30 +64,32 @@ class GrafikKomposisiAsetPage(tk.Frame):
             labels = []
             values = []
 
-            # Hitung saldo akhir tiap akun aset
+            # Hitung saldo akhir tiap akun aset (termasuk penyesuaian)
             for kode_akun, nama_akun in aset_akun:
                 c.execute("""
                     SELECT 
                         COALESCE(SUM(debit), 0) - COALESCE(SUM(kredit), 0)
                     FROM jurnal_umum_detail
                     WHERE kode_akun = ?
-                    AND jenis_jurnal IN ('UMUM', 'PENYESUAIAN')
+                      AND jenis_jurnal IN ('UMUM', 'PENYESUAIAN')
                 """, (kode_akun,))
                 saldo = c.fetchone()[0]
-                if saldo != 0:  # hanya tampilkan kalau ada saldo
+                if saldo != 0:
                     labels.append(nama_akun)
                     values.append(saldo)
 
             conn.close()
 
+            # Tidak ada data
+            self.ax.clear()
             if not values:
-                messagebox.showinfo("Info", "Tidak ada data aset untuk ditampilkan.")
-                self.ax.clear()
+                self.ax.axis('off')
+                self.ax.text(0.5, 0.5, "Tidak ada data aset untuk ditampilkan.",
+                             ha='center', va='center', fontsize=11, color='gray')
                 self.canvas.draw()
                 return
 
             # Gambar pie chart
-            self.ax.clear()
             labels_with_saldo = [f"{nama}\nRp {saldo:,.0f}" for nama, saldo in zip(labels, values)]
 
             self.ax.pie(
@@ -68,18 +100,12 @@ class GrafikKomposisiAsetPage(tk.Frame):
                 textprops={'fontsize': 10}
             )
 
-            self.ax.set_title("Komposisi Aset", fontsize=14, fontweight="bold")
+            self.ax.axis('equal')
+            self.ax.set_title("Komposisi Aset Berdasarkan Akun", fontsize=14, fontweight="bold")
+
             self.canvas.draw()
 
         except sqlite3.Error as e:
             messagebox.showerror("Error Database", f"Gagal mengambil data aset: {e}")
 
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    class dummy :
-        def show_frame(self, name):
-            pass
-    app = GrafikKomposisiAsetPage(root, dummy())
-    app.pack()
-    app.mainloop()
