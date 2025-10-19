@@ -4,6 +4,10 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import ttk, messagebox, filedialog
 
+def format_rupiah(nominal):
+    formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+    return f"{formatted}"
+
 class JasaPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -45,7 +49,7 @@ class JasaPage(tk.Frame):
         ttk.Button(input_frame, text="Simpan", command=self.simpan_jasa).grid(row=4, column=0, columnspan=2, pady=10)
         ttk.Button(input_frame, text="Hapus", command=self.hapus_jasa).grid(row=4, column=1, columnspan=2, pady=5)
         ttk.Button(input_frame, text="Kembali ke Menu Utama", width=30,
-                   command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=5, column=0, columnspan=3, pady=10)
+                   command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=5, column=0, columnspan=3, pady=10)
 
         # === FRAME TABEL ===
         table_frame = ttk.LabelFrame(self, text="Daftar Jasa", padding=10)
@@ -93,7 +97,11 @@ class JasaPage(tk.Frame):
             return
 
         try:
-            harga = float(harga)
+            cleaned_harga = ''.join(filter(str.isdigit, harga))
+            harga = int(cleaned_harga)
+            if harga < 0:
+                messagebox.showerror("Error", "Harga tidak boleh negatif.")
+                return
         except ValueError:
             messagebox.showerror("Error", "Harga harus berupa angka.")
             return
@@ -154,7 +162,7 @@ class JasaPage(tk.Frame):
                 except Exception as e:
                     print(f"Gagal load gambar {nama}: {e}")
 
-            self.tree.insert("", "end", iid=jasa_id, image=img, values=(nama, deskripsi, f"Rp{harga:,.0f}"))
+            self.tree.insert("", "end", iid=jasa_id, image=img, values=(nama, deskripsi, f"{format_rupiah(harga)}"))
 
     # === DOUBLE CLICK ===
     def on_tree_double_click(self, event):
