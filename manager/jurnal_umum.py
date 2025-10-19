@@ -94,19 +94,17 @@ class JurnalUmumPage(tk.Frame):
         total_kredit = 0
 
         try:
-            # PERBAIKAN QUERY: JOIN dengan tabel 'akun' untuk mendapatkan nama_akun
-            # dan pastikan kolom yang diambil urutannya benar.
             query = """
                 SELECT 
                     jud.tanggal, 
                     jud.transaksi_ref_id, 
                     jud.keterangan, 
                     jud.kode_akun, 
-                    a.nama_akun,  -- KOLOM TAMBAHAN DARI TABEL AKUN
+                    a.nama_akun, 
                     jud.debit, 
                     jud.kredit
                 FROM jurnal_umum_detail jud
-                JOIN akun a ON jud.kode_akun = a.kode_akun  -- Lakukan JOIN
+                JOIN akun a ON jud.kode_akun = a.kode_akun 
                 WHERE strftime('%m', jud.tanggal) = ?
                   AND strftime('%Y', jud.tanggal) = ?
                   AND jud.jenis_jurnal = 'UMUM' -- FILTER HANYA JURNAL UMUM
@@ -118,22 +116,12 @@ class JurnalUmumPage(tk.Frame):
             if not results:
                 messagebox.showinfo("Info", f"Tidak ada data Jurnal Umum untuk {bulan} {tahun}.")
                 return
-            
-            c.execute("""SELECT saldo_awal FROM saldo_awal 
-                      WHERE strftime('%m', tanggal) = ? 
-                      AND strftime('%Y', tanggal) = ?""", (bulan_angka, tahun))
-            saldo_awal = c.fetchone()[0]
-
-            if not saldo_awal:
-                messagebox.showerror("Error", "Saldo awal tidak ditemukan, harap beralih ke menu neraca saldo setelah penutupan untuk melakukan perhitungan saldo awal.")
-                return
 
             last_ref_id = None
             # PASTIKAN URUTAN UNPACKING SESUAI DENGAN QUERY (7 KOLOM)
             for tanggal, ref_id, keterangan_transaksi, kode_akun, nama_akun, debit, kredit in results:
                 
                 # Pastikan debit dan kredit adalah numerik (int/float)
-                # Nilai None/NULL dari database diubah menjadi 0
                 debit = debit if debit is not None else 0
                 kredit = kredit if kredit is not None else 0
                 
@@ -142,7 +130,6 @@ class JurnalUmumPage(tk.Frame):
                         self.tree.insert("", "end", values=("--", "", "", "", "", ""), tags=('separator',))
                     last_ref_id = ref_id
                 
-                # Baris yang error (kredit kini sudah angka)
                 if kredit > 0:
                     nama_akun = f"        {nama_akun}"
                     
