@@ -118,9 +118,17 @@ class JurnalUmumPage(tk.Frame):
             if not results:
                 messagebox.showinfo("Info", f"Tidak ada data Jurnal Umum untuk {bulan} {tahun}.")
                 return
+            
+            c.execute("""SELECT saldo_awal FROM saldo_awal 
+                      WHERE strftime('%m', tanggal) = ? 
+                      AND strftime('%Y', tanggal) = ?""", (bulan_angka, tahun))
+            saldo_awal = c.fetchone()[0]
+
+            if not saldo_awal:
+                messagebox.showerror("Error", "Saldo awal tidak ditemukan, harap beralih ke menu neraca saldo setelah penutupan untuk melakukan perhitungan saldo awal.")
+                return
 
             last_ref_id = None
-            
             # PASTIKAN URUTAN UNPACKING SESUAI DENGAN QUERY (7 KOLOM)
             for tanggal, ref_id, keterangan_transaksi, kode_akun, nama_akun, debit, kredit in results:
                 

@@ -58,15 +58,15 @@ class MenuManagerPage(tk.Frame):
 
         # Frame pembungkus tiga kolom agar rata tengah
         center_frame = ttk.Frame(content_frame)
-        center_frame.grid(column=0, row=1, padx=10, pady=10, sticky="n")
+        center_frame.grid(column=0, row=1, padx=5, pady=10, sticky="n")
         for i in range(3):
-            center_frame.grid_columnconfigure(i, weight=1, minsize=300)
+            center_frame.grid_columnconfigure(i, weight=1)
 
         # ===============================
         # FRAME 1: MANAJEMEN DATA
         # ===============================
         data_frame = ttk.LabelFrame(center_frame, text="Manajemen Data", padding=15)
-        data_frame.grid(column=0, row=0, padx=20, pady=10, sticky="nsew")
+        data_frame.grid(column=0, row=0, padx=5, pady=10, sticky="nsew")
         data_frame.grid_columnconfigure(0, weight=1)
 
         ttk.Button(data_frame, text="✅ Kelola Jasa", style="Menu.TButton",
@@ -86,7 +86,7 @@ class MenuManagerPage(tk.Frame):
         # FRAME 2: SIKLUS AKUNTANSI
         # ===============================
         siklus_frame = ttk.LabelFrame(center_frame, text="Siklus Akuntansi", padding=15)
-        siklus_frame.grid(column=1, row=0, padx=20, pady=10, sticky="nsew")
+        siklus_frame.grid(column=1, row=0, padx=5, pady=10, sticky="nsew")
         siklus_frame.grid_columnconfigure(0, weight=1)
 
         ttk.Button(siklus_frame, text="📘 Jurnal Umum", style="Menu.TButton",
@@ -101,7 +101,7 @@ class MenuManagerPage(tk.Frame):
         ttk.Button(siklus_frame, text="📝 Jurnal Penyesuaian", style="Menu.TButton",
                    command=lambda: controller.show_frame("Jurnal Penyesuaian")).grid(
             column=0, row=3, padx=10, pady=10, sticky="ew")
-        ttk.Button(siklus_frame, text="🗂️ Neraca Lajur (Worksheet)", style="Menu.TButton",
+        ttk.Button(siklus_frame, text="🗂️ Neraca Lajur", style="Menu.TButton",
                    command=lambda: controller.show_frame("Worksheet")).grid(
             column=0, row=4, padx=10, pady=10, sticky="ew")
 
@@ -109,7 +109,7 @@ class MenuManagerPage(tk.Frame):
         # FRAME 3: LAPORAN & PENUTUPAN
         # ===============================
         laporan_frame = ttk.LabelFrame(center_frame, text="Laporan & Penutupan", padding=15)
-        laporan_frame.grid(column=2, row=0, padx=20, pady=10, sticky="nsew")
+        laporan_frame.grid(column=2, row=0, padx=5, pady=10, sticky="nsew")
         laporan_frame.grid_columnconfigure(0, weight=1)
 
         ttk.Button(laporan_frame, text="📈 Laporan Laba Rugi", style="Menu.TButton",
@@ -130,9 +130,33 @@ class MenuManagerPage(tk.Frame):
         ttk.Button(laporan_frame, text="🔒 Neraca Saldo Setelah Penutupan", style="Menu.TButton",
                    command=lambda: controller.show_frame("Neraca Saldo Setelah Penutupan")).grid(
             column=0, row=5, padx=10, pady=10, sticky="ew")
-        ttk.Button(laporan_frame, text="📊 Analisis Keuangan", style="Menu.TButton",
-                   command=lambda: controller.show_frame("Analisis Keuangan")).grid(
-            column=0, row=5, padx=10, pady=10, sticky="ew")
+        
+        # ===============================
+        # FRAME 3: Analisis Grafik
+        # ===============================
+        grafik_frame = ttk.LabelFrame(center_frame, text="Analisis Grafik", padding=15)
+        grafik_frame.grid(column=3, row=0, padx=5, pady=10, sticky="nsew")
+        grafik_frame.grid_columnconfigure(0, weight=1)
+
+        ttk.Button(grafik_frame, text="📊 Grafik Pendapatan", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Jurnal Penutup")).grid(
+            column=0, row=0, padx=10, pady=10, sticky="ew")
+
+        ttk.Button(grafik_frame, text="📊 Grafik Pengeluaran", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Jurnal Penutup")).grid(
+            column=0, row=1, padx=10, pady=10, sticky="ew")
+
+        ttk.Button(grafik_frame, text="📊 Grafik Komposisi Aset", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Jurnal Penutup")).grid(
+            column=0, row=2, padx=10, pady=10, sticky="ew")
+        
+        ttk.Button(grafik_frame, text="📊 Grafik Pendapatan & Beban", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Jurnal Penutup")).grid(
+            column=0, row=3, padx=10, pady=10, sticky="ew")
+        
+        ttk.Button(grafik_frame, text="📊 Grafik Perubahan Modal", style="Menu.TButton",
+                   command=lambda: controller.show_frame("Jurnal Penutup")).grid(
+            column=0, row=4, padx=10, pady=10, sticky="ew")
 
         # ===============================
         # TOMBOL KEMBALI KE LOGIN
