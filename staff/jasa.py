@@ -49,7 +49,7 @@ class JasaPage(tk.Frame):
         ttk.Button(input_frame, text="Simpan", command=self.simpan_jasa).grid(row=4, column=0, columnspan=2, pady=10)
         ttk.Button(input_frame, text="Hapus", command=self.hapus_jasa).grid(row=4, column=1, columnspan=2, pady=5)
         ttk.Button(input_frame, text="Kembali ke Menu Utama", width=30,
-                   command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=5, column=0, columnspan=3, pady=10)
+                   command=lambda: controller.show_frame("Menu Utama Staff")).grid(row=5, column=0, columnspan=3, pady=10)
 
         # === FRAME TABEL ===
         table_frame = ttk.LabelFrame(self, text="Daftar Jasa", padding=10)
