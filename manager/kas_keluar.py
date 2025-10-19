@@ -8,10 +8,14 @@ import re # Untuk mengekstrak kode akun
 def _connect_db():
     return sqlite3.connect('data_keuangan.db')
 
-def _unformat_rupiah_int(formatted_string):
-    """Fungsi helper untuk membersihkan string RpX,XXX menjadi integer."""
-    # Menghapus 'Rp', spasi, dan koma (separator ribuan)
-    return int(str(formatted_string).replace("Rp", "").replace(",", "").strip())
+def format_rupiah(nominal):
+    formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+    return f"{formatted}"
+
+def _unformat_nominal_int(formatted_string):
+    s = str(formatted_string).replace("Rp", "").strip()
+    cleaned = ''.join(filter(str.isdigit, s))
+    return int(cleaned)
 
 class KasKeluarPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -65,7 +69,7 @@ class KasKeluarPage(tk.Frame):
         self.tree_kanan.heading("tanggal", text="Tanggal")
         self.tree_kanan.column("keterangan", width=200, anchor="center")
         self.tree_kanan.heading("keterangan", text="Keterangan")
-        self.tree_kanan.column("nominal", width=150, anchor="center")
+        self.tree_kanan.column("nominal", width=150, anchor="e")
         self.tree_kanan.heading("nominal", text="Nominal (Rp)")
 
         # Scrollbar untuk Treeview
@@ -116,7 +120,16 @@ class KasKeluarPage(tk.Frame):
         # Validasi input
         if not akun or not keterangan or not nominal:
             messagebox.showwarning("Peringatan", "Mohon isi semua kolom input.")
-
+            return
+        
+        try:
+            nominal = _unformat_nominal_int(nominal)
+            if nominal <= 0:
+                messagebox.showerror("Error", "Nominal harus lebih dari nol.")
+                return
+        except ValueError:
+            messagebox.showerror("Error", "Nominal harus berupa angka yang valid.")
+            return
         conn = _connect_db()
         c = conn.cursor()
 
@@ -180,6 +193,9 @@ class KasKeluarPage(tk.Frame):
         self.entry_harga.delete(0, tk.END)
 
     def load_daftar_transaksi(self):
+        for item in self.tree_kanan.get_children():
+            self.tree_kanan.delete(item)
+            
         conn = _connect_db()
         c = conn.cursor()
 
@@ -187,6 +203,8 @@ class KasKeluarPage(tk.Frame):
         rows = c.fetchall()
 
         for row in rows:
-            self.tree_kanan.insert("", tk.END, values=(row[0], row[1], row[3], f"Rp{row[2]}"))
+            transaksi_id, tanggal, nominal, kategori = row
+            nominal_fmt = f"Rp {format_rupiah(nominal)}"
+            self.tree_kanan.insert("", tk.END, values=(transaksi_id, tanggal, kategori, nominal_fmt))
 
         conn.close()

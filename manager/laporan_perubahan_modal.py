@@ -4,6 +4,9 @@ import sqlite3
 import datetime
 from function.bulan_map import bulan_map
 
+def format_rupiah(nominal):
+    formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+    return f"{formatted}"
 
 # === Fungsi bantu ambil saldo akun untuk perhitungan laba rugi ===
 def _get_account_balances(bulan_num, tahun):
@@ -156,11 +159,11 @@ class LaporanPerubahanModalPage(tk.Frame):
         conn.close()
 
         # === Tampilkan hasil laporan ===
-        self.treeview.insert("", "end", values=("Modal Awal", f"{modal_awal:,.0f}"))
-        self.treeview.insert("", "end", values=("Laba Bersih", f"{laba_bersih:,.0f}"))
+        self.treeview.insert("", "end", values=("Modal Awal", f"{format_rupiah(modal_awal)}"))
+        self.treeview.insert("", "end", values=("Laba Bersih", f"{format_rupiah(laba_bersih)}"))
 
         modal_akhir = modal_awal + laba_bersih
-        self.treeview.insert("", "end", values=("Modal Akhir", f"{modal_akhir:,.0f}"), tags=("akhir",))
+        self.treeview.insert("", "end", values=("Modal Akhir", f"{format_rupiah(modal_akhir)}"), tags=("akhir",))
         # Atur style background tag-nya
         self.treeview.tag_configure("akhir", font=('Helvetica', 11, 'bold'), background='#E0F7FA')
 

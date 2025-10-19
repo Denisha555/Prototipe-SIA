@@ -3,6 +3,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3
 
+def format_rupiah(nominal):
+    formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+    return f"{formatted}"
 
 class PenjualanPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -114,7 +117,7 @@ class PenjualanPage(tk.Frame):
         self.jasa_data = c.fetchall()
         conn.close()
 
-        self.combo_jasa["values"] = [f"{j[1]} - Rp{j[2]:,.0f}" for j in self.jasa_data]
+        self.combo_jasa["values"] = [f"{j[1]} - {format_rupiah(j[2])}" for j in self.jasa_data]
 
     def tambah_transaksi(self):
         jasa_index = self.combo_jasa.current()
@@ -132,7 +135,7 @@ class PenjualanPage(tk.Frame):
         total = harga * jumlah
 
         self.tree_input.insert("", "end", values=(
-            jasa_id, nama, deskripsi, jumlah, f"Rp{harga:,.0f}", f"Rp{total:,.0f}"
+            jasa_id, nama, deskripsi, jumlah, f"{format_rupiah(harga)}", f"{format_rupiah(total)}"
         ))
 
         self.combo_jasa.set("")
@@ -160,7 +163,7 @@ class PenjualanPage(tk.Frame):
         # Hitung total keseluruhan
         total_semua = 0
         for row in transaksi_data:
-            total_val = int(str(row[5]).replace("Rp", "").replace(",", ""))
+            total_val = int(str(row[5]).replace(".", ""))
             total_semua += total_val
 
         # Simpan header transaksi
@@ -197,7 +200,7 @@ class PenjualanPage(tk.Frame):
         conn.commit()
         conn.close()
 
-        messagebox.showinfo("Sukses", f"Transaksi {transaksi_id} berhasil disimpan!\nTotal: Rp{total_semua:,.0f}")
+        messagebox.showinfo("Sukses", f"Transaksi {transaksi_id} berhasil disimpan!\nTotal: Rp{format_rupiah(total_semua)}")
 
         # Bersihkan tabel input
         for i in self.tree_input.get_children():
@@ -217,4 +220,6 @@ class PenjualanPage(tk.Frame):
         conn.close()
 
         for row in data:
-            self.tree_data.insert("", "end", values=row)
+            transaksi_id, tanggal, total = row
+            formatted_total = format_rupiah(total)
+            self.tree_data.insert("", "end", values=(transaksi_id, tanggal, formatted_total))

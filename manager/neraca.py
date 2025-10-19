@@ -8,6 +8,9 @@ from function.bulan_map import bulan_map
 def _connect_db():
     return sqlite3.connect("data_keuangan.db")
 
+def format_rupiah(nominal):
+    formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+    return f"{formatted}"
 
 class NeracaPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -143,19 +146,19 @@ class NeracaPage(tk.Frame):
         # Isi ulang tabel sesuai kategori
         if kategori == "Aktiva":
             for nama_akun, saldo in aktiva:
-                self.tree.insert("", "end", values=(nama_akun, f"{saldo:,.0f}"))
+                self.tree.insert("", "end", values=(nama_akun, f"{format_rupiah(saldo)}"))
         else:  # Pasiva
             for nama_akun, saldo in pasiva:
-                self.tree.insert("", "end", values=(nama_akun, f"{saldo:,.0f}"))
+                self.tree.insert("", "end", values=(nama_akun, f"{format_rupiah(saldo)}"))
 
         # Tambahkan total
         total_aktiva = sum(s for _, s in aktiva)
         total_pasiva = sum(s for _, s in pasiva)
 
         if kategori == "Aktiva":
-            self.tree.insert("", "end", values=("TOTAL AKTIVA", f"{total_aktiva:,.0f}"), tags="total")
+            self.tree.insert("", "end", values=("TOTAL AKTIVA", f"{format_rupiah(total_aktiva)}"), tags="total")
         else:
-            self.tree.insert("", "end", values=("TOTAL PASIVA", f"{total_pasiva:,.0f}"), tags="total")
+            self.tree.insert("", "end", values=("TOTAL PASIVA", f"{format_rupiah(total_pasiva)}"), tags="total")
 
         self.tree.tag_configure("total", font=('Helvetica', 11, 'bold'), background='#E0F7FA')
 

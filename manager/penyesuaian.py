@@ -3,6 +3,10 @@ from tkinter import ttk, messagebox
 import sqlite3
 from datetime import date
 
+def format_rupiah(nominal):
+    formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+    return f"{formatted}"
+
 def cek_nomor_akun(nama_akun):
     conn = sqlite3.connect("data_keuangan.db")
     c = conn.cursor()
@@ -87,7 +91,7 @@ class PenyesuaianPage(tk.Frame):
 
         self.tree.heading("Tanggal", text="Tanggal")
         self.tree.heading("JenisPenyesuaian", text="Penyesuaian")
-        self.tree.heading("Nominal", text="Nominal")
+        self.tree.heading("Nominal", text="Nominal (Rp)")
 
         ttk.Button(
             frame_input,
@@ -118,7 +122,7 @@ class PenyesuaianPage(tk.Frame):
         for row in data:
             tanggal, keterangan_akun, nominal = row
             jenis_penyesuaian = keterangan_akun 
-            nominal_fmt = f"Rp{nominal:,.0f}"
+            nominal_fmt = f"{format_rupiah(nominal)}"
 
             self.tree.insert("", "end", values=(tanggal, jenis_penyesuaian, nominal_fmt))
 
