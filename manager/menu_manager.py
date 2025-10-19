@@ -148,7 +148,7 @@ class MenuManagerPage(tk.Frame):
             column=0, row=1, padx=10, pady=10, sticky="ew")
 
         ttk.Button(grafik_frame, text="⚗️ Grafik Komposisi Aset", style="Menu.TButton",
-                   command=lambda: controller.show_frame("Jurnal Penutup")).grid(
+                   command=lambda: controller.show_frame("Grafik Komposisi Aset")).grid(
             column=0, row=2, padx=10, pady=10, sticky="ew")
         
         ttk.Button(grafik_frame, text="📈 Grafik Pendapatan & Beban", style="Menu.TButton",
