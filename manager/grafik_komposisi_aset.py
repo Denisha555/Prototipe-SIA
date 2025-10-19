@@ -26,14 +26,13 @@ class GrafikKomposisiAsetPage(tk.Frame):
         # ===============================
         ttk.Label(self, text="📊 Grafik Komposisi Aset", style="Title.TLabel").pack(pady=(20, 10))
 
-        ttk.Button(self, text="Tampilkan Grafik", style="Primary.TButton",
+        ttk.Button(self, text="Tampilkan Grafik",
                    command=self.tampilkan_grafik).pack(pady=10)
         
         # ===============================
         # TOMBOL KEMBALI
         # ===============================
-        ttk.Button(self, text="◀️ Kembali ke Menu Utama",
-                   style="Danger.TButton",
+        ttk.Button(self, text="Kembali ke Menu Utama",
                    command=lambda: controller.show_frame("Menu Utama Manager")
                    ).pack(pady=(10, 25))
 

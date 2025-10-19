@@ -25,9 +25,9 @@ class GrafikPendapatanDanBebanPage(tk.Frame):
         self.entry_tahun = ttk.Entry(filter_frame, width=10)
         self.entry_tahun.grid(row=0, column=3, padx=5)
 
-        ttk.Button(filter_frame, text="Tampilkan", command=self.tampilkan_grafik).grid(row=0, column=4, padx=10)
+        ttk.Button(filter_frame, text="Tampilkan Grafik", command=self.tampilkan_grafik).grid(row=0, column=4, padx=10)
 
-        ttk.Button(self, text="◀️ Kembali ke Menu Utama",
+        ttk.Button(self, text="Kembali ke Menu Utama",
                    command=lambda: controller.show_frame("Menu Utama Manager")).pack(pady=10)
 
         # Canvas untuk grafik
