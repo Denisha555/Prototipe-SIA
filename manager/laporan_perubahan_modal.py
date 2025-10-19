@@ -95,7 +95,7 @@ class LaporanPerubahanModalPage(tk.Frame):
             }
             bulan_sekarang = eng_to_id.get(bulan_sekarang, bulan_sekarang)
 
-        ttk.Label(self, text="📊 Laporan Perubahan Modal", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
+        ttk.Label(self, text="💵 Laporan Perubahan Modal", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
 
         ttk.Label(self, text="Bulan:").grid(row=1, column=0, sticky="e", padx=5, pady=5)
         self.combo_bulan = ttk.Combobox(self, values=list(bulan_map.keys()), state="readonly", width=25)

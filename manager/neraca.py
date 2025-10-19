@@ -20,7 +20,7 @@ class NeracaPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         
-        ttk.Label(self, text="💼 Neraca", font=("Helvetica", 18, "bold")).grid(
+        ttk.Label(self, text="🏦 Neraca", font=("Helvetica", 18, "bold")).grid(
             row=0, column=0, columnspan=2, pady=15
         )
 

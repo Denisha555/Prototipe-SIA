@@ -143,7 +143,7 @@ class MenuManagerPage(tk.Frame):
                    command=lambda: controller.show_frame("Grafik Pendapatan")).grid(
             column=0, row=0, padx=10, pady=10, sticky="ew")
 
-        ttk.Button(grafik_frame, text="📉 Grafik Pengeluaran", style="Menu.TButton",
+        ttk.Button(grafik_frame, text="📊 Grafik Pengeluaran", style="Menu.TButton",
                    command=lambda: controller.show_frame("Grafik Pengeluaran")).grid(
             column=0, row=1, padx=10, pady=10, sticky="ew")
 
@@ -151,11 +151,11 @@ class MenuManagerPage(tk.Frame):
                    command=lambda: controller.show_frame("Grafik Komposisi Aset")).grid(
             column=0, row=2, padx=10, pady=10, sticky="ew")
         
-        ttk.Button(grafik_frame, text="📈 Grafik Pendapatan & Beban", style="Menu.TButton",
+        ttk.Button(grafik_frame, text="📊 Grafik Pendapatan & Beban", style="Menu.TButton",
                    command=lambda: controller.show_frame("Grafik Pendapatan dan Beban")).grid(
             column=0, row=3, padx=10, pady=10, sticky="ew")
         
-        ttk.Button(grafik_frame, text="📊 Grafik Perubahan Modal", style="Menu.TButton",
+        ttk.Button(grafik_frame, text="📈 Grafik Perubahan Modal", style="Menu.TButton",
                    command=lambda: controller.show_frame("Grafik Perubahan Modal")).grid(
             column=0, row=4, padx=10, pady=10, sticky="ew")
 

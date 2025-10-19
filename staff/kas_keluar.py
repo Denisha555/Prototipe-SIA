@@ -25,7 +25,7 @@ class KasKeluarPage(tk.Frame):
         self.debit_accounts_map = self._get_debit_accounts()
         akun_list = list(self.debit_accounts_map.keys())
 
-        ttk.Label(self, text="🛒 Input  Pengeluaran", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+        ttk.Label(self, text="💸 Input  Pengeluaran", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
 
         # ❗ KOREKSI: Pilihan Akun (Ganti Kategori)
         ttk.Label(self, text="Akun: ").grid(row=1, column=0, sticky="e", padx=10, pady=5)

@@ -38,7 +38,7 @@ class MenuStaffPage(tk.Frame):
         menu_frame.grid_columnconfigure((0, 1), weight=1)
         menu_frame.grid_rowconfigure((0, 1), weight=1)
 
-        ttk.Button(menu_frame, text="🧾 Kelola Jasa", style="Menu.TButton",
+        ttk.Button(menu_frame, text="⚙️ Kelola Jasa", style="Menu.TButton",
                    command=lambda: controller.show_frame("Input Jasa Staff")).grid(
             column=0, row=0, padx=20, pady=20, sticky="nsew"
         )
@@ -48,12 +48,12 @@ class MenuStaffPage(tk.Frame):
             column=1, row=0, padx=20, pady=20, sticky="nsew"
         )
 
-        ttk.Button(menu_frame, text="💰 Input Pengeluaran", style="Menu.TButton",
+        ttk.Button(menu_frame, text="💸 Input Pengeluaran", style="Menu.TButton",
                    command=lambda: controller.show_frame("Input Kas Keluar")).grid(
             column=0, row=1, padx=20, pady=20, sticky="nsew"
         )
 
-        ttk.Button(menu_frame, text="✔️ Input Penyesuaian", style="Menu.TButton",
+        ttk.Button(menu_frame, text="📝 Input Penyesuaian", style="Menu.TButton",
                    command=lambda: controller.show_frame("Penyesuaian Staff")).grid(
             column=1, row=1, padx=20, pady=20, sticky="nsew"
         )

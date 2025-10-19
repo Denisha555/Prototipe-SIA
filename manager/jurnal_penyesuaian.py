@@ -23,7 +23,7 @@ class JurnalPenyesuaianPage(tk.Frame):
         self.grid_columnconfigure(1, weight=1)
 
         ttk.Label(
-            self, text="📘 Jurnal Penyesuaian", font=("Helvetica", 18, "bold")
+            self, text="🧮 Jurnal Penyesuaian", font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, columnspan=2, pady=15)
 
         bulan_list = list(bulan_map.keys())

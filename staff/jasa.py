@@ -21,7 +21,7 @@ class JasaPage(tk.Frame):
         self.grid_columnconfigure(1, weight=2)
         self.grid_rowconfigure(1, weight=1)
 
-        ttk.Label(self, text="💼 Manajemen Jasa", font=("Helvetica", 18, "bold")).grid(
+        ttk.Label(self, text="⚙️ Manajemen Jasa", font=("Helvetica", 18, "bold")).grid(
             row=0, column=0, columnspan=2, pady=15
         )
 

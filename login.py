@@ -13,7 +13,7 @@ from manager.neraca import NeracaPage
 from manager.neraca_saldo import NeracaSaldoPage
 from manager.neraca_saldo_setelah_penutupan import NeracaSaldoSetelahPenutupanPage
 from manager.worksheet import WorksheetPage
-from manager.laba_rugi import LabaRugiPage
+from manager.laporan_laba_rugi import LabaRugiPage
 from manager.jurnal_penutup import JurnalPenutupPage
 from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
 from manager.penyesuaian import PenyesuaianPage as PenyesuaianPageManager

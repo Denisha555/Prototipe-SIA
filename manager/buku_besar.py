@@ -91,7 +91,7 @@ class BukuBesarPage(tk.Frame):
         # === Judul Halaman ===
         ttk.Label(
             self,
-            text="📘 Buku Besar",
+            text="📚 Buku Besar",
             font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, columnspan=2, pady=(15, 10))
         

@@ -120,7 +120,7 @@ class GrafikPengeluaranPage(tk.Frame):
             tanggal = [int(d[0][-2:]) for d in data]  # ambil tanggal (1–31)
             total = [d[1] for d in data]
 
-            bars = self.ax.bar(tanggal, total, color="#D9534F", edgecolor='black')
+            bars = self.ax.bar(tanggal, total, color="#D9534F")
 
             # Tambahkan label Rp di atas batang
             for bar in bars:

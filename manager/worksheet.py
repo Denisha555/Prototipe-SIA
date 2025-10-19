@@ -34,7 +34,7 @@ class WorksheetPage(tk.Frame):
         
         ttk.Label(
             self,
-            text="📊 Kertas Kerja (Worksheet)",
+            text="📰 Neraca Lajur (Worksheet)",
             font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, pady=(15, 10))
 

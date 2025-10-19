@@ -24,7 +24,7 @@ class GrafikKomposisiAsetPage(tk.Frame):
         # ===============================
         # TITLE
         # ===============================
-        ttk.Label(self, text="📊 Grafik Komposisi Aset", style="Title.TLabel").pack(pady=(20, 10))
+        ttk.Label(self, text="⚗️ Grafik Komposisi Aset", style="Title.TLabel").pack(pady=(20, 10))
 
         ttk.Button(self, text="Tampilkan Grafik",
                    command=self.tampilkan_grafik).pack(pady=10)

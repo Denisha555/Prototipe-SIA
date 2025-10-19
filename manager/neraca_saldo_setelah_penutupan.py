@@ -36,7 +36,7 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
 
         ttk.Label(
             self,
-            text="🔒 Neraca Saldo Setelah Penutupan",
+            text="🔐 Neraca Saldo Setelah Penutupan",
             font=("Helvetica", 18, "bold")
         ).grid(row=0, column=0, columnspan=2, pady=(15, 10))
         
