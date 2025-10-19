@@ -5,6 +5,7 @@ from tkinter import ttk, messagebox
 from function.initialize_db import initialize_db
 from manager.grafik_komposisi_aset import GrafikKomposisiAsetPage
 from manager.grafik_pengeluaran import GrafikPengeluaranPage
+from manager.grafik_perubahan_modal import GrafikModalPage
 from manager.jurnal_umum import JurnalUmumPage
 from manager.buku_besar import BukuBesarPage
 from manager.laporan_arus_kas import LaporanArusKasPage
@@ -102,6 +103,7 @@ class LoginPage(tk.Tk):
                 "Grafik Pendapatan": GrafikPendapatanPage,
                 "Grafik Komposisi Aset": GrafikKomposisiAsetPage,
                 "Grafik Pengeluaran": GrafikPengeluaranPage,
+                "Grafik Perubahan Modal": GrafikModalPage,
                 # "Pencatatan": PencatatanPage,
                 # "Pelaporan": PelaporanPage,
                 # "Grafik": GrafikPage,
