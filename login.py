@@ -104,11 +104,8 @@ class LoginPage(tk.Tk):
                 "Grafik Pendapatan": GrafikPendapatanPage,
                 "Grafik Komposisi Aset": GrafikKomposisiAsetPage,
                 "Grafik Pengeluaran": GrafikPengeluaranPage,
-<<<<<<< HEAD
                 "Grafik Perubahan Modal": GrafikModalPage,
-=======
                 "Grafik Pendapatan dan Beban": GrafikPendapatanDanBebanPage
->>>>>>> a7ab1a964b1acc631148d1c19a12562aa0a16dea
                 # "Pencatatan": PencatatanPage,
                 # "Pelaporan": PelaporanPage,
                 # "Grafik": GrafikPage,

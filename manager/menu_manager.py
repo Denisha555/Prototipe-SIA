@@ -152,11 +152,8 @@ class MenuManagerPage(tk.Frame):
             column=0, row=2, padx=10, pady=10, sticky="ew")
         
         ttk.Button(grafik_frame, text="📈 Grafik Pendapatan & Beban", style="Menu.TButton",
-<<<<<<< HEAD
                    command=lambda: controller.show_frame("Grafik Pendapatan & Beban")).grid(
-=======
                    command=lambda: controller.show_frame("Grafik Pendapatan dan Beban")).grid(
->>>>>>> a7ab1a964b1acc631148d1c19a12562aa0a16dea
             column=0, row=3, padx=10, pady=10, sticky="ew")
         
         ttk.Button(grafik_frame, text="📊 Grafik Perubahan Modal", style="Menu.TButton",
