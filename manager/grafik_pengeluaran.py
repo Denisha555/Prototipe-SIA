@@ -152,18 +152,3 @@ class GrafikPengeluaranPage(tk.Frame):
             messagebox.showerror("Error Database", f"Gagal mengambil data: {e}")
 
 
-# ===============================
-# TEST STANDALONE
-# ===============================
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Grafik Pengeluaran")
-    root.geometry("900x650")
-
-    class DummyController:
-        def show_frame(self, name):
-            print(f"Kembali ke: {name}")
-
-    app = GrafikPengeluaranPage(root, DummyController())
-    app.pack(fill="both", expand=True)
-    root.mainloop()

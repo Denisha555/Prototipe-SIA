@@ -33,6 +33,7 @@ from staff.jasa import JasaPage as JasaPageStaff
 from manager.jasa import JasaPage as JasaPageManager
 from staff.penjualan import PenjualanPage as PenjualanPageStaff
 from manager.penjualan import PenjualanPage as PenjualanPageManager
+from manager.grafik_pendapatan_dan_beban import GrafikPendapatanDanBebanPage
 
 
 
@@ -103,7 +104,11 @@ class LoginPage(tk.Tk):
                 "Grafik Pendapatan": GrafikPendapatanPage,
                 "Grafik Komposisi Aset": GrafikKomposisiAsetPage,
                 "Grafik Pengeluaran": GrafikPengeluaranPage,
+<<<<<<< HEAD
                 "Grafik Perubahan Modal": GrafikModalPage,
+=======
+                "Grafik Pendapatan dan Beban": GrafikPendapatanDanBebanPage
+>>>>>>> a7ab1a964b1acc631148d1c19a12562aa0a16dea
                 # "Pencatatan": PencatatanPage,
                 # "Pelaporan": PelaporanPage,
                 # "Grafik": GrafikPage,
