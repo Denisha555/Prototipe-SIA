@@ -55,11 +55,6 @@ class GrafikPendapatanPage(tk.Frame):
         self.figure = plt.Figure(figsize=(8, 4.5), dpi=100)
         self.ax = self.figure.add_subplot(111)
 
-        # tampilan awal: belum ada grafik
-        self.ax.axis('off')
-        self.ax.text(0.5, 0.5, "Belum ada grafik.\nPilih bulan dan tahun lalu tekan 'Tampilkan Grafik'.",
-                     ha='center', va='center', fontsize=11, color='gray')
-
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         self.canvas.draw()
@@ -76,6 +71,8 @@ class GrafikPendapatanPage(tk.Frame):
                 self.combo_bulan.set(name)
                 break
         self.entry_tahun.insert(0, current_year)
+
+        self.tampilkan_grafik()
 
     def tampilkan_grafik(self):
         bulan = self.combo_bulan.get()
@@ -128,12 +125,13 @@ class GrafikPendapatanPage(tk.Frame):
             # Tambahkan label di atas batang
             for bar in bars:
                 height = bar.get_height()
+                formatted_height = f"{height:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
                 self.ax.text(bar.get_x() + bar.get_width()/2, height + max(total)*0.02,
-                             f"Rp{height:,.0f}", ha='center', va='bottom', fontsize=8, rotation=0)
+                             f"Rp{formatted_height}", ha='center', va='bottom', fontsize=8, rotation=0)
 
             self.ax.set_title(f"Grafik Penjualan per Tanggal ({bulan} {tahun})", fontsize=13, fontweight="bold")
             self.ax.set_xlabel("Tanggal", fontsize=10)
-            self.ax.set_ylabel("Total Penjualan (Rp)", fontsize=10)
+            self.ax.set_ylabel("Total Penjualan (Juta Rupiah)", fontsize=10)
             self.ax.grid(axis='y', linestyle='--', alpha=0.6)
 
             # Biar grafik pas dan proporsional

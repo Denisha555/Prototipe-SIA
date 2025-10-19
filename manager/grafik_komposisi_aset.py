@@ -42,14 +42,11 @@ class GrafikKomposisiAsetPage(tk.Frame):
         self.figure = plt.Figure(figsize=(6, 6), dpi=100)
         self.ax = self.figure.add_subplot(111)
 
-        # sembunyikan axes dulu biar gak kelihatan kotak kosong
-        self.ax.axis('off')
-        self.ax.text(0.5, 0.5, "Belum ada grafik.\nTekan 'Tampilkan Grafik' untuk menampilkan.",
-                     ha='center', va='center', fontsize=11, color='gray')
-
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         self.canvas.draw()
+
+        self.tampilkan_grafik()
 
     def tampilkan_grafik(self):
         try:
@@ -89,7 +86,10 @@ class GrafikKomposisiAsetPage(tk.Frame):
                 return
 
             # Gambar pie chart
-            labels_with_saldo = [f"{nama}\nRp {saldo:,.0f}" for nama, saldo in zip(labels, values)]
+            labels_with_saldo = []
+            for nama, saldo in zip(labels, values):
+                formatted_saldo = f"{saldo:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".") # Format titik
+                labels_with_saldo.append(f"{nama}\nRp {formatted_saldo}")
 
             self.ax.pie(
                 values,

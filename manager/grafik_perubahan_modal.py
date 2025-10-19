@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
 import sqlite3
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.ticker import FuncFormatter
 
 try:
     from function.bulan_map import bulan_map
@@ -48,6 +49,17 @@ class GrafikModalPage(tk.Frame):
         # Tampilkan grafik default saat pertama kali dimuat
         self.tampilkan_grafik()
 
+    def format_rupiah_titik(self, nominal):
+        formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+        return f"Rp{formatted}"
+
+    def format_jutaan(self, x, pos):
+        if x == 0:
+            return '0'
+        formatted = f'{x*1e-6:,.0f}'.replace(",", "#").replace(".", ",").replace("#", ".") 
+        return formatted
+
+
     def tampilkan_grafik(self):
         tahun = self.entry_tahun.get()
 
@@ -71,12 +83,14 @@ class GrafikModalPage(tk.Frame):
             if not data:
                 messagebox.showinfo("Info", f"Tidak ada data perubahan modal yang terekam untuk tahun {tahun}.\nPastikan Laporan Perubahan Modal sudah dibuat untuk bulan-bulan di tahun tersebut.")
                 self.ax.clear()
+                self.ax.set_title(f"Grafik Perubahan Modal Pemilik Tahun {tahun}", fontsize=12, fontweight="bold")
+                self.ax.axis('off')
+                self.ax.text(0.5, 0.5, "Data tidak tersedia.", ha='center', va='center', fontsize=11, color='gray')
                 self.canvas.draw()
                 return
 
             bulan_terisi = {v: k for k, v in bulan_map.items()} 
             
-            # Dictionary untuk menampung modal akhir per bulan
             modal_akhir_bulanan = {} 
             
             for bulan_num, modal_akhir in data:
@@ -92,20 +106,21 @@ class GrafikModalPage(tk.Frame):
             
             self.ax.plot(labels_plot, values_plot, marker='o', linestyle='-', color='#8B4513', linewidth=2, label="Modal Akhir")
             
+            formatter = FuncFormatter(self.format_jutaan)
+            self.ax.yaxis.set_major_formatter(formatter)
+
             for i, val in enumerate(values_plot):
-                # Hanya tampilkan label untuk nilai > 0
-                if val > 0:
-                    self.ax.text(labels_plot[i], val, f'Rp{int(val):,}', ha='center', va='bottom', fontsize=8)
+                if val != 0:
+                    formatted_val = self.format_rupiah_titik(val) 
+                    self.ax.text(labels_plot[i], val, formatted_val, ha='center', va='bottom', fontsize=8)
 
             self.ax.set_title(f"Grafik Perubahan Modal Pemilik Tahun {tahun}", fontsize=12, fontweight="bold")
             self.ax.set_xlabel("Bulan")
-            self.ax.set_ylabel("Saldo Modal (Rp)")
+            self.ax.set_ylabel("Saldo Modal (Juta Rupiah)")
             
-            # Rotasi label X agar tidak tumpang tindih
             plt.setp(self.ax.get_xticklabels(), rotation=45, ha="right")
             
             self.ax.grid(axis='y', linestyle='--', alpha=0.7)
-            self.ax.ticklabel_format(axis='y', style='plain')
             self.figure.tight_layout(pad=3.0)
             self.canvas.draw()
 

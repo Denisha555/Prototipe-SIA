@@ -50,6 +50,8 @@ class GrafikPendapatanDanBebanPage(tk.Frame):
                 self.combo_bulan.set(name)
                 break
 
+        self.tampilkan_grafik()
+
     def tampilkan_grafik(self):
         bulan = self.combo_bulan.get()
         tahun = self.entry_tahun.get()
@@ -118,7 +120,7 @@ class GrafikPendapatanDanBebanPage(tk.Frame):
             self.ax.set_xticks(list(x))
             self.ax.set_xticklabels(semua_tanggal)
             self.ax.set_xlabel("Tanggal")
-            self.ax.set_ylabel("Jumlah (Rp)")
+            self.ax.set_ylabel("Jumlah (Juta Rupiah)")
             self.ax.set_title(f"Pendapatan vs Beban per Tanggal ({bulan} {tahun})", fontsize=13, fontweight="bold")
             self.ax.legend()
             self.ax.grid(axis='y', linestyle='--', alpha=0.6)
@@ -129,8 +131,12 @@ class GrafikPendapatanDanBebanPage(tk.Frame):
             laba_rugi = total_pendapatan - total_beban
             warna_laba = "#5cb85c" if laba_rugi >= 0 else "#d9534f"
 
+            formatted_total_pendapatan = f"{total_pendapatan:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+            formatted_total_beban = f"{total_beban:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+            formatted_laba_rugi = f"{laba_rugi:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+            
             self.ax.text(0.5, -0.22,
-                         f"Total Pendapatan: Rp{total_pendapatan:,.0f}   |   Total Beban: Rp{total_beban:,.0f}   |   Laba/Rugi: Rp{laba_rugi:,.0f}",
+                         f"Total Pendapatan: Rp{formatted_total_pendapatan}   |   Total Beban: Rp{formatted_total_beban}   |   Laba/Rugi: Rp{formatted_laba_rugi}",
                          transform=self.ax.transAxes, ha='center', fontsize=10, color=warna_laba, fontweight="bold")
 
             self.canvas.draw()
