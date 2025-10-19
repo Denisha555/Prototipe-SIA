@@ -89,12 +89,6 @@ def initialize_db(self):
                   modal_akhir INTEGER)
                 ''')
         
-        c.execute('''CREATE TABLE IF NOT EXISTS saldo_awal(
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  tanggal DATE,
-                  saldo_awal INTEGER)
-                ''')
-        
         initial_coa = [
             ('111', 'Kas', 'Aset', 'Debit'),
             ('112', 'Piutang Usaha', 'Aset', 'Debit'),

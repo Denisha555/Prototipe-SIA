@@ -166,27 +166,6 @@ class NeracaSaldoSetelahPenutupanPage(tk.Frame):
             else:
                 messagebox.showinfo("Info", f"Tidak ada data saldo akun riil hingga {bulan} {tahun}.")
 
-            # ===== Simpan total saldo akhir sebagai saldo awal bulan depan =====
-            bulan_next = int(bulan_num)
-            tahun_next = tahun_int
-            if bulan_next == 12:
-                bulan_next = 1
-                tahun_next += 1
-            else:
-                bulan_next += 1
-
-            tanggal_next = f"{tahun_next}-{bulan_next:02d}-01"
-            total_saldo_akhir = total_debit_nssp  # atau total_kredit_nssp, karena seimbang
-
-            # Cek apakah sudah ada data untuk tanggal tersebut
-            c.execute("SELECT COUNT(*) FROM saldo_awal WHERE tanggal = ?", (tanggal_next,))
-            exists = c.fetchone()[0] > 0
-
-            if exists:
-                c.execute("UPDATE saldo_awal SET saldo_awal = ? WHERE tanggal = ?", (total_saldo_akhir, tanggal_next))
-            else:
-                c.execute("INSERT INTO saldo_awal (saldo_awal, tanggal) VALUES (?, ?)", (total_saldo_akhir, tanggal_next))
-
         except sqlite3.Error as e:
             messagebox.showerror("Error Database", f"Terjadi kesalahan: {e}")
         finally:
