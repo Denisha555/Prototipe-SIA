@@ -14,6 +14,7 @@ from manager.laba_rugi import LabaRugiPage
 from manager.jurnal_penutup import JurnalPenutupPage
 from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
 from manager.penyesuaian import PenyesuaianPage as PenyesuaianPageManager
+from manager.grafik_pendapatan import GrafikPendapatanPage
 from staff.penyesuaian import PenyesuaianPage as PenyesuaianPageStaff
 from manager.laporan_perubahan_modal import LaporanPerubahanModalPage
 from pencatatan import PencatatanPage
@@ -96,11 +97,12 @@ class LoginPage(tk.Tk):
                 "Jurnal Penutup": JurnalPenutupPage,
                 "Penyesuaian Manager": PenyesuaianPageManager,
                 "Jurnal Penyesuaian": JurnalPenyesuaianPage,
-                "Pencatatan": PencatatanPage,
-                "Pelaporan": PelaporanPage,
-                "Grafik": GrafikPage,
-                "Pajak": PajakPage,        
-                "Penggajian": PenggajianPage, 
+                "Grafik Pendapatan": GrafikPendapatanPage,
+                # "Pencatatan": PencatatanPage,
+                # "Pelaporan": PelaporanPage,
+                # "Grafik": GrafikPage,
+                # "Pajak": PajakPage,        
+                # "Penggajian": PenggajianPage, 
             }[name]
             frame = PageClass(self.container, self)
             self.frames[name] = frame

@@ -139,7 +139,7 @@ class MenuManagerPage(tk.Frame):
         grafik_frame.grid_columnconfigure(0, weight=1)
 
         ttk.Button(grafik_frame, text="📊 Grafik Pendapatan", style="Menu.TButton",
-                   command=lambda: controller.show_frame("Jurnal Penutup")).grid(
+                   command=lambda: controller.show_frame("Grafik Pendapatan")).grid(
             column=0, row=0, padx=10, pady=10, sticky="ew")
 
         ttk.Button(grafik_frame, text="📊 Grafik Pengeluaran", style="Menu.TButton",
