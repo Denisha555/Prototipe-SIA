@@ -175,7 +175,8 @@ class LaporanPerubahanModalPage(tk.Frame):
             c.execute("""
                 SELECT SUM(kredit - debit)
                 FROM jurnal_umum_detail
-                WHERE kode_akun = '311'
+                WHERE kode_akun = '311' 
+                  AND jenis_jurnal = 'UMUM'
                   AND strftime('%m', tanggal) = ?
                   AND strftime('%Y', tanggal) = ?
             """, (bulan_num, tahun))

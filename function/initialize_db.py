@@ -1,7 +1,7 @@
 import sqlite3
-import random
 import datetime
-from datetime import timedelta
+import random
+
 
 def initialize_db(self):
         conn = sqlite3.connect('data_keuangan.db')
@@ -117,5 +117,128 @@ def initialize_db(self):
 
         conn.commit()
         conn.close()
+
+        # # Koneksi ke database
+        # conn = sqlite3.connect("data_keuangan.db")
+        # c = conn.cursor()
+
+        # def generate_dummy_data():
+        #     # Hapus dulu data lama biar bersih
+        #     c.execute("DELETE FROM transaksi_penjualan")
+        #     c.execute("DELETE FROM transaksi_kas_keluar")
+        #     c.execute("DELETE FROM jurnal_umum_detail")
+        #     c.execute("DELETE FROM transaksi_penyesuaian")
+        #     c.execute("DELETE FROM rekap_modal")
+        #     conn.commit()
+
+        #     start_date = datetime.date(2025, 8, 1)
+        #     end_date = datetime.date(2025, 10, 31)
+        #     delta = datetime.timedelta(days=1)
+
+        #     # =========  PENJUALAN =========
+        #     while start_date <= end_date:
+        #         if start_date.weekday() < 6:  # 0-5 Senin-Sabtu, Minggu libur
+        #             total = random.randint(500000, 2000000)
+        #             datestr = start_date.strftime("%Y%m%d")
+        #             transaksi_id = f"PJ{datestr}001"
+
+        #             c.execute("""
+        #                 INSERT INTO transaksi_penjualan (transaksi_penjualan_id, tanggal, total, kategori, keterangan)
+        #                 VALUES (?, ?, ?, ?, ?)
+        #             """, (transaksi_id, start_date, total, "Pendapatan Jasa", "Penjualan jasa harian"))
+
+        #             # Masuk jurnal umum
+        #             c.execute("""
+        #                 INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit)
+        #                 VALUES (?, ?, ?, ?, ?, ?)
+        #             """, (transaksi_id, start_date, "111", "Kas dari penjualan", total, 0))
+        #             c.execute("""
+        #                 INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit)
+        #                 VALUES (?, ?, ?, ?, ?, ?)
+        #             """, (transaksi_id, start_date, "401", "Pendapatan jasa", 0, total))
+        #         start_date += delta
+
+        #     # =========  KAS KELUAR =========
+        #     start_date = datetime.date(2025, 8, 1)
+        #     while start_date <= end_date:
+        #         if random.random() < 0.3:  # sekitar 30% hari ada pengeluaran
+        #             jenis = random.choice(["Gaji", "Listrik", "Perlengkapan"])
+        #             nominal = random.randint(300000, 1500000)
+        #             datestr = start_date.strftime("%Y%m%d")
+        #             transaksi_id = f"PB{datestr}001"
+
+        #             c.execute("""
+        #                 INSERT INTO transaksi_kas_keluar (transaksi_kas_keluar_id, tanggal, kategori, nominal, keterangan)
+        #                 VALUES (?, ?, ?, ?, ?)
+        #             """, (transaksi_id, start_date, jenis, nominal, f"Pembayaran {jenis.lower()}"))
+
+        #             # Jurnal umum
+        #             if jenis == "Perlengkapan":
+        #                 akun_debit = "113"  # Perlengkapan (Aset)
+        #             elif jenis == "Gaji":
+        #                 akun_debit = "511"
+        #             else:
+        #                 akun_debit = "520"
+
+        #             c.execute("""
+        #                 INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit)
+        #                 VALUES (?, ?, ?, ?, ?, ?)
+        #             """, (transaksi_id, start_date, akun_debit, f"Pengeluaran {jenis}", nominal, 0))
+        #             c.execute("""
+        #                 INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit)
+        #                 VALUES (?, ?, ?, ?, ?, ?)
+        #             """, (transaksi_id, start_date, "111", f"Kas keluar untuk {jenis}", 0, nominal))
+        #         start_date += delta
+
+        #     # ========= PENYESUAIAN AKHIR BULAN =========
+        #     for bulan in [8, 9, 10]:
+        #         tanggal_akhir = datetime.date(2025, bulan, 28)
+
+        #         # --- Penyusutan peralatan ---
+        #         depresiasi = random.randint(400000, 700000)
+        #         c.execute("""
+        #             INSERT INTO transaksi_penyesuaian (tanggal, kode_akun, keterangan, debit, kredit)
+        #             VALUES (?, ?, ?, ?, ?)
+        #         """, (tanggal_akhir, "514", "Beban penyusutan peralatan", depresiasi, 0))
+        #         c.execute("""
+        #             INSERT INTO transaksi_penyesuaian (tanggal, kode_akun, keterangan, debit, kredit)
+        #             VALUES (?, ?, ?, ?, ?)
+        #         """, (tanggal_akhir, "122", "Akumulasi penyusutan peralatan", 0, depresiasi))
+
+        #         # Jurnal penyesuaian (jenis_jurnal = PENYESUAIAN)
+        #         c.execute("""
+        #             INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit, jenis_jurnal)
+        #             VALUES (?, ?, ?, ?, ?, ?, ?)
+        #         """, (f"ADJ{bulan}A", tanggal_akhir, "514", "Beban penyusutan peralatan", depresiasi, 0, "PENYESUAIAN"))
+        #         c.execute("""
+        #             INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit, jenis_jurnal)
+        #             VALUES (?, ?, ?, ?, ?, ?, ?)
+        #         """, (f"ADJ{bulan}A", tanggal_akhir, "122", "Akumulasi penyusutan peralatan", 0, depresiasi, "PENYESUAIAN"))
+
+        #         # --- Penyesuaian perlengkapan (sebagian sudah terpakai) ---
+        #         beban_perlengkapan = random.randint(500000, 1200000)
+        #         c.execute("""
+        #             INSERT INTO transaksi_penyesuaian (tanggal, kode_akun, keterangan, debit, kredit)
+        #             VALUES (?, ?, ?, ?, ?)
+        #         """, (tanggal_akhir, "513", "Beban perlengkapan", beban_perlengkapan, 0))
+        #         c.execute("""
+        #             INSERT INTO transaksi_penyesuaian (tanggal, kode_akun, keterangan, debit, kredit)
+        #             VALUES (?, ?, ?, ?, ?)
+        #         """, (tanggal_akhir, "113", "Pengurangan perlengkapan", 0, beban_perlengkapan))
+
+        #         c.execute("""
+        #             INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit, jenis_jurnal)
+        #             VALUES (?, ?, ?, ?, ?, ?, ?)
+        #         """, (f"ADJ{bulan}B", tanggal_akhir, "513", "Beban perlengkapan", beban_perlengkapan, 0, "PENYESUAIAN"))
+        #         c.execute("""
+        #             INSERT INTO jurnal_umum_detail (transaksi_ref_id, tanggal, kode_akun, keterangan, debit, kredit, jenis_jurnal)
+        #             VALUES (?, ?, ?, ?, ?, ?, ?)
+        #         """, (f"ADJ{bulan}B", tanggal_akhir, "113", "Pengurangan perlengkapan", 0, beban_perlengkapan, "PENYESUAIAN"))
+
+        #     conn.commit()
+        #     print("✅ Dummy data berhasil dibuat dari Agustus - Oktober 2025")
+
+        # generate_dummy_data()
+        # conn.close()
 
         
