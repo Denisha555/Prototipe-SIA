@@ -57,6 +57,8 @@ class GrafikKomposisiAsetPage(tk.Frame):
             c.execute("SELECT kode_akun, nama_akun FROM akun WHERE kategori = 'Aset'")
             aset_akun = c.fetchall()
 
+            aset_akun = [akun for akun in aset_akun if akun[0] != "122"]
+
             labels = []
             values = []
 
@@ -73,7 +75,7 @@ class GrafikKomposisiAsetPage(tk.Frame):
                 if saldo != 0:
                     labels.append(nama_akun)
                     values.append(saldo)
-
+            
             conn.close()
 
             # Tidak ada data
@@ -100,7 +102,7 @@ class GrafikKomposisiAsetPage(tk.Frame):
             )
 
             self.ax.axis('equal')
-            self.ax.set_title("Komposisi Aset Berdasarkan Akun", fontsize=14, fontweight="bold")
+            self.ax.set_title("Komposisi Aset Berdasarkan Akun", fontsize=14, fontweight="bold", pad=20)
 
             self.canvas.draw()
 
