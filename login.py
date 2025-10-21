@@ -3,37 +3,37 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from function.initialize_db import initialize_db
-from manager.grafik_komposisi_aset import GrafikKomposisiAsetPage
-from manager.grafik_pengeluaran import GrafikPengeluaranPage
-from manager.grafik_perubahan_modal import GrafikModalPage
-from manager.jurnal_umum import JurnalUmumPage
 from manager.buku_besar import BukuBesarPage
+from manager.grafik_pendapatan import GrafikPendapatanPage
+from manager.grafik_pengeluaran import GrafikPengeluaranPage
+from manager.grafik_komposisi_aset import GrafikKomposisiAsetPage
+from manager.grafik_perubahan_modal import GrafikModalPage
+from manager.grafik_pendapatan_dan_beban import GrafikPendapatanDanBebanPage
+from manager.jasa import JasaPage as JasaPageManager
+from manager.jurnal_penutup import JurnalPenutupPage
+from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
+from manager.jurnal_umum import JurnalUmumPage
+from manager.kas_keluar import KasKeluarPage as KasKeluarPageManager
 from manager.laporan_arus_kas import LaporanArusKasPage
+from manager.laporan_laba_rugi import LabaRugiPage
+from manager.menu_manager import MenuManagerPage
 from manager.neraca import NeracaPage
 from manager.neraca_saldo import NeracaSaldoPage
 from manager.neraca_saldo_setelah_penutupan import NeracaSaldoSetelahPenutupanPage
-from manager.worksheet import WorksheetPage
-from manager.laporan_laba_rugi import LabaRugiPage
-from manager.jurnal_penutup import JurnalPenutupPage
-from manager.jurnal_penyesuaian import JurnalPenyesuaianPage
+from manager.penjualan import PenjualanPage as PenjualanPageManager
 from manager.penyesuaian import PenyesuaianPage as PenyesuaianPageManager
-from manager.grafik_pendapatan import GrafikPendapatanPage
-from staff.penyesuaian import PenyesuaianPage as PenyesuaianPageStaff
+from manager.worksheet import WorksheetPage
 from manager.laporan_perubahan_modal import LaporanPerubahanModalPage
+from staff.jasa import JasaPage as JasaPageStaff
+from staff.kas_keluar import KasKeluarPage as KasKeluarPageStaff
+from staff.menu_staff import MenuStaffPage
+from staff.penjualan import PenjualanPage as PenjualanPageStaff
+from staff.penyesuaian import PenyesuaianPage as PenyesuaianPageStaff
 from pencatatan import PencatatanPage
 from pelaporan import PelaporanPage
 from grafik import GrafikPage
 from pajak import PajakPage
 from penggajian import PenggajianPage
-from staff.menu_staff import MenuStaffPage
-from manager.menu_manager import MenuManagerPage
-from staff.kas_keluar import KasKeluarPage as KasKeluarPageStaff
-from manager.kas_keluar import KasKeluarPage as KasKeluarPageManager
-from staff.jasa import JasaPage as JasaPageStaff
-from manager.jasa import JasaPage as JasaPageManager
-from staff.penjualan import PenjualanPage as PenjualanPageStaff
-from manager.penjualan import PenjualanPage as PenjualanPageManager
-from manager.grafik_pendapatan_dan_beban import GrafikPendapatanDanBebanPage
 
 
 
