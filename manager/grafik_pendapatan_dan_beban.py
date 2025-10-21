@@ -113,17 +113,49 @@ class GrafikPendapatanDanBebanPage(tk.Frame):
             self.ax.clear()
             bar_width = 0.4
             x = range(len(semua_tanggal))
-            self.ax.bar([i - bar_width/2 for i in x], pendapatan, width=bar_width, color="#5cb85c", label="Pendapatan")
-            self.ax.bar([i + bar_width/2 for i in x], beban, width=bar_width, color="#d9534f", label="Beban")
+            bars_pendapatan = self.ax.bar([i - bar_width/2 for i in x], pendapatan, width=bar_width, color="#5cb85c", label="Pendapatan")
+            bars_beban = self.ax.bar([i + bar_width/2 for i in x], beban, width=bar_width, color="#d9534f", label="Beban")
 
+            max_value = max(max(pendapatan, default=0), max(beban, default=0))
+            offset = max_value * 0.02
+            
+            def format_rupiah_titik(nominal):
+                formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+                return f"Rp{formatted}"
+            
+            # Label untuk Pendapatan
+            for bar, val in zip(bars_pendapatan, pendapatan):
+                if val > 0:
+                    height = bar.get_height()
+                    self.ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        height + offset,
+                        format_rupiah_titik(val), 
+                        ha='center', va='bottom', fontsize=8, color="#5cb85c"
+                    )
+
+            # Label untuk Beban
+            for bar, val in zip(bars_beban, beban):
+                if val > 0:
+                    height = bar.get_height()
+                    self.ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        height + offset,
+                        format_rupiah_titik(val), 
+                        ha='center', va='bottom', fontsize=8, color="#d9534f"
+                    )
+                    
             # Tambah label
             self.ax.set_xticks(list(x))
             self.ax.set_xticklabels(semua_tanggal)
             self.ax.set_xlabel("Tanggal")
-            self.ax.set_ylabel("Jumlah (Juta Rupiah)")
+            self.ax.set_ylabel("Jumlah (Rp)")
             self.ax.set_title(f"Pendapatan vs Beban per Tanggal ({bulan} {tahun})", fontsize=13, fontweight="bold")
             self.ax.legend()
             self.ax.grid(axis='y', linestyle='--', alpha=0.6)
+
+            if max_value > 0:
+                self.ax.set_ylim(0, max_value * 1.3)
 
             # Tampilkan total
             total_pendapatan = sum(pendapatan)
