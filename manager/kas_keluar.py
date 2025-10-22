@@ -204,7 +204,7 @@ class KasKeluarPage(tk.Frame):
 
         for row in rows:
             transaksi_id, tanggal, nominal, kategori = row
-            nominal_fmt = f"Rp {format_rupiah(nominal)}"
+            nominal_fmt = f"{format_rupiah(nominal)}"
             self.tree_kanan.insert("", tk.END, values=(transaksi_id, tanggal, kategori, nominal_fmt))
 
         conn.close()
