@@ -228,11 +228,3 @@ class LaporanPerubahanModalPage(tk.Frame):
         total_beban = sum(item["debit"] - item["kredit"] for item in data if item["kategori"] == "Beban")
         return total_pendapatan - total_beban
 
-
-# === Testing mandiri ===
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Laporan Perubahan Modal")
-    app = LaporanPerubahanModalPage(root, None)
-    app.pack(fill="both", expand=True)
-    root.mainloop()

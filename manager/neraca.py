@@ -137,6 +137,27 @@ class NeracaPage(tk.Frame):
             elif p[0] == "Modal Pemilik":
                 pasiva.remove(p)
 
+        # cek database rekap_modal untuk modal akhir
+        c.execute("""SELECT modal_awal, tanggal FROM rekap_modal
+                  WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?""", (bulan_num, tahun))
+        modal_data, tanggal = c.fetchone()
+
+        # jika tidak ada rekap modal di bulan sebelumnya, abaikan 
+        if tanggal and modal_data:
+            bulan_lalu =str(int(bulan_num) - 1).zfill(2)
+            c.execute("""
+                SELECT modal_akhir FROM rekap_modal
+                WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
+            """, (bulan_lalu, tahun))
+            modal_lalu = c.fetchone()
+            # tambahkan kas dengan modal akhir
+            if modal_lalu:
+                modal_awal = modal_data
+                for i, (nama_akun, saldo) in enumerate(aktiva):
+                    if nama_akun == "Kas":
+                        aktiva[i] = (nama_akun, saldo + modal_awal)
+                        break
+
         conn.close()
 
         # Hapus isi tabel sebelumnya
