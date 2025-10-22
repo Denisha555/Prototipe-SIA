@@ -131,8 +131,9 @@ class GrafikPendapatanPage(tk.Frame):
 
             self.ax.set_title(f"Grafik Penjualan per Tanggal ({bulan} {tahun})", fontsize=13, fontweight="bold")
             self.ax.set_xlabel("Tanggal", fontsize=10)
-            self.ax.set_ylabel("Total Penjualan (Juta Rupiah)", fontsize=10)
+            self.ax.set_ylabel("Total Penjualan (Rp)", fontsize=10)
             self.ax.grid(axis='y', linestyle='--', alpha=0.6)
+            self.ax.set_xticks(tanggal)
 
             # Biar grafik pas dan proporsional
             self.ax.set_xlim(min(tanggal) - 1, max(tanggal) + 1)

@@ -69,6 +69,80 @@ def _get_account_balances(bulan_num, tahun):
     conn.close()
     return report_data
 
+def hitung_modal(bulan_num, tahun):
+    # Hitung laba bersih
+    total_pendapatan = sum(item["kredit"] - item["debit"] for item in _get_account_balances(bulan_num, tahun) if item["kategori"] == "Pendapatan")
+    total_beban = sum(item["debit"] - item["kredit"] for item in _get_account_balances(bulan_num, tahun) if item["kategori"] == "Beban")
+    laba_bersih = total_pendapatan - total_beban
+
+    conn = sqlite3.connect('data_keuangan.db')
+    c = conn.cursor()
+
+    # Cari modal akhir bulan sebelumnya
+    try:
+        bulan_int = int(bulan_num)
+        tahun_int = int(tahun)
+    except ValueError:
+        return
+
+    if bulan_int == 1:
+        prev_bulan = 12
+        prev_tahun = tahun_int - 1
+    else:
+        prev_bulan = bulan_int - 1
+        prev_tahun = tahun_int
+
+    prev_bulan_str = f"{prev_bulan:02d}"
+    c.execute("""
+        SELECT modal_akhir 
+        FROM rekap_modal 
+        WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
+    """, (prev_bulan_str, str(prev_tahun)))
+    prev_data = c.fetchone()
+
+    if prev_data and prev_data[0] is not None:
+        modal_awal = prev_data[0]
+    else:
+        # Jika belum ada data bulan sebelumnya, hitung saldo awal
+        tanggal_awal_periode = f"{tahun}-{bulan_num}-01"
+        
+        c.execute("""
+            SELECT SUM(kredit) - SUM(debit) 
+            FROM jurnal_umum_detail 
+            WHERE kode_akun = '311' 
+              AND (jenis_jurnal IS NULL OR jenis_jurnal NOT IN ('PENYESUAIAN', 'PENUTUP'))
+              AND tanggal <= ?
+        """, (tanggal_awal_periode,))
+        
+        modal_awal = c.fetchone()[0] or 0 
+
+    # Hitung modal akhir
+    modal_akhir = modal_awal + laba_bersih 
+
+    # Simpan / update ke tabel rekap_modal
+    datestr = f"{tahun}-{bulan_num}-01"
+
+    c.execute("""
+        SELECT id FROM rekap_modal
+        WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
+    """, (bulan_num, tahun))
+    data = c.fetchone()
+
+    if not data:
+        c.execute("""
+            INSERT INTO rekap_modal (tanggal, modal_awal, modal_akhir) 
+            VALUES (?, ?, ?)
+        """, (datestr, modal_awal, modal_akhir))
+    else:
+        c.execute("""
+            UPDATE rekap_modal 
+            SET modal_awal = ?, modal_akhir = ?
+            WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
+        """, (modal_awal, modal_akhir, bulan_num, tahun))
+
+    conn.commit()
+    conn.close()
+    return modal_akhir # Mengembalikan modal akhir
 
 # === Kelas GUI ===
 class LaporanPerubahanModalPage(tk.Frame):
@@ -119,8 +193,7 @@ class LaporanPerubahanModalPage(tk.Frame):
 
         ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")).grid(row=5, column=0, columnspan=2, pady=10)
 
-    # === Fungsi utama tampilkan laporan ===
-        # === Fungsi utama tampilkan laporan ===
+    # Fungsi utama tampilkan laporan
     def tampil(self):
         bulan_nama = self.combo_bulan.get()
         tahun = self.entry_tahun.get().strip()
@@ -141,85 +214,34 @@ class LaporanPerubahanModalPage(tk.Frame):
             messagebox.showerror("Error", "Tahun harus berupa angka.")
             return
 
-        # --- Hitung laba bersih ---
-        laba_bersih = self.hitung_laba_rugi(bulan_num, tahun)
-
-        # Bersihkan tabel
-        self.treeview.delete(*self.treeview.get_children())
+        hitung_modal(bulan_num, tahun)
 
         conn = sqlite3.connect('data_keuangan.db')
         c = conn.cursor()
 
-        # --- Cari modal akhir bulan sebelumnya ---
-        bulan_int = int(bulan_num)
-        tahun_int = int(tahun)
-        if bulan_int == 1:
-            prev_bulan = 12
-            prev_tahun = tahun_int - 1
-        else:
-            prev_bulan = bulan_int - 1
-            prev_tahun = tahun_int
-
-        prev_bulan_str = f"{prev_bulan:02d}"
         c.execute("""
-            SELECT modal_akhir 
-            FROM rekap_modal 
+            SELECT modal_awal, modal_akhir 
+            FROM rekap_modal
             WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
-        """, (prev_bulan_str, str(prev_tahun)))
-        prev_data = c.fetchone()
-
-        if prev_data and prev_data[0] is not None:
-            modal_awal = prev_data[0]
-        else:
-            # fallback kalau belum ada data bulan sebelumnya → ambil dari saldo awal akun 311
-            c.execute("""
-                SELECT SUM(kredit - debit)
-                FROM jurnal_umum_detail
-                WHERE kode_akun = '311' 
-                  AND jenis_jurnal = 'UMUM'
-                  AND strftime('%m', tanggal) = ?
-                  AND strftime('%Y', tanggal) = ?
-            """, (bulan_num, tahun))
-            modal_awal = c.fetchone()[0] or 0
-
+        """, (bulan_num, tahun))
+        data_modal = c.fetchone()
         conn.close()
 
-        # --- Hitung modal akhir ---
-        modal_akhir = modal_awal + laba_bersih 
+        if not data_modal:
+            messagebox.showerror("Error", "Gagal mengambil data modal setelah perhitungan.")
+            return
 
-        # === Tampilkan ke tabel ===
+        modal_awal, modal_akhir = data_modal
+
+        # Hitung Laba Bersih
+        laba_bersih = modal_akhir - modal_awal
+
+        # Bersihkan tabel dan tampilkan
+        self.treeview.delete(*self.treeview.get_children())
         self.treeview.insert("", "end", values=("Modal Awal", f"{format_rupiah(modal_awal)}"))
         self.treeview.insert("", "end", values=("Laba Bersih", f"{format_rupiah(laba_bersih)}"))
         self.treeview.insert("", "end", values=("Modal Akhir", f"{format_rupiah(modal_akhir)}"), tags=("akhir",))
         self.treeview.tag_configure("akhir", font=('Helvetica', 11, 'bold'), background='#E0F7FA')
-
-        # --- Simpan / update ke tabel rekap_modal ---
-        datestr = f"{tahun}-{bulan_num}-01"
-
-        conn = sqlite3.connect('data_keuangan.db')
-        c = conn.cursor()
-        c.execute("""
-            SELECT id FROM rekap_modal
-            WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
-        """, (bulan_num, tahun))
-        data = c.fetchone()
-
-        if not data:
-            c.execute("""
-                INSERT INTO rekap_modal (tanggal, modal_awal, modal_akhir) 
-                VALUES (?, ?, ?)
-            """, (datestr, modal_awal, modal_akhir))
-        else:
-            c.execute("""
-                UPDATE rekap_modal 
-                SET modal_awal = ?, modal_akhir = ?
-                WHERE strftime('%m', tanggal) = ? AND strftime('%Y', tanggal) = ?
-            """, (modal_awal, modal_akhir, bulan_num, tahun))
-
-        conn.commit()
-        conn.close()
-
-
 
     # === Fungsi hitung laba rugi ===
     def hitung_laba_rugi(self, bulan_num, tahun):
@@ -228,3 +250,11 @@ class LaporanPerubahanModalPage(tk.Frame):
         total_beban = sum(item["debit"] - item["kredit"] for item in data if item["kategori"] == "Beban")
         return total_pendapatan - total_beban
 
+
+# === Testing mandiri ===
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Laporan Perubahan Modal")
+    app = LaporanPerubahanModalPage(root, None)
+    app.pack(fill="both", expand=True)
+    root.mainloop()

@@ -5,6 +5,7 @@ import sqlite3
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.ticker import FuncFormatter
+from manager.laporan_perubahan_modal import hitung_modal
 
 try:
     from function.bulan_map import bulan_map
@@ -70,6 +71,31 @@ class GrafikModalPage(tk.Frame):
         try:
             conn = sqlite3.connect("data_keuangan.db")
             c = conn.cursor()
+            
+            current_month_num = datetime.now().strftime("%m")
+            current_year = datetime.now().strftime("%Y")
+            
+            bulan_labels_order = sorted(list(bulan_map.values())) # ['01', '02', ..., '12']
+
+            for bulan_num in bulan_labels_order:
+                if tahun == current_year and bulan_num > current_month_num:
+                    continue 
+
+                # Cek apakah data bulan tersebut sudah ada di rekap_modal
+                c.execute("""
+                    SELECT 1 
+                    FROM rekap_modal
+                    WHERE strftime('%Y', tanggal) = ? AND strftime('%m', tanggal) = ?
+                """, (tahun, bulan_num))
+                
+                if c.fetchone() is None:
+                    hitung_modal(bulan_num, tahun)
+            
+            conn.commit()
+            conn.close()
+            
+            conn = sqlite3.connect("data_keuangan.db")
+            c = conn.cursor()
             c.execute("""
                 SELECT strftime('%m', tanggal), modal_akhir 
                 FROM rekap_modal
@@ -81,7 +107,7 @@ class GrafikModalPage(tk.Frame):
             conn.close()
 
             if not data:
-                messagebox.showinfo("Info", f"Tidak ada data perubahan modal yang terekam untuk tahun {tahun}.\nPastikan Laporan Perubahan Modal sudah dibuat untuk bulan-bulan di tahun tersebut.")
+                messagebox.showinfo("Info", f"Tidak ada data perubahan modal yang terekam untuk tahun {tahun}.")
                 self.ax.clear()
                 self.ax.set_title(f"Grafik Perubahan Modal Pemilik Tahun {tahun}", fontsize=12, fontweight="bold")
                 self.ax.axis('off')
@@ -101,6 +127,11 @@ class GrafikModalPage(tk.Frame):
             
             labels_plot = [bulan_terisi.get(num, num) for num in bulan_labels_order]
             values_plot = [modal_akhir_bulanan.get(num, 0) for num in bulan_labels_order] 
+            
+            if tahun == current_year:
+                max_index = int(current_month_num)
+                labels_plot = labels_plot[:max_index]
+                values_plot = values_plot[:max_index]
 
             self.ax.clear()
             
@@ -126,3 +157,5 @@ class GrafikModalPage(tk.Frame):
 
         except sqlite3.Error as e:
             messagebox.showerror("Error Database", f"Gagal mengambil data Modal: {e}")
+        except Exception as e:
+            messagebox.showerror("Error Aplikasi", f"Terjadi kesalahan saat menampilkan grafik: {e}")
