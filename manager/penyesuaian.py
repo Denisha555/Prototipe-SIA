@@ -28,7 +28,7 @@ class PenyesuaianPage(tk.Frame):
         self.grid_columnconfigure(1, weight=3)
         self.grid_rowconfigure(2, weight=1) 
 
-        ttk.Label(self, text="📝 Jurnal Penyesuaian", font=("Helvetica", 18, "bold")).grid(
+        ttk.Label(self, text="📝 Kelola Penyesuaian", font=("Helvetica", 18, "bold")).grid(
             row=0, column=0, columnspan=2, pady=15
         )
 

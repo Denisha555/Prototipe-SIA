@@ -79,7 +79,7 @@ class MenuManagerPage(tk.Frame):
         ttk.Button(data_frame, text="💸 Kelola Pengeluaran", style="Menu.TButton",
                    command=lambda: controller.show_frame("Input Edit Kas Keluar")).grid(
             column=0, row=2, padx=10, pady=10, sticky="ew")
-        ttk.Button(data_frame, text="📝 Penyesuaian", style="Menu.TButton",
+        ttk.Button(data_frame, text="📝 Kelola Penyesuaian", style="Menu.TButton",
                    command=lambda: controller.show_frame("Penyesuaian Manager")).grid(
             column=0, row=3, padx=10, pady=10, sticky="ew")
 
