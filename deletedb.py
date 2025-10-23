@@ -1,8 +1,8 @@
-# import sqlite3
-# import sys
-# from tkinter import messagebox
+import sqlite3
+import sys
+from tkinter import messagebox
 
-# DB_NAME = 'data_keuangan.db'
+DB_NAME = 'data_keuangan.db'
 # # ID_HAPUS diubah menjadi ID Transaksi Penjualan yang spesifik
 # ID_HAPUS = 'PJ20251009001' 
 
@@ -95,68 +95,131 @@
 #     if messagebox.askyesno("Konfirmasi Penghapusan", f"Anda YAKIN ingin menghapus transaksi Penjualan {ID_HAPUS} beserta semua detail dan entri jurnal terkait?"):
 #         hapus_transaksi_penjualan_agresif()
 
-import sqlite3
-import sys
-from tkinter import messagebox
 
-DB_NAME = 'data_keuangan.db'
 
-# --- TANGGAL YANG AKAN DIHAPUS ---
-TANGGAL_HAPUS = '2025-10-23' 
 
-# --- Tabel yang ditargetkan ---
-# Prefix ID Kas Keluar di skema Anda biasanya adalah 'PB' diikuti tanggal.
-ID_PREFIX_HAPUS = f'PB{TANGGAL_HAPUS.replace("-", "")}' 
-NAMA_TABEL_UTAMA = 'transaksi_kas_keluar'
-NAMA_KOLOM_ID = 'transaksi_kas_keluar_id'
+
+
+# # --- TANGGAL YANG AKAN DIHAPUS ---
+# TANGGAL_HAPUS = '2025-10-04' 
+
+# # --- Tabel yang ditargetkan ---
+# # Prefix ID Kas Keluar di skema Anda biasanya adalah 'PB' diikuti tanggal.
+# ID_PREFIX_HAPUS = f'PB{TANGGAL_HAPUS.replace("-", "")}' 
+# NAMA_TABEL_UTAMA = 'transaksi_kas_keluar'
+# NAMA_KOLOM_ID = 'transaksi_kas_keluar_id'
+
+# def _connect_db():
+#     return sqlite3.connect(DB_NAME)
+
+# def hapus_transaksi_kas_keluar_berdasarkan_tanggal():
+    
+#     conn = _connect_db()
+#     c = conn.cursor()
+    
+#     total_transaksi_deleted = 0
+#     total_jurnal_deleted = 0
+    
+#     print(f"\nMemulai penghapusan data Kas Keluar pada tanggal {TANGGAL_HAPUS}...")
+        
+#     try:
+#         # 1. Mendapatkan daftar SEMUA ID Kas Keluar yang akan dihapus pada tanggal tersebut
+#         # Kita menggunakan ID PREFIX (misal: PB20251023) DAN tanggal (untuk double check)
+#         query_select = f"SELECT {NAMA_KOLOM_ID} FROM {NAMA_TABEL_UTAMA} WHERE {NAMA_KOLOM_ID} LIKE ? AND tanggal = ?"
+#         c.execute(query_select, (f"{ID_PREFIX_HAPUS}%", TANGGAL_HAPUS))
+#         ids_kas_keluar = [row[0] for row in c.fetchall()]
+        
+#         count_jurnal_kk = 0
+        
+#         if not ids_kas_keluar:
+#             messagebox.showinfo("Informasi", f"Tidak ada transaksi Kas Keluar yang ditemukan pada tanggal {TANGGAL_HAPUS}.")
+#             conn.close()
+#             return
+            
+#         # 2. HAPUS DARI JURNAL UMUM (menggunakan ID transaksi Kas Keluar sebagai referensi)
+#         placeholders = ','.join('?' for _ in ids_kas_keluar)
+        
+#         c.execute(f"DELETE FROM jurnal_umum_detail WHERE transaksi_ref_id IN ({placeholders})", ids_kas_keluar)
+#         count_jurnal_kk = c.rowcount
+        
+#         # 3. HAPUS DARI TRANSAKSI KAS KELUAR UTAMA
+#         c.execute(f"DELETE FROM {NAMA_TABEL_UTAMA} WHERE {NAMA_KOLOM_ID} LIKE ? AND tanggal = ?", (f"{ID_PREFIX_HAPUS}%", TANGGAL_HAPUS))
+#         count_kk = c.rowcount
+        
+#         total_transaksi_deleted += count_kk
+#         total_jurnal_deleted += count_jurnal_kk
+        
+#         print(f"Kas Keluar: {count_kk} transaksi dihapus.")
+#         print(f"Jurnal Terkait: {total_jurnal_deleted} entri dihapus.")
+
+#     except sqlite3.OperationalError as e:
+#         conn.rollback()
+#         print(f"FATAL ERROR: Gagal mengakses tabel. Detail: {e}")
+#         messagebox.showerror("Error FATAL", f"Gagal menghapus data Kas Keluar. Detail: {e}")
+#         sys.exit(1)
+#     except sqlite3.Error as e:
+#         conn.rollback()
+#         print(f"ERROR Database: {e}")
+#         messagebox.showerror("Error Database", f"Gagal menghapus data: {e}")
+#         raise e
+    
+#     conn.commit()
+#     conn.close()
+    
+#     print(f"\n=======================================================")
+#     print(f"✅ Penghapusan Transaksi Kas Keluar Tgl {TANGGAL_HAPUS} Selesai!")
+#     print(f"   - Total Transaksi Kas Keluar Dihapus: {total_transaksi_deleted}")
+#     print(f"   - Total Entri Jurnal Dihapus: {total_jurnal_deleted}")
+#     print(f"=======================================================")
+    
+#     messagebox.showinfo("Sukses Penghapusan", 
+#                         f"SEMUA transaksi Kas Keluar tanggal {TANGGAL_HAPUS} dan jurnal terkait telah berhasil dihapus.\n\n"
+#                         f"Total {total_transaksi_deleted} baris Kas Keluar dan {total_jurnal_deleted} baris jurnal dihapus.")
+
+
+# if __name__ == "__main__":
+#     if messagebox.askyesno("Konfirmasi Penghapusan", f"Anda YAKIN ingin menghapus SEMUA data Kas Keluar pada tanggal {TANGGAL_HAPUS} beserta entri jurnal terkait?"):
+#         hapus_transaksi_kas_keluar_berdasarkan_tanggal()
+
+
+
+
+
+
+
+# --- ID TRANSAKSI JURNAL YANG AKAN DIHAPUS ---
+# ID ini merujuk ke transaksi Kas Keluar (PB)
+ID_JURNAL_HAPUS = 'PB20251004001' 
 
 def _connect_db():
     return sqlite3.connect(DB_NAME)
 
-def hapus_transaksi_kas_keluar_berdasarkan_tanggal():
+def hapus_jurnal_umum_by_ref_id():
     
     conn = _connect_db()
     c = conn.cursor()
     
-    total_transaksi_deleted = 0
     total_jurnal_deleted = 0
     
-    print(f"\nMemulai penghapusan data Kas Keluar pada tanggal {TANGGAL_HAPUS}...")
+    print(f"\nMemulai penghapusan entri Jurnal Umum untuk transaksi referensi ID: {ID_JURNAL_HAPUS}...")
         
     try:
-        # 1. Mendapatkan daftar SEMUA ID Kas Keluar yang akan dihapus pada tanggal tersebut
-        # Kita menggunakan ID PREFIX (misal: PB20251023) DAN tanggal (untuk double check)
-        query_select = f"SELECT {NAMA_KOLOM_ID} FROM {NAMA_TABEL_UTAMA} WHERE {NAMA_KOLOM_ID} LIKE ? AND tanggal = ?"
-        c.execute(query_select, (f"{ID_PREFIX_HAPUS}%", TANGGAL_HAPUS))
-        ids_kas_keluar = [row[0] for row in c.fetchall()]
+        # 1. HAPUS DARI JURNAL UMUM
+        # Transaksi Kas Keluar selalu menghasilkan minimal dua baris jurnal (Debit Beban/Aset, Kredit Kas)
+        c.execute("DELETE FROM jurnal_umum_detail WHERE transaksi_ref_id = ?", (ID_JURNAL_HAPUS,))
+        total_jurnal_deleted = c.rowcount
         
-        count_jurnal_kk = 0
-        
-        if not ids_kas_keluar:
-            messagebox.showinfo("Informasi", f"Tidak ada transaksi Kas Keluar yang ditemukan pada tanggal {TANGGAL_HAPUS}.")
+        if total_jurnal_deleted == 0:
+            messagebox.showinfo("Informasi", f"Tidak ada entri Jurnal Umum ditemukan untuk ID referensi {ID_JURNAL_HAPUS}.")
             conn.close()
             return
-            
-        # 2. HAPUS DARI JURNAL UMUM (menggunakan ID transaksi Kas Keluar sebagai referensi)
-        placeholders = ','.join('?' for _ in ids_kas_keluar)
-        
-        c.execute(f"DELETE FROM jurnal_umum_detail WHERE transaksi_ref_id IN ({placeholders})", ids_kas_keluar)
-        count_jurnal_kk = c.rowcount
-        
-        # 3. HAPUS DARI TRANSAKSI KAS KELUAR UTAMA
-        c.execute(f"DELETE FROM {NAMA_TABEL_UTAMA} WHERE {NAMA_KOLOM_ID} LIKE ? AND tanggal = ?", (f"{ID_PREFIX_HAPUS}%", TANGGAL_HAPUS))
-        count_kk = c.rowcount
-        
-        total_transaksi_deleted += count_kk
-        total_jurnal_deleted += count_jurnal_kk
-        
-        print(f"Kas Keluar: {count_kk} transaksi dihapus.")
+
         print(f"Jurnal Terkait: {total_jurnal_deleted} entri dihapus.")
 
     except sqlite3.OperationalError as e:
         conn.rollback()
         print(f"FATAL ERROR: Gagal mengakses tabel. Detail: {e}")
-        messagebox.showerror("Error FATAL", f"Gagal menghapus data Kas Keluar. Detail: {e}")
+        messagebox.showerror("Error FATAL", f"Gagal menghapus data jurnal. Detail: {e}")
         sys.exit(1)
     except sqlite3.Error as e:
         conn.rollback()
@@ -168,16 +231,14 @@ def hapus_transaksi_kas_keluar_berdasarkan_tanggal():
     conn.close()
     
     print(f"\n=======================================================")
-    print(f"✅ Penghapusan Transaksi Kas Keluar Tgl {TANGGAL_HAPUS} Selesai!")
-    print(f"   - Total Transaksi Kas Keluar Dihapus: {total_transaksi_deleted}")
+    print(f"✅ Penghapusan Jurnal Umum {ID_JURNAL_HAPUS} Selesai!")
     print(f"   - Total Entri Jurnal Dihapus: {total_jurnal_deleted}")
     print(f"=======================================================")
     
     messagebox.showinfo("Sukses Penghapusan", 
-                        f"SEMUA transaksi Kas Keluar tanggal {TANGGAL_HAPUS} dan jurnal terkait telah berhasil dihapus.\n\n"
-                        f"Total {total_transaksi_deleted} baris Kas Keluar dan {total_jurnal_deleted} baris jurnal dihapus.")
+                        f"Semua entri Jurnal Umum (JU) dengan transaksi_ref_id {ID_JURNAL_HAPUS} ({total_jurnal_deleted} baris) telah berhasil dihapus.")
 
 
 if __name__ == "__main__":
-    if messagebox.askyesno("Konfirmasi Penghapusan", f"Anda YAKIN ingin menghapus SEMUA data Kas Keluar pada tanggal {TANGGAL_HAPUS} beserta entri jurnal terkait?"):
-        hapus_transaksi_kas_keluar_berdasarkan_tanggal()
+    if messagebox.askyesno("Konfirmasi Penghapusan Jurnal", f"Anda YAKIN ingin menghapus SEMUA entri Jurnal Umum yang merujuk pada transaksi ID {ID_JURNAL_HAPUS}?"):
+        hapus_jurnal_umum_by_ref_id()
