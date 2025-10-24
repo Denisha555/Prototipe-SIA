@@ -123,7 +123,7 @@ class JurnalPenutupPage(tk.Frame):
         tree_frame.grid_columnconfigure(0, weight=1)
         tree_frame.grid_rowconfigure(0, weight=1)
 
-        self.tree = ttk.Treeview(tree_frame, columns=("tanggal", "keterangan", "kode_akun", "debit", "kredit"), show="headings", height=15)
+        self.tree = ttk.Treeview(tree_frame, columns=("tanggal", "keterangan", "kode_akun", "debit", "kredit"), show="headings", height=16)
         self.tree.heading("tanggal", text="Tanggal", anchor="w")
         self.tree.heading("keterangan", text="Keterangan", anchor="w")
         self.tree.heading("kode_akun", text="Kode Akun", anchor="w")

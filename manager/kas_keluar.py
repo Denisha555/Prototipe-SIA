@@ -60,7 +60,7 @@ class KasKeluarPage(tk.Frame):
 
         frame_kanan = ttk.LabelFrame(self, text="Daftar Kas Keluar")
         frame_kanan.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
-        self.tree_kanan = ttk.Treeview(frame_kanan, columns=("id", "tanggal", "keterangan", "nominal"), show="headings", height=10)
+        self.tree_kanan = ttk.Treeview(frame_kanan, columns=("id", "tanggal", "keterangan", "nominal"), show="headings", height=33)
         self.tree_kanan.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
         self.tree_kanan.column("id", width=0, stretch=tk.NO)

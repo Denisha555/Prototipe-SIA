@@ -76,7 +76,7 @@ class PenjualanPage(tk.Frame):
             frame_kanan,
             columns=("id", "tanggal", "total"),
             show="headings",
-            height=15
+            height=33
         )
         self.tree_data.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 

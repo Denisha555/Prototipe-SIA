@@ -64,7 +64,7 @@ class LaporanArusKasPage(tk.Frame):
 
         ttk.Button(self, text="Tampilkan", command=self.tampil).grid(row=3, column=0, columnspan=2, pady=10)
 
-        self.treeview = ttk.Treeview(self, columns=("keterangan", "nominal", 'subtotal'), show="headings", height=15)
+        self.treeview = ttk.Treeview(self, columns=("keterangan", "nominal", 'subtotal'), show="headings", height=29)
         self.treeview.heading("keterangan", text="Keterangan")
         self.treeview.heading("nominal", text="Nominal (Rp)")
         self.treeview.heading("subtotal", text="Subtotal (Rp)")

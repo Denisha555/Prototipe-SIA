@@ -425,7 +425,7 @@ class BukuBesarPage(tk.Frame):
             
         self.bb_frame.config(text=f"Rincian Buku Besar: {kode_akun} - {nama_akun}")
 
-        tree = ttk.Treeview(self.bb_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings")
+        tree = ttk.Treeview(self.bb_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings", height=25)
         tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
         self.bb_frame.grid_rowconfigure(2, weight=1)
         

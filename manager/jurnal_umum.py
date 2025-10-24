@@ -27,7 +27,7 @@ class JurnalUmumPage(tk.Frame):
         ttk.Button(self, text="Tampilkan", command=self.load_laporan).grid(row=3, column=0, columnspan=2, pady=10)
 
         # Treeview untuk jurnal umum
-        self.tree = ttk.Treeview(self, columns=("tanggal", "keterangan", "kode_akun", "nama_akun", "debit", "kredit"), show="headings", height=15)
+        self.tree = ttk.Treeview(self, columns=("tanggal", "keterangan", "kode_akun", "nama_akun", "debit", "kredit"), show="headings", height=28)
         self.tree.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
         self.tree.column("tanggal", width=130, anchor=tk.CENTER)
