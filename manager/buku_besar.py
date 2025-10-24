@@ -320,19 +320,36 @@ class BukuBesarPage(tk.Frame):
         
         balance = 0
         try:
-            query = """
-                SELECT SUM(debit) - SUM(kredit)
-                FROM jurnal_umum_detail
-                WHERE kode_akun = ? 
-                  AND tanggal < ?
-                  -- Hanya UMUM dan PENYESUAIAN yang membentuk Saldo Awal, PENUTUP hanya memengaruhi bulan itu.
-                  AND (jenis_jurnal IS NULL OR jenis_jurnal NOT IN ('PENUTUP')) 
-            """
-            c.execute(query, (kode_akun, f"{year}-{bulan_num}-01"))
-            
-            result = c.fetchone()
-            if result and result[0] is not None:
-                balance = result[0]
+            if kode_akun == "401":
+                balance = 0
+            elif kode_akun == "311":
+                query = """
+                    SELECT SUM(debit) - SUM(kredit)
+                    FROM jurnal_umum_detail
+                    WHERE kode_akun = ? 
+                    AND tanggal < ?
+                    -- Hanya UMUM, PENYESUAIAN, dan PENUTUP yang membentuk Saldo Awal.
+                """
+                c.execute(query, (kode_akun, f"{year}-{bulan_num}-01"))
+                
+                result = c.fetchall()
+                if result and result[0][0] is not None:
+                    balance = result[0][0]
+        
+            else:
+                query = """
+                    SELECT SUM(debit) - SUM(kredit)
+                    FROM jurnal_umum_detail
+                    WHERE kode_akun = ? 
+                    AND tanggal < ?
+                    -- Hanya UMUM dan PENYESUAIAN yang membentuk Saldo Awal, PENUTUP hanya memengaruhi bulan itu.
+                    AND (jenis_jurnal IS NULL OR jenis_jurnal NOT IN ('PENUTUP')) 
+                """
+                c.execute(query, (kode_akun, f"{year}-{bulan_num}-01"))
+                
+                result = c.fetchone()
+                if result and result[0] is not None:
+                    balance = result[0]
 
         except sqlite3.Error as e:
             messagebox.showerror("Error Database", f"Gagal menghitung saldo awal: {e}")
@@ -368,7 +385,6 @@ class BukuBesarPage(tk.Frame):
             conn.close()
 
         return transactions
-
 
     def show_buku_besar(self):
         for widget in self.bb_frame.winfo_children():
@@ -449,8 +465,12 @@ class BukuBesarPage(tk.Frame):
             # Hitung saldo berjalan
             if saldo_normal == 'Debit':
                 saldo_berjalan += debit - kredit
+                print("debit normal")
+                print(saldo_berjalan)
             else:
                 saldo_berjalan += kredit - debit
+                print("kredit normal")
+                print(saldo_berjalan)
                 
             total_debit += debit
             total_kredit += kredit
