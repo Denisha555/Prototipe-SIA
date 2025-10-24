@@ -312,7 +312,7 @@ class BukuBesarPage(tk.Frame):
             conn.close()
         return akun_map
 
-    def _get_beginning_balance(self, kode_akun, year, month):
+    def _get_beginning_balance(self, kode_akun, year, month, saldo_normal):
         conn = _connect_db()
         c = conn.cursor()
         
@@ -320,36 +320,23 @@ class BukuBesarPage(tk.Frame):
         
         balance = 0
         try:
-            if kode_akun == "401":
-                balance = 0
-            elif kode_akun == "311":
-                query = """
-                    SELECT SUM(debit) - SUM(kredit)
-                    FROM jurnal_umum_detail
-                    WHERE kode_akun = ? 
-                    AND tanggal < ?
-                    -- Hanya UMUM, PENYESUAIAN, dan PENUTUP yang membentuk Saldo Awal.
-                """
-                c.execute(query, (kode_akun, f"{year}-{bulan_num}-01"))
+            query = """
+                SELECT SUM(debit), SUM(kredit)
+                FROM jurnal_umum_detail
+                WHERE kode_akun = ? 
+                  AND tanggal < ?
+            """
+            c.execute(query, (kode_akun, f"{year}-{bulan_num}-01"))
+            
+            result = c.fetchone()
+            if result and (result[0] is not None or result[1] is not None):
+                total_debit = result[0] or 0
+                total_kredit = result[1] or 0
                 
-                result = c.fetchall()
-                if result and result[0][0] is not None:
-                    balance = result[0][0]
-        
-            else:
-                query = """
-                    SELECT SUM(debit) - SUM(kredit)
-                    FROM jurnal_umum_detail
-                    WHERE kode_akun = ? 
-                    AND tanggal < ?
-                    -- Hanya UMUM dan PENYESUAIAN yang membentuk Saldo Awal, PENUTUP hanya memengaruhi bulan itu.
-                    AND (jenis_jurnal IS NULL OR jenis_jurnal NOT IN ('PENUTUP')) 
-                """
-                c.execute(query, (kode_akun, f"{year}-{bulan_num}-01"))
-                
-                result = c.fetchone()
-                if result and result[0] is not None:
-                    balance = result[0]
+                if saldo_normal == 'Kredit':
+                    balance = total_kredit - total_debit # Kredit > Debit
+                else:
+                    balance = total_debit - total_kredit # Debit > Kredit
 
         except sqlite3.Error as e:
             messagebox.showerror("Error Database", f"Gagal menghitung saldo awal: {e}")
@@ -415,7 +402,7 @@ class BukuBesarPage(tk.Frame):
         
         self._auto_post_jurnal_penutup(bulan_num, selected_tahun)
 
-        saldo_awal = self._get_beginning_balance(kode_akun, selected_tahun, selected_bulan)
+        saldo_awal = self._get_beginning_balance(kode_akun, selected_tahun, selected_bulan, saldo_normal)
         transaksi_bulanan = self._get_monthly_transactions(kode_akun, selected_tahun, selected_bulan)
 
         if not transaksi_bulanan and saldo_awal == 0:
@@ -465,12 +452,8 @@ class BukuBesarPage(tk.Frame):
             # Hitung saldo berjalan
             if saldo_normal == 'Debit':
                 saldo_berjalan += debit - kredit
-                print("debit normal")
-                print(saldo_berjalan)
             else:
                 saldo_berjalan += kredit - debit
-                print("kredit normal")
-                print(saldo_berjalan)
                 
             total_debit += debit
             total_kredit += kredit
