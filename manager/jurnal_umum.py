@@ -46,10 +46,7 @@ class JurnalUmumPage(tk.Frame):
         self.tree.heading("kredit", text="Kredit (Rp)")
         
         ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
-                   ).grid(row=6, column=0, columnspan=2, pady=5)
-        
-        ttk.Label(self, text="", font=("Helvetica", 10,
-                   )).grid(row=7, column=0, columnspan=2, pady=20)
+                   ).grid(row=6, column=0, columnspan=2, pady=(5,20))
         
         today = datetime.now()
         current_year = today.strftime("%Y")

@@ -123,12 +123,7 @@ class BukuBesarPage(tk.Frame):
         )
 
         ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
-                   ).grid(row=4, column=0, columnspan=2, pady=5)
-        
-        # footer
-        ttk.Label(
-            self, text="", font=("Helvetica", 10)
-        ).grid(row=4, column=0, columnspan=2, pady=20)
+                   ).grid(row=4, column=0, columnspan=2, pady=(5,20))
         
         today = datetime.now()
         current_year = today.strftime("%Y")
@@ -419,7 +414,7 @@ class BukuBesarPage(tk.Frame):
             
         self.bb_frame.config(text=f"Rincian Buku Besar: {kode_akun} - {nama_akun}")
 
-        tree = ttk.Treeview(self.bb_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings", height=25)
+        tree = ttk.Treeview(self.bb_frame, columns=("tanggal", "keterangan", "debit", "kredit", "saldo"), show="headings", height=24)
         tree.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
         self.bb_frame.grid_rowconfigure(2, weight=1)
         

@@ -29,11 +29,6 @@ from staff.kas_keluar import KasKeluarPage as KasKeluarPageStaff
 from staff.menu_staff import MenuStaffPage
 from staff.penjualan import PenjualanPage as PenjualanPageStaff
 from staff.penyesuaian import PenyesuaianPage as PenyesuaianPageStaff
-from pencatatan import PencatatanPage
-from pelaporan import PelaporanPage
-from grafik import GrafikPage
-from pajak import PajakPage
-from penggajian import PenggajianPage
 
 
 
@@ -106,11 +101,6 @@ class LoginPage(tk.Tk):
                 "Grafik Pengeluaran": GrafikPengeluaranPage,
                 "Grafik Perubahan Modal": GrafikModalPage,
                 "Grafik Pendapatan dan Beban": GrafikPendapatanDanBebanPage
-                # "Pencatatan": PencatatanPage,
-                # "Pelaporan": PelaporanPage,
-                # "Grafik": GrafikPage,
-                # "Pajak": PajakPage,        
-                # "Penggajian": PenggajianPage, 
             }[name]
             frame = PageClass(self.container, self)
             self.frames[name] = frame
