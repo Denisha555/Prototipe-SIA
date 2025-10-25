@@ -8,9 +8,17 @@ from function.bulan_map import bulan_map
 def _connect_db():
     return sqlite3.connect("data_keuangan.db")
 
-def format_rupiah(nominal):
-    formatted = f"{int(nominal):,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
-    return f"{formatted}"
+def format_rupiah(amount):
+    try:
+        amount = int(amount)
+        if amount == 0:
+            return ""
+        is_negative = amount < 0
+        abs_amount = abs(amount)
+        formatted = f"{abs_amount:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+        return f"({formatted})" if is_negative else formatted
+    except (TypeError, ValueError):
+        return ""
 
 class NeracaPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -167,10 +175,10 @@ class NeracaPage(tk.Frame):
         # Isi ulang tabel sesuai kategori
         if kategori == "Aktiva":
             for nama_akun, saldo in aktiva:
-                self.tree.insert("", "end", values=(nama_akun, f"{format_rupiah(saldo)}"))
+                self.tree.insert("", "end", values=(nama_akun, format_rupiah(saldo)))
         else:  # Pasiva
             for nama_akun, saldo in pasiva:
-                self.tree.insert("", "end", values=(nama_akun, f"{format_rupiah(saldo)}"))
+                self.tree.insert("", "end", values=(nama_akun, format_rupiah(saldo)))
 
         # Tambahkan total
         total_aktiva = sum(s for _, s in aktiva)
