@@ -17,13 +17,14 @@ def _connect_db():
     return sqlite3.connect('data_keuangan.db')
 
 def _format_rupiah(amount):
-    """Fungsi format Rupiah sederhana tanpa simbol negatif."""
     try:
         amount = int(amount)
         if amount == 0:
             return ""
-        formatted = f"{abs(amount):,}".replace(",", "#").replace(".", ",").replace("#", ".")
-        return formatted
+        is_negative = amount < 0
+        abs_amount = abs(amount)
+        formatted = f"{abs_amount:,.0f}".replace(",", "#").replace(".", ",").replace("#", ".")
+        return f"({formatted})" if is_negative else formatted
     except (TypeError, ValueError):
         return ""
 
@@ -283,6 +284,9 @@ class LaporanArusKasPage(tk.Frame):
         total_neto += neto_pendanaan
         
         insert_row("")
+
+        keterangan_neto = "Kenaikan Kas" if total_neto >= 0 else "Penurunan Kas"
+        insert_row(keterangan_neto, "", _format_rupiah(total_neto), tag='subtotal')
 
         # SALDO KAS AKHIR PERIODE
         saldo_kas_akhir = saldo_kas_awal + total_neto
