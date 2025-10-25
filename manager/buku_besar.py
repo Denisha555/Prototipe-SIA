@@ -123,7 +123,7 @@ class BukuBesarPage(tk.Frame):
         )
 
         ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
-                   ).grid(row=4, column=0, columnspan=2)
+                   ).grid(row=4, column=0, columnspan=2, pady=5)
         
         # footer
         ttk.Label(

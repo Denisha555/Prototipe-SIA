@@ -11,6 +11,8 @@ class JurnalUmumPage(tk.Frame):
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_rowconfigure(5, weight=1)
 
         ttk.Label(self, text="📘 Jurnal Umum", font=("Helvetica", 18, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
@@ -45,6 +47,9 @@ class JurnalUmumPage(tk.Frame):
         
         ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
                    ).grid(row=6, column=0, columnspan=2, pady=5)
+        
+        ttk.Label(self, text="", font=("Helvetica", 10,
+                   )).grid(row=7, column=0, columnspan=2, pady=20)
         
         today = datetime.now()
         current_year = today.strftime("%Y")
