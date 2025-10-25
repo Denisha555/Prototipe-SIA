@@ -87,6 +87,8 @@ class BukuBesarPage(tk.Frame):
         # --- Konfigurasi tata letak utama ---
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
 
         # === Judul Halaman ===
         ttk.Label(
@@ -121,7 +123,12 @@ class BukuBesarPage(tk.Frame):
         )
 
         ttk.Button(self, text="Kembali ke Menu Utama", command=lambda: controller.show_frame("Menu Utama Manager")
-                   ).grid(row=3, column=0, columnspan=2, pady=5)
+                   ).grid(row=4, column=0, columnspan=2)
+        
+        # footer
+        ttk.Label(
+            self, text="", font=("Helvetica", 10)
+        ).grid(row=4, column=0, columnspan=2, pady=20)
         
         today = datetime.now()
         current_year = today.strftime("%Y")
